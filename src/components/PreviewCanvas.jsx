@@ -65,18 +65,12 @@ export default function PreviewCanvas({
         node.saturation(saturation / 100);
         node.hue(temperature);
       }
-      if (filters.includes(Konva.Filters.Convolve)) {
-        node.convolutionKernel([
-          0,
-          -1,
-          0,
-          -1,
-          5 + sharpness / 10,
-          -1,
-          0,
-          -1,
-          0,
-        ]);
+      if (
+        filters.includes(Konva.Filters.Convolve) &&
+        typeof node.convolveKernel === "function"
+      ) {
+        node.filters([Konva.Filters.Convolve]);
+        node.convolveKernel([0, -1, 0, -1, 5 + sharpness / 10, -1, 0, -1, 0]);
       }
 
       node.getLayer()?.batchDraw();
