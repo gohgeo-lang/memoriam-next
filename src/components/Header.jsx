@@ -1,0 +1,180 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { auth } from "../../src/firebase";
+import { logoutAction } from "@/app/actions/auth";
+
+export default function Header() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [submenuOpen, setSubmenuOpen] = useState(false);
+  const [user, setUser] = useState(undefined);
+  const [message, setMessage] = useState("");
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser ?? null);
+    });
+    return () => unsub();
+  }, []);
+
+  const handleLogout = async () => {
+    await logoutAction();
+    await signOut(auth);
+    setMessage("로그아웃 되었습니다.");
+    setTimeout(() => {
+      setMessage("");
+      window.location.href = "/";
+    }, 1500);
+  };
+
+  const menuItems = [
+    { path: "/about", label: "브랜드" },
+    { path: "/guide", label: "안심가이드" },
+    { label: "서비스", hasSubmenu: true },
+    { path: "/support", label: "고객센터" },
+    ...(user === undefined
+      ? []
+      : user
+      ? [{ label: "로그아웃", action: handleLogout }]
+      : [{ path: "/login", label: "로그인" }]),
+  ];
+
+  const submenuItems = [
+    { path: "/service/estimate", label: "비교견적" },
+    { path: "/service/photo", label: "영정사진" },
+    { path: "/service/memoriam", label: "메모리얼" },
+  ];
+
+  let activeMenu = null;
+  for (let item of menuItems) {
+    if (item.path && pathname.startsWith(item.path)) {
+      activeMenu = item.label;
+      break;
+    }
+  }
+  if (!activeMenu) {
+    for (let sub of submenuItems) {
+      if (pathname.startsWith(sub.path)) {
+        activeMenu = sub.label;
+        break;
+      }
+    }
+  }
+
+  return (
+    <header className="z-10 fixed flex justify-between py-2 px-2 top-0 left-0 right-0 bg-gray-100/80 backdrop-blur-sm">
+      {message && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-[#7b5449] text-white px-6 py-2 rounded shadow-md z-50">
+          {message}
+        </div>
+      )}
+      <div className="flex items-baseline gap-3">
+        <Link
+          href="/"
+          className="text-xl font-bold no-underline text-[#7b5449] transition duration-200 hover:scale-[1.02]"
+        >
+          Memoriam
+        </Link>
+        {activeMenu && <span className="text-xs font-thin">{activeMenu}</span>}
+      </div>
+
+      {!isOpen ? (
+        <button
+          className="text-2xl text-[#7b5449] cursor-pointer"
+          onClick={() => setIsOpen(true)}
+        >
+          ☰
+        </button>
+      ) : submenuOpen ? (
+        <button
+          className="text-2xl text-[#7b5449] cursor-pointer z-20"
+          onClick={() => setSubmenuOpen(false)}
+        >
+          ←
+        </button>
+      ) : (
+        <button
+          className="text-2xl text-[#7b5449] cursor-pointer z-30"
+          onClick={() => {
+            setIsOpen(false);
+            setSubmenuOpen(false);
+          }}
+        >
+          x
+        </button>
+      )}
+
+      <nav
+        className={`fixed top-4 left-0 right-0 flex justify-center gap-3 p-0
+          transition-all duration-300 ease-in-out ${
+            isOpen && !submenuOpen
+              ? "opacity-100 translate-x-20 text-[#7b5449] pointer-events-auto"
+              : "opacity-0 translate-x-100 text-[#7b5449] pointer-events-none"
+          }`}
+      >
+        {menuItems.map((item, index) =>
+          item.hasSubmenu ? (
+            <span
+              key={item.label}
+              onClick={() => setSubmenuOpen(!submenuOpen)}
+              className="text-sm font-thin text-[#7b5449] cursor-pointer"
+              style={{ transitionDelay: `${index * 0.1}s` }}
+            >
+              {item.label}
+            </span>
+          ) : item.action ? (
+            <button
+              key={item.label}
+              onClick={item.action}
+              className="text-sm font-thin text-[#7b5449] cursor-pointer bg-transparent border-0"
+              style={{ transitionDelay: `${index * 0.1}s` }}
+            >
+              {item.label}
+            </button>
+          ) : (
+            <Link
+              key={item.path}
+              href={item.path}
+              onClick={() => {
+                setIsOpen(false);
+                setSubmenuOpen(false);
+              }}
+              className="text-sm font-thin text-[#7b5449] no-underline cursor-pointer"
+              style={{ transitionDelay: `${index * 0.1}s` }}
+            >
+              {item.label}
+            </Link>
+          )
+        )}
+      </nav>
+
+      <div
+        className={`fixed top-4 left-0 right-0 flex justify-center gap-6 p-0 ${
+          submenuOpen && isOpen
+            ? "opacity-100 translate-x-20 text-[#7b5449] pointer-events-auto"
+            : "opacity-0 translate-x-100 text-[#7b5449] pointer-events-none"
+        }`}
+      >
+        {submenuItems.map((sub, subIndex) => (
+          <Link
+            className="no-underline text-sm font-thin text-[#7b5449]"
+            key={sub.path}
+            href={sub.path}
+            onClick={() => {
+              setIsOpen(false);
+              setSubmenuOpen(false);
+            }}
+            style={{ transitionDelay: `${subIndex * 0.1 + 0.2}s` }}
+          >
+            {sub.label}
+          </Link>
+        ))}
+      </div>
+    </header>
+  );
+}
