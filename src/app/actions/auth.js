@@ -25,6 +25,7 @@ export async function loginAction(prevState, formData) {
 }
 
 export async function logoutAction() {
-  cookies().delete("__session");
+  const cookieStore = await cookies();
+  cookieStore.delete("__session");
   return { message: "로그아웃 되었습니다.", success: true };
 }

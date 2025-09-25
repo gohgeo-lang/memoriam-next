@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 import { useEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
@@ -71,6 +72,17 @@ export default function LoginPage() {
           {isPending || isTransPending ? "처리중..." : "로그인"}
         </button>
       </form>
+
+      <p className="mt-4 text-sm text-center">
+        아직 계정이 없으신가요?{" "}
+        <Link
+          href="/signup"
+          className="hover:underline"
+          style={{ color: "#7b5449" }}
+        >
+          회원가입
+        </Link>
+      </p>
     </div>
   );
 }

@@ -23,13 +23,22 @@ export default function Header() {
   }, []);
 
   const handleLogout = async () => {
-    await logoutAction();
-    await signOut(auth);
-    setMessage("");
-    setTimeout(() => {
-      setMessage("");
-      window.location.href = "/";
-    }, 1500);
+    try {
+      const result = await logoutAction();
+      await signOut(auth);
+
+      if (result?.message) {
+        setMessage(result.message);
+      }
+
+      setTimeout(() => {
+        setMessage("");
+        window.location.href = "/";
+      }, 1500);
+    } catch (err) {
+      console.error("로그아웃 실패:", err);
+      setMessage("로그아웃 처리 중 오류가 발생했습니다.");
+    }
   };
 
   const menuItems = [
