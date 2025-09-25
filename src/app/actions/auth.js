@@ -18,13 +18,13 @@ export async function loginAction(prevState, formData) {
       path: "/",
     });
 
-    return { message: "로그인 성공! 🙌", success: true };
+    return { message: "로그인 성공!", success: true };
   } catch (err) {
-    return { message: "로그인 실패 ❌", success: false };
+    return { message: "로그인 실패!", success: false };
   }
 }
 
 export async function logoutAction() {
   cookies().delete("__session");
-  return { message: "로그아웃 되었습니다 👋", success: true };
+  return { message: "로그아웃 되었습니다.", success: true };
 }

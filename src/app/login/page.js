@@ -22,7 +22,6 @@ export default function LoginPage() {
     }
   }, [state.success, router]);
 
-  // 실제 로그인 핸들러: Firebase → idToken 발급 → formAction 호출
   const handleLogin = async (e) => {
     e.preventDefault();
     const email = e.target.email.value;
@@ -35,7 +34,6 @@ export default function LoginPage() {
       const formData = new FormData();
       formData.set("idToken", idToken);
 
-      // ✅ transition 안에서 호출해야 warning 안 뜸
       startTransition(() => {
         formAction(formData);
       });

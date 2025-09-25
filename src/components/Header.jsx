@@ -25,7 +25,7 @@ export default function Header() {
   const handleLogout = async () => {
     await logoutAction();
     await signOut(auth);
-    setMessage("로그아웃 되었습니다.");
+    setMessage("");
     setTimeout(() => {
       setMessage("");
       window.location.href = "/";
