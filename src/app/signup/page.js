@@ -64,7 +64,7 @@ export default function SignUpPage() {
           <h2 className="text-center text-3xl font-bold">회원가입</h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             이미 계정이 있으신가요?{" "}
-            <Link href="/login" className="text-blue-600 hover:text-blue-500">
+            <Link href="/login" className="text-[#7b5449] hover:text-[#5f4038]">
               로그인하기
             </Link>
           </p>
@@ -157,7 +157,7 @@ export default function SignUpPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#7b5449] hover:bg-[#5f4038] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-300 disabled:cursor-not-allowed"
           >
             {loading ? "가입 중..." : "가입하기"}
           </button>

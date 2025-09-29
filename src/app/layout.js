@@ -1,6 +1,7 @@
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Providers from "./providers";
 export const metadata = {
   title: "Memoriam",
   description: "반려동물 메모리얼 플랫폼",

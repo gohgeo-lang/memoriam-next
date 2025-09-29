@@ -1,10 +1,9 @@
-// app/api/auth/[...nextauth]/route.js
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
 
-const authOptions = {
+export const authOptions = {
   providers: [
     CredentialsProvider({
       name: "이메일과 비밀번호",

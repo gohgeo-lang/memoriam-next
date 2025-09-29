@@ -1,36 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-import { onAuthStateChanged, signOut } from "firebase/auth";
-import { auth } from "../../src/firebase";
-import { logoutAction } from "@/app/actions/auth";
+import { useSession, signOut } from "next-auth/react";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [submenuOpen, setSubmenuOpen] = useState(false);
-  const [user, setUser] = useState(undefined);
   const [message, setMessage] = useState("");
   const pathname = usePathname();
-
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser ?? null);
-    });
-    return () => unsub();
-  }, []);
+  const { data: session } = useSession();
 
   const handleLogout = async () => {
     try {
-      const result = await logoutAction();
-      await signOut(auth);
-
-      if (result?.message) {
-        setMessage(result.message);
-      }
-
+      await signOut({ redirect: false });
+      setMessage("로그아웃 되었습니다.");
       setTimeout(() => {
         setMessage("");
         window.location.href = "/";
@@ -46,9 +31,7 @@ export default function Header() {
     { path: "/guide", label: "안심가이드" },
     { label: "서비스", hasSubmenu: true },
     { path: "/support", label: "고객센터" },
-    ...(user === undefined
-      ? []
-      : user
+    ...(session
       ? [{ label: "로그아웃", action: handleLogout }]
       : [{ path: "/login", label: "로그인" }]),
   ];
