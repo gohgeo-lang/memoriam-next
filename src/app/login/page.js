@@ -1,88 +1,121 @@
+// app/login/page.js
 "use client";
-
-import Link from "next/link";
-import { useActionState } from "react";
-import { useEffect, useTransition } from "react";
+import { useState } from "react";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/firebase";
-import { loginAction } from "../actions/auth";
+import Link from "next/link";
 
 export default function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const router = useRouter();
-  const [state, formAction, isPending] = useActionState(loginAction, {
-    message: "",
-    success: false,
-  });
-  const [isTransPending, startTransition] = useTransition();
 
-  useEffect(() => {
-    if (state.success) {
-      const timer = setTimeout(() => router.push("/"), 1500);
-      return () => clearTimeout(timer);
-    }
-  }, [state.success, router]);
-
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const email = e.target.email.value;
-    const pw = e.target.password.value;
+    setLoading(true);
+    setError("");
 
     try {
-      const userCred = await signInWithEmailAndPassword(auth, email, pw);
-      const idToken = await userCred.user.getIdToken();
-
-      const formData = new FormData();
-      formData.set("idToken", idToken);
-
-      startTransition(() => {
-        formAction(formData);
+      // NextAuth의 signIn 함수 사용
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
       });
-    } catch (err) {
-      console.error("로그인 실패:", err);
+
+      if (result?.error) {
+        setError("이메일 또는 비밀번호가 올바르지 않습니다");
+        return;
+      }
+
+      // 로그인 성공!
+      router.push("/dashboard");
+      router.refresh();
+    } catch (error) {
+      setError("로그인 중 오류가 발생했습니다");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-sm mx-auto mt-20">
-      {state.message && (
-        <div className="mb-4 px-4 py-2 text-white bg-[#7b5449] rounded">
-          {state.message}
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-lg">
+        <div>
+          <h2 className="text-center text-3xl font-bold">로그인</h2>
+          <p className="mt-2 text-center text-sm text-gray-600">
+            계정이 없으신가요?{" "}
+            <Link href="/signup" className="text-blue-600 hover:text-blue-500">
+              회원가입하기
+            </Link>
+          </p>
         </div>
-      )}
 
-      <form onSubmit={handleLogin} className="flex flex-col gap-2">
-        <input
-          type="email"
-          name="email"
-          placeholder="이메일"
-          className="border p-2"
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="비밀번호"
-          className="border p-2"
-        />
-        <button
-          type="submit"
-          disabled={isPending || isTransPending}
-          className="bg-[#7b5449] text-white p-2 rounded"
-        >
-          {isPending || isTransPending ? "처리중..." : "로그인"}
-        </button>
-      </form>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div className="space-y-4">
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
+                이메일 주소
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                placeholder="example@email.com"
+              />
+            </div>
 
-      <p className="mt-4 text-sm text-center">
-        아직 계정이 없으신가요?{" "}
-        <Link
-          href="/signup"
-          className="hover:underline"
-          style={{ color: "#7b5449" }}
-        >
-          회원가입
-        </Link>
-      </p>
+            <div>
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
+                비밀번호
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                placeholder="비밀번호를 입력하세요"
+              />
+            </div>
+          </div>
+
+          {error && (
+            <div className="rounded-md bg-red-50 p-4">
+              <div className="text-sm text-red-800">{error}</div>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-300 disabled:cursor-not-allowed"
+          >
+            {loading ? "로그인 중..." : "로그인"}
+          </button>
+        </form>
+
+        <div className="text-center">
+          <a href="#" className="text-sm text-gray-600 hover:text-gray-900">
+            비밀번호를 잊으셨나요?
+          </a>
+        </div>
+      </div>
     </div>
   );
 }

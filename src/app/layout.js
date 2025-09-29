@@ -10,9 +10,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="ko">
       <body className="bg-white text-gray-900">
-        <Header />
-        <main className="pt-14">{children}</main>
-        <Footer />
+        <Providers>
+          <Header />
+          <main className="pt-14">{children}</main>
+          <Footer />
+        </Providers>
       </body>
     </html>
   );
