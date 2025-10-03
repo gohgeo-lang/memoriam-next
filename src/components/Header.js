@@ -72,7 +72,7 @@ export default function Header() {
       <div className="flex items-center gap-3">
         <Link
           href="/"
-          className="relative h-full w-24 transition duration-200 scale-[1.3] hover:scale-[1.33]"
+          className="relative h-full w-24 transition duration-200 scale-[1.5] hover:scale-[1.33]"
         >
           <Image
             src="/image/memoriam-logo.png"
