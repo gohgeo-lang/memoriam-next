@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 
@@ -65,12 +66,17 @@ export default function Header() {
           {message}
         </div>
       )}
-      <div className="flex items-baseline gap-3">
+      <div className="flex items-center gap-3">
         <Link
           href="/"
-          className="text-xl font-bold no-underline text-[#7b5449] transition duration-200 hover:scale-[1.02]"
+          className="relative h-full w-32 transition duration-200 hover:scale-[1.03]"
         >
-          Memoriam
+          <Image
+            src="/image/memoriam-logo.png"
+            alt="Memoriam Logo"
+            fill
+            priority
+          />
         </Link>
         {activeMenu && <span className="text-xs font-thin">{activeMenu}</span>}
       </div>

@@ -3,6 +3,7 @@
 import Input from "@/components/Input";
 import Section from "@/components/Section";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -55,9 +56,12 @@ export default function Home() {
             <p className="text-gray-500 text-sm">“내새깽이”</p>
           </div>
         </div>
-        <button className="mt-6 bg-[#7b5449] text-white px-6 py-3 rounded-xl active:bg-[#5a3e36] active:text-stone-500 active:scale-[0.98]">
-          더 많은 이야기 보기
-        </button>
+        <Link href="/service/photo">
+          {/** 메모리얼페이지 만들면 변경할 것 **/}
+          <button className="mt-6 bg-[#7b5449] text-white px-6 py-3 rounded-xl active:bg-[#5a3e36] active:text-stone-500 active:scale-[0.98]">
+            더 많은 이야기 보기
+          </button>
+        </Link>
       </Section>
 
       <Section
