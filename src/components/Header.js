@@ -69,13 +69,14 @@ export default function Header() {
       <div className="flex items-center gap-3">
         <Link
           href="/"
-          className="relative h-full w-32 transition duration-200 hover:scale-[1.03]"
+          className="relative h-full w-24 transition duration-200 scale-[1.3] hover:scale-[1.33]"
         >
           <Image
             src="/image/memoriam-logo.png"
             alt="Memoriam Logo"
             fill
             priority
+            className="object-contain"
           />
         </Link>
         {activeMenu && <span className="text-xs font-thin">{activeMenu}</span>}
