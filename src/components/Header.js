@@ -1,5 +1,8 @@
 "use client";
 
+import { FaBars } from "react-icons/fa";
+import { IoChevronBack } from "react-icons/io5";
+import { IoClose } from "react-icons/io5";
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -60,7 +63,7 @@ export default function Header() {
   }
 
   return (
-    <header className="z-10 fixed flex justify-between py-2 px-2 top-0 left-0 right-0 bg-gray-100/80 backdrop-blur-sm">
+    <header className="z-10 fixed flex justify-between h-10 py-2 px-2 top-0 left-0 right-0 bg-gray-100/80 backdrop-blur-sm">
       {message && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-[#7b5449] text-white px-6 py-2 rounded shadow-md z-50">
           {message}
@@ -84,32 +87,32 @@ export default function Header() {
 
       {!isOpen ? (
         <button
-          className="text-2xl text-[#7b5449] cursor-pointer"
+          className="text-base text-[#7b5449] cursor-pointer"
           onClick={() => setIsOpen(true)}
         >
-          ☰
+          <FaBars />
         </button>
       ) : submenuOpen ? (
         <button
-          className="text-2xl text-[#7b5449] cursor-pointer z-20"
+          className="text-base text-[#7b5449] cursor-pointer z-20"
           onClick={() => setSubmenuOpen(false)}
         >
-          ←
+          <IoChevronBack />
         </button>
       ) : (
         <button
-          className="text-2xl text-[#7b5449] cursor-pointer z-30"
+          className="text-base text-[#7b5449] cursor-pointer z-30"
           onClick={() => {
             setIsOpen(false);
             setSubmenuOpen(false);
           }}
         >
-          x
+          <IoClose />
         </button>
       )}
 
       <nav
-        className={`fixed top-4 left-0 right-0 flex justify-center gap-3 p-0
+        className={`fixed top-2.5 left-0 right-0 flex justify-center gap-3 p-0
           transition-all duration-300 ease-in-out ${
             isOpen && !submenuOpen
               ? "opacity-100 translate-x-20 text-[#7b5449] pointer-events-auto"
@@ -153,7 +156,7 @@ export default function Header() {
       </nav>
 
       <div
-        className={`fixed top-4 left-0 right-0 flex justify-center gap-6 p-0 ${
+        className={`fixed top-2.5 left-0 right-0 flex justify-center gap-6 p-0 ${
           submenuOpen && isOpen
             ? "opacity-100 translate-x-20 text-[#7b5449] pointer-events-auto"
             : "opacity-0 translate-x-100 text-[#7b5449] pointer-events-none"
