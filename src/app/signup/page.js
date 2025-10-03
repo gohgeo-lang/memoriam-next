@@ -1,4 +1,3 @@
-// app/signup/page.js
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -17,7 +16,6 @@ export default function SignUpPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // 비밀번호 확인
     if (password !== confirmPassword) {
       setError("비밀번호가 일치하지 않습니다");
       return;
@@ -47,7 +45,6 @@ export default function SignUpPage() {
         return;
       }
 
-      // 회원가입 성공! 로그인 페이지로 이동
       alert("회원가입이 완료되었습니다. 로그인해주세요!");
       router.push("/login");
     } catch (error) {

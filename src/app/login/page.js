@@ -1,4 +1,3 @@
-// app/login/page.js
 "use client";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
@@ -19,7 +18,6 @@ export default function LoginPage() {
     setError("");
 
     try {
-      // NextAuth의 signIn 함수 사용
       const result = await signIn("credentials", {
         email,
         password,
@@ -31,7 +29,6 @@ export default function LoginPage() {
         return;
       }
 
-      // 로그인 성공!
       router.push("/");
       router.refresh();
     } catch (error) {
