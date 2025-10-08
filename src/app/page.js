@@ -35,7 +35,7 @@ export default function Home() {
           <div className="bg-white rounded-lg p-6 shadow-sm">
             <h3 className="text-[#7b5449] font-semibold text-lg">동행</h3>
             <p className="text-gray-600">
-              사람과 반려동물 모두를 위한 추모 서비스.
+              사랑하는 우리아이를 위한 추모 서비스.
             </p>
           </div>
         </div>
