@@ -1,15 +1,10 @@
-import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+export async function hashPassword(password) {
+  const hashedPassword = await bcrypt.hash(password, 12);
+  return hashedPassword;
+}
+export async function verifyPassword(password, hashedPassword) {
+  const isValid = await bcrypt.compare(password, hashedPassword);
 
-export async function getSession() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
-  if (!token) return null;
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    return decoded;
-  } catch {
-    return null;
-  }
+  return isValid;
 }

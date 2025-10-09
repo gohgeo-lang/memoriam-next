@@ -37,7 +37,7 @@ export default function Header() {
     { path: "/support", label: "고객센터" },
     ...(session
       ? [{ label: "로그아웃", action: handleLogout }]
-      : [{ path: "/login", label: "로그인" }]),
+      : [{ path: "/auth/login", label: "로그인" }]),
   ];
 
   const submenuItems = [
