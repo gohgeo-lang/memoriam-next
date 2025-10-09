@@ -11,7 +11,7 @@ export async function signUp({ email, password, name }) {
     });
 
     if (existingUser) {
-      return { success: false, error: "이민 사용중인 이메일입니다" };
+      return { success: false, error: "이미 사용중인 이메일입니다" };
     }
 
     const hashedPassword = await hashPassword(password);
@@ -33,7 +33,7 @@ export async function signUp({ email, password, name }) {
 export async function signIn({ email, password }) {
   try {
     const user = await prisma.user.findUnique({
-      wherer: { email },
+      where: { email },
     });
 
     if (!user) {
@@ -48,7 +48,7 @@ export async function signIn({ email, password }) {
     if (!isValidPassword) {
       return {
         success: false,
-        error: "이메밍ㄹ 또는 비밀번호가 올바르지 않습니다",
+        error: "이메일 또는 비밀번호가 올바르지 않습니다",
       };
     }
 
@@ -96,7 +96,7 @@ export async function getCurrentUser() {
       },
     });
 
-    return usesr;
+    return user;
   } catch (error) {
     console.error(error);
     return null;
