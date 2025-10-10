@@ -26,12 +26,12 @@ export default function FilterBar({ onChange }) {
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             placeholder="업체명, 서비스 검색"
-            className="w-full md:max-w-sm rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full md:max-w-sm rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#7b5449]"
           />
           <select
             value={city}
             onChange={(e) => setCity(e.target.value)}
-            className="rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#7b5449]"
           >
             <option value="">지역 전체</option>
             <option value="서울">서울</option>
@@ -45,7 +45,7 @@ export default function FilterBar({ onChange }) {
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value)}
-            className="rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#7b5449]"
           >
             <option>추천</option>
             <option>거리순</option>
@@ -54,7 +54,7 @@ export default function FilterBar({ onChange }) {
           </select>
           <button
             onClick={apply}
-            className="rounded-lg border border-black px-4 py-2 text-sm text-black hover:scale-105"
+            className="rounded-lg border px-4 py-2 text-sm text-black hover:scale-105 hover:bg-[#7b5449] hover:text-white active:scale-95"
           >
             적용
           </button>
@@ -66,10 +66,10 @@ export default function FilterBar({ onChange }) {
           <button
             key={t}
             onClick={() => toggleTag(t)}
-            className={`rounded-full border px-3 py-1 text-xs ${
+            className={`rounded-full px-3 py-1 text-xs ${
               tags.includes(t)
-                ? "bg-blue-500 text-white"
-                : "bg-white hover:bg-gray-500"
+                ? "bg-[#7b5449] text-white"
+                : "bg-gray-200 text-[#7b5449] hover:bg-[#7b5449]/50"
             }`}
           >
             {t}

@@ -4,7 +4,7 @@ export default function VendorCard({ vendor }) {
   const path = "/service/estimate";
   console.log(path);
   return (
-    <div className="rounded-xl border p-4 shadow hover:shadow-xl transition">
+    <div className="rounded-xl border p-4 m-4 shadow hover:shadow-xl transition">
       <div className="flex items-start justify-between">
         <h3 className="text-base font-semibold">{vendor.name}</h3>
         <div className="flex items-center gap-1 text-amber-600">
@@ -27,7 +27,7 @@ export default function VendorCard({ vendor }) {
         {vendor.tags.map((t) => (
           <span
             key={t}
-            className="inline-flex items-center rounded-full bg-blue-500 px-2 py-1 text-xs font-medium"
+            className="inline-flex items-center rounded-full bg-[#7b5449] px-2 py-1 text-xs font-medium text-white"
           >
             {t}
           </span>
@@ -37,11 +37,11 @@ export default function VendorCard({ vendor }) {
       <div className="mt-4 flex items-center justify-end gap-2">
         <Link
           href={`${path}/${vendor.id}`}
-          className="rounded-lg border px-3 py-1.5 text-sm hover:bg-blue-600"
+          className="rounded-lg border px-3 py-1.5 text-sm hover:bg-[#7b5449] hover:text-white active:scale-95"
         >
           상세보기
         </Link>
-        <button className="rounded-lg border px-3 py-1.5 text-sm hover:bg-blue-600">
+        <button className="rounded-lg border px-3 py-1.5 text-sm hover:bg-[#7b5449] hover:text-white active:scale-95">
           견적 요청
         </button>
       </div>

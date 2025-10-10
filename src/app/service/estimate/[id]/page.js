@@ -7,8 +7,8 @@ function findVendor(id) {
   return TEST_VENDORS.find((v) => v.id === id);
 }
 
-export default function VendorDetailPage({ params }) {
-  const vendor = findVendor(params.id);
+export default async function VendorDetailPage({ params }) {
+  const vendor = findVendor((await params).id);
 
   console.log(vendor);
   if (!vendor) {
@@ -28,7 +28,7 @@ export default function VendorDetailPage({ params }) {
             {vendor.tags.map((t) => (
               <span
                 key={t}
-                className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700"
+                className="inline-flex items-center rounded-full bg-[#7b5449] px-2.5 py-1 text-xs font-medium text-white"
               >
                 {t}
               </span>
@@ -136,7 +136,7 @@ export default function VendorDetailPage({ params }) {
           </p>
         </div>
         <div className="mt-3">
-          <button className="rounded-lg bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700">
+          <button className="rounded-lg bg-[#7b5449] px-4 py-2 text-sm text-white hover:scale-105 active:scale-95">
             견적 요청
           </button>
         </div>
