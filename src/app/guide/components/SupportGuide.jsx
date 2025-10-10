@@ -3,7 +3,7 @@ export default function SupportGuide() {
     <section className="py-12 lg:py-20 bg-indigo-50">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center gap-8">
         <img
-          src="/images/support.png"
+          src="/image/counsel.png"
           alt="심리 지원"
           className="w-full md:w-1/2 rounded-2xl shadow-lg"
         />

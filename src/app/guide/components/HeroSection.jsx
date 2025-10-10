@@ -1,6 +1,6 @@
 export default function HeroSection() {
   return (
-    <section className="relative bg-gradient-to-b from-yellow-950/70 to-orange-950/10 text-white py-24 px-6">
+    <section className="relative bg-gradient-to-b from-yellow-950/70 to-orange-950/10 text-white py-10">
       <div className="max-w-5xl mx-auto text-center">
         <h1 className="text-4xl md:text-6xl font-extrabold mb-4 ">
           안심가이드
@@ -10,7 +10,7 @@ export default function HeroSection() {
           반려동물 장례 안내
         </p>
         <img
-          src="/image/dog-cat.webp"
+          src="/image/dog-cat1.webp"
           alt="반려동물 이미지"
           className="mx-auto w-64 md:w-96 rounded-lg shadow-xl animate-fadeIn delay-400"
         />

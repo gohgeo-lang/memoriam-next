@@ -19,7 +19,7 @@ export default function ServiceGuide() {
             <div className="rounded-2xl overflow-hidden shadow-lg">
               <FrameCard>
                 <img
-                  src="/img/group-cremation.jpg"
+                  src="/image/dog-cat2.webp"
                   alt="합동 화장"
                   className="w-full h-64 sm:h-80 md:h-96 object-cover"
                 />
@@ -28,7 +28,7 @@ export default function ServiceGuide() {
             <div className="p-4 sm:p-6 md:p-8">
               <p className="text-gray-700 mb-4">
                 합동 화장은 가족과 함께하는 장례가 어려운 경우, 부담 없이 선택할
-                수 있으며, 고인을 존중하는 마음으로 진행됩니다.
+                수 있으며, 떠나가는 아이를 존중하는 마음으로 진행됩니다.
               </p>
               <p className="text-gray-700">
                 상징적인 이미지와 차분한 분위기를 통해 유가족이 마음의 위안을
@@ -61,7 +61,7 @@ export default function ServiceGuide() {
             <div className="rounded-2xl overflow-hidden shadow-lg">
               <FrameCard>
                 <img
-                  src="/img/individual-cremation.jpg"
+                  src="/image/cat1.webp"
                   alt="개별 화장"
                   className="w-full h-64 sm:h-80 md:h-96 object-cover"
                 />

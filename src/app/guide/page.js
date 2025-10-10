@@ -10,30 +10,28 @@ import SupportGuide from "./components/SupportGuide";
 export default function GuidePage() {
   return (
     <>
-      <>
-        <HeroSection />
+      <HeroSection />
 
-        {/* 절차 안내 */}
-        <ProcedureSteps />
+      {/* 절차 안내 */}
+      <ProcedureSteps />
 
-        {/* 서비스 안내 */}
-        <ServiceGuide />
+      {/* 서비스 안내 */}
+      <ServiceGuide />
 
-        {/* 비용 안내 */}
-        <CostGuide />
+      {/* 비용 안내 */}
+      <CostGuide />
 
-        {/* 심리 상담 */}
-        <SupportGuide />
+      {/* 심리 상담 */}
+      <SupportGuide />
 
-        {/* FAQ */}
-        <FAQ />
+      {/* FAQ */}
+      <FAQ />
 
-        {/* 미션/비전 지우기 또는 위치 변경 */}
-        <MissionVision />
+      {/* 미션/비전 지우기 또는 위치 변경 */}
+      <MissionVision />
 
-        {/* 상담 CTA */}
-        <CTASection />
-      </>
+      {/* 상담 CTA */}
+      <CTASection />
     </>
   );
 }

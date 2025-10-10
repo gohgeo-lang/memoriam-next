@@ -1,28 +1,81 @@
+// app/estimate/page.js
+"use client";
+import { useMemo, useState } from "react";
+import { TEST_VENDORS } from "./lib/vendors";
+import VendorCard from "./components/VendorCard";
 import FilterBar from "./components/FilterBar";
-import QuoteList from "./components/QuoteList";
-import ComparisonTable from "./components/ComparisonTable";
-import EmptyState from "./components/EmptyState";
 
-export default function ComparePage() {
-  // 임시 데이터 (추후 API 연결 예정)
-  const quotes = [
-    { id: 1, name: "행복 펫 장례", price: 350000, rating: 4.5 },
-    { id: 2, name: "펫엔젤 서비스", price: 420000, rating: 4.7 },
-  ];
+export default function EstimatePage() {
+  const [query, setQuery] = useState({
+    keyword: "",
+    city: "",
+    tags: [],
+    sort: "추천",
+  });
 
-  const selected = [quotes[0]]; // 선택된 업체 상태 (추후 useState로 관리)
+  const list = useMemo(() => {
+    let data = [...TEST_VENDORS];
+
+    if (query.keyword) {
+      const kw = query.keyword.trim();
+      data = data.filter(
+        (v) =>
+          v.name.includes(kw) ||
+          v.tags.some((t) => t.includes(kw)) ||
+          v.city.includes(kw)
+      );
+    }
+
+    if (query.city) data = data.filter((v) => v.city === query.city);
+    if (query.tags.length)
+      data = data.filter((v) => query.tags.every((t) => v.tags.includes(t)));
+
+    switch (query.sort) {
+      case "거리순":
+        data.sort((a, b) => a.distanceKm - b.distanceKm);
+        break;
+      case "낮은가격":
+        data.sort((a, b) => a.priceFrom - b.priceFrom);
+        break;
+      case "높은평점":
+        data.sort((a, b) => b.rating - a.rating);
+        break;
+      case "추천":
+      default:
+        data.sort(
+          (a, b) =>
+            b.rating * 2 +
+            Math.min(b.reviews, 200) / 100 -
+            b.distanceKm * 0.05 -
+            (a.rating * 2 +
+              Math.min(a.reviews, 200) / 100 -
+              a.distanceKm * 0.05)
+        );
+        break;
+    }
+    return data;
+  }, [query]);
 
   return (
-    <div className="p-6 space-y-6">
-      <FilterBar />
-
-      {quotes.length > 0 ? (
-        <QuoteList quotes={quotes} />
+    <div className="space-y-6">
+      <FilterBar onChange={setQuery} />
+      <div className="flex items-center justify-between">
+        <h2 className="text-sm text-gray-600">총 {list.length}곳</h2>
+        <button className="text-sm text-gray-500 hover:text-gray-800">
+          지도로 보기(준비중)
+        </button>
+      </div>
+      {list.length === 0 ? (
+        <div className="rounded-xl border bg-white p-8 text-center text-gray-500">
+          조건에 맞는 업체가 없어요. 필터를 조정해보세요.
+        </div>
       ) : (
-        <EmptyState message="아직 등록된 견적이 없습니다." />
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {list.map((v) => (
+            <VendorCard key={v.id} vendor={v} />
+          ))}
+        </div>
       )}
-
-      {selected.length > 0 && <ComparisonTable selected={selected} />}
     </div>
   );
 }
