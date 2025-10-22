@@ -67,12 +67,12 @@ export default async function getCompanies(userLat, userLon) {
       reviews: Math.floor(Math.random() * 100),
       distanceKm: getDistance(userLat, userLon, coordX, coordY).toFixed(2),
       priceFrom: Math.floor(Math.random() * 1000000),
-      tags: ["24시간", "픽업", "개별화장", "유골함제고", "추모실"],
+      tags: ["24시간", "픽업", "개별화장", "유골함제공", "추모실"],
       city: [
         row
           .getElementsByTagName("siteWhlAddr")[0]
           ?.textContent?.split(" ")[0] ?? "",
-        row.getElementsByTagName("rdnWhlAddr")[0]?.textContent?.split(" ")[1] ??
+        row.getElementsByTagName("rdnWhlAddr")[0]?.textContent?.split(" ")[0] ??
           "",
       ],
       cremationTypes: [

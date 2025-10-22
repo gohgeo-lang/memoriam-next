@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function CompanyCard({ company }) {
   const path = "/service/estimate";
-  console.log(path);
+
   return (
     <div className="rounded-xl border p-4 m-4 bg-[#fdf8f6] shadow hover:shadow-xl hover:bg-[#f5d5c8] transition ">
       <div className="flex items-start justify-between">
@@ -53,7 +53,7 @@ export default function CompanyCard({ company }) {
 
       <div className="mt-4 flex items-center justify-end gap-2">
         <Link
-          href={`${path}/${company.id}`}
+          href={`/service/estimate/${company.id}`}
           className="rounded-lg border px-3 py-1.5 text-sm hover:bg-[#7b5449] hover:text-white active:scale-95"
         >
           상세보기

@@ -1,31 +1,49 @@
 // app/estimate/[id]/page.js
+"use client";
 import Link from "next/link";
+import { getCompanyById } from "../lib/companiesCache";
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { notFound } from "next/navigation";
-import { TEST_VENDORS } from "../lib/vendors";
 
-function findVendor(id) {
-  return TEST_VENDORS.find((v) => v.id === id);
-}
+export default function CompanyDetailPage() {
+  const params = useParams(); // { id: "..." }
+  const router = useRouter();
+  const [company, setCompany] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-export default async function VendorDetailPage({ params }) {
-  const vendor = findVendor((await params).id);
+  useEffect(() => {
+    async function fetchCompany() {
+      const found = await getCompanyById(params.id);
+      if (!found) {
+        router.push("/estimate"); // 없으면 리스트 페이지로
+      } else {
+        setCompany(found);
+      }
+      setLoading(false);
+    }
+    fetchCompany();
+  }, [params.id, router]);
 
-  console.log(vendor);
-  if (!vendor) {
+  console.log("paramsId", params.id);
+
+  if (!company && !loading) {
     notFound();
   }
+
+  if (loading) return <p className="p-4">로딩중...</p>;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold">{vendor.name}</h1>
+          <h1 className="text-xl font-semibold">{company.name}</h1>
           <p className="mt-1 text-sm text-gray-600">
-            {vendor.city} • 최저 {vendor.priceFrom.toLocaleString()}원 • 평점{" "}
-            {vendor.rating} ({vendor.reviews})
+            {company.city} • 최저 {company.priceFrom?.toLocaleString() ?? ""}원
+            • 평점 {company.rating} ({company.reviews})
           </p>
           <div className="mt-2 flex flex-wrap gap-2">
-            {vendor.tags.map((t) => (
+            {company.tags.map((t) => (
               <span
                 key={t}
                 className="inline-flex items-center rounded-full bg-[#7b5449] px-2.5 py-1 text-xs font-medium text-white"
@@ -47,7 +65,7 @@ export default async function VendorDetailPage({ params }) {
       <section className="rounded-xl border bg-white p-4">
         <h2 className="text-base font-semibold">화장 방식</h2>
         <div className="mt-3 grid gap-3 md:grid-cols-2">
-          {vendor.cremationTypes.map((c) => (
+          {company.cremationTypes.map((c) => (
             <div key={c.type} className="rounded-lg border p-3">
               <div className="flex items-center justify-between">
                 <p className="font-medium">{c.type}</p>
@@ -74,7 +92,7 @@ export default async function VendorDetailPage({ params }) {
               </tr>
             </thead>
             <tbody>
-              {vendor.priceTable.map((row) => (
+              {company.priceTable.map((row) => (
                 <tr key={row.weight} className="border-t">
                   <td className="py-2">{row.weight}</td>
                   <td className="py-2">{row.indiv.toLocaleString()}원</td>
@@ -84,9 +102,9 @@ export default async function VendorDetailPage({ params }) {
             </tbody>
           </table>
         </div>
-        {vendor.options?.length ? (
+        {company.options?.length ? (
           <div className="mt-3 flex flex-wrap gap-2">
-            {vendor.options.map((o) => (
+            {company.options.map((o) => (
               <span
                 key={o}
                 className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-xs text-gray-700"
@@ -102,10 +120,10 @@ export default async function VendorDetailPage({ params }) {
       <section className="rounded-xl border bg-white p-4">
         <h2 className="text-base font-semibold">운영시간</h2>
         <div className="mt-2 grid gap-2 text-sm text-gray-700 md:grid-cols-2">
-          <p>평일: {vendor.hours.weekdays}</p>
-          <p>주말/공휴일: {vendor.hours.weekend}</p>
-          <p>야간/긴급: {vendor.hours.emergency}</p>
-          <p className="text-gray-600">안내: {vendor.hours.lastEntryNote}</p>
+          <p>평일: {company.hours.weekdays}</p>
+          <p>주말/공휴일: {company.hours.weekend}</p>
+          <p>야간/긴급: {company.hours.emergency}</p>
+          <p className="text-gray-600">안내: {company.hours.lastEntryNote}</p>
         </div>
       </section>
 
@@ -116,22 +134,23 @@ export default async function VendorDetailPage({ params }) {
           <p>
             전화:{" "}
             <a
-              href={`tel:${vendor.contacts.phone}`}
+              href={`tel:${company.contacts.phone}`}
               className="text-blue-600 hover:underline"
             >
-              {vendor.contacts.phone}
+              {company.contacts.phone}
             </a>
           </p>
-          <p>주소: {vendor.contacts.address}</p>
+          <p>지번: {company.contacts.addressSite}</p>
+          <p>도로명: {company.contacts.addressRdn}</p>
           <p className="md:col-span-2">
             웹사이트:{" "}
             <a
-              href={vendor.contacts.site}
+              href={company.contacts.site}
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 hover:underline"
             >
-              {vendor.contacts.site}
+              {company.contacts.site}
             </a>
           </p>
         </div>
