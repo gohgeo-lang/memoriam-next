@@ -114,6 +114,29 @@ export default function Photo() {
         break;
     }
   };
+  const handleSave = async () => {
+    const canvas = document.querySelector("canvas");
+    if (!canvas) return alert("저장할 이미지가 없습니다.");
+
+    canvas.toBlob(async (blob) => {
+      const formData = new FormData();
+      formData.append("file", blob, "result.png");
+
+      const res = await fetch("/api/photo/save", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        alert("저장 완료!");
+        console.log("서버에 저장된 URL:", data.url);
+      } else {
+        alert("저장 실패");
+      }
+    });
+  };
 
   const presets = [
     { id: 1, name: "기본", type: "default" },
@@ -307,10 +330,14 @@ export default function Photo() {
           )}
 
           {activeStep === 7 && (
-            <div>
-              <p className="text-sm text-center">저장하기</p>
-              <p>사진 저장하기</p>
-              <p>사진 공유하기</p>
+            <div className="flex flex-col items-center gap-3 py-6">
+              <p className="text-sm text-center mb-3">사진 저장하기</p>
+              <button
+                onClick={handleSave}
+                className="px-6 py-3 bg-[#7b5449] text-white rounded-lg shadow-md hover:bg-[#5c3a2f] transition"
+              >
+                저장하기
+              </button>
             </div>
           )}
         </div>
