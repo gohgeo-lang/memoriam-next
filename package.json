@@ -9,14 +9,13 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@prisma/client": "^6.16.2",
+    "@prisma/client": "^6.18.0",
     "bcryptjs": "^3.0.2",
     "firebase": "^12.3.0",
     "firebase-admin": "^13.5.0",
     "konva": "^10.0.2",
     "next": "15.5.4",
     "next-auth": "^4.24.11",
-    "prisma": "^6.16.2",
     "proj4": "^2.19.10",
     "react": "19.1.0",
     "react-dom": "19.1.0",
@@ -29,6 +28,7 @@
     "@tailwindcss/postcss": "^4",
     "eslint": "^9",
     "eslint-config-next": "15.5.4",
+    "prisma": "^6.18.0",
     "tailwindcss": "^4"
   }
 }
