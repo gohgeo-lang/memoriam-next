@@ -14,9 +14,9 @@ export async function GET() {
         },
       },
       orderBy: { createdAt: "desc" },
-      includes: {
+      include: {
         author: true,
-        comment: {
+        comments: {
           include: {
             author: true,
           },
