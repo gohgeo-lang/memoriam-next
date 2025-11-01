@@ -18,27 +18,52 @@ model User {
   comments  Comment[]
 }
 
+model PostCategory {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  posts Post[]
+}
+
 model Post {
-  id        Int       @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   title     String
   content   String
-  published Boolean   @default(false)
-  createdAt DateTime  @default(now())
-  author    User      @relation(fields: [authorId], references: [id])
-  authorId  Int
-  comments  Comment[]
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  author   User @relation(fields: [authorId], references: [id])
+  authorId Int
+
+  category   PostCategory @relation(fields: [categoryId], references: [id])
+  categoryId Int
+
+  comments     Comment[]
+  PostMemorial PostMemorial?
 
   @@map("Post")
+}
+
+model PostMemorial {
+  id            Int     @id @default(autoincrement())
+  petName       String
+  ownerName     String
+  thumbnailUrl  String?
+  rememberCount Int     @default(0)
+
+  post   Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId Int  @unique
 }
 
 model Comment {
   id        Int      @id @default(autoincrement())
   content   String
   createdAt DateTime @default(now())
-  post      Post     @relation(fields: [postId], references: [id])
-  postId    Int
-  author    User?    @relation(fields: [authorId], references: [id], onDelete: SetNull)
-  authorId  Int?
+
+  post   Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId Int
+
+  author   User? @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  authorId Int?
 
   @@map("Comment")
 }
