@@ -36,9 +36,9 @@ export async function GET() {
 }
 
 export async function POST(request) {
-  const session = await getServerSession(authPotions);
+  const session = await getServerSession(authOptions);
 
-  if (!session || session.user) {
+  if (!session || !session.user) {
     return NextResponse.json({ error: "인증이 필요합니다." }, { status: 401 });
   }
 
@@ -48,7 +48,7 @@ export async function POST(request) {
     const userId = parseInt(session.user.id, 10);
 
     const newPost = await prisma.post.create({
-      date: {
+      data: {
         title,
         content,
         published: true,

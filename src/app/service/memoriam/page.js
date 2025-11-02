@@ -14,10 +14,10 @@ const mapStoryData = (post) => {
     title: post.title,
     content: post.content,
 
-    petName: post.memorial?.petName || "댕냥이",
-    ownerName: post.memorial?.ownerName || post.author?.name || "보호자",
-    thumbnailUrl: post.memorial?.thumbnailUrl || "/image/dog-cat1.webp",
-    rememberCount: post.memorial?.rememberCount || 0,
+    petName: post.Postmemorial?.petName || "댕냥이",
+    ownerName: post.Postmemorial?.ownerName || post.author?.name || "보호자",
+    thumbnailUrl: post.Postmemorial?.thumbnailUrl || "/image/dog-cat1.webp",
+    rememberCount: post.Postmemorial?.rememberCount || 0,
 
     comments: (post.comments || []).map((comment) => ({
       id: comment.id,

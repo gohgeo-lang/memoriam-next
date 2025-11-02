@@ -13,7 +13,7 @@ export async function POST(request, { params }) {
       where: {
         postId: postId,
       },
-      date: {
+      data: {
         rememberCount: {
           increment: 1,
         },
