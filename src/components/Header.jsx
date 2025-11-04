@@ -27,7 +27,7 @@ export default function Header() {
   };
 
   const menuItems = [
-    { path: "/about", label: "브랜드" },
+    { path: "/brand", label: "브랜드" },
     { path: "/guide", label: "안심가이드" },
     { label: "서비스", hasSubmenu: true },
     { path: "/support", label: "고객센터" },
