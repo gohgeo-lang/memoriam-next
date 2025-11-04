@@ -1,4 +1,4 @@
-export default function About() {
+export default function brand() {
   return (
     <div className="w-full p-0 m-0 bg-[rgb(245,240,230)] text-[rgb(101,67,33)] font-serif leading-normal">
       {/* Hero Section: 왼쪽 텍스트 / 오른쪽 이미지 */}
@@ -76,14 +76,45 @@ export default function About() {
           <br />
           우리는 보호자님의 마음을 이해하며, 기억을 소중하게 지켜드립니다.
         </p>
+
         <ul className="flex justify-center gap-[42px]">
           {[1, 2, 3].map((index) => (
-            <li key={index} className="w-[412px]">
+            <li key={index} className="w-[412px] relative">
+              {/* 이미지 */}
               <img
-                src={`https://fourpaws.co.kr/img/new-brand-section02-0${index}.png`}
-                alt=""
+                src={`/image/promise${index}.jpg`}
+                alt={`Memoriam promise ${index}`}
                 className="w-full h-[350px] object-cover mb-[21px] rounded-lg shadow-sm"
               />
+
+              {/* 왼쪽 아래 문구 */}
+              <span className="absolute bottom-[25px] left-[25px] text-white text-[17px] font-medium drop-shadow-lg leading-[1.5] text-left">
+                {index === 1 && (
+                  <>
+                    단순한 장례가 아닌 <br />
+                    <span className="font-semibold text-[18px]">
+                      "진정한 교감"
+                    </span>
+                  </>
+                )}
+                {index === 2 && (
+                  <>
+                    따뜻한 마음을 담습니다.
+                    <br />
+                    <span className="font-semibold text-[18px]">
+                      "소중한 기록"
+                    </span>
+                  </>
+                )}
+                {index === 3 && (
+                  <>
+                    기억을 지키는 <br />
+                    <span className="font-semibold text-[18px]">
+                      "친절한 전문성"
+                    </span>
+                  </>
+                )}
+              </span>
             </li>
           ))}
         </ul>
