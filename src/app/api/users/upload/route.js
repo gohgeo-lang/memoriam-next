@@ -38,9 +38,10 @@ export async function POST(req) {
       .end(buffer);
   });
 
-  await prisma.user.update({
+  const updated = await prisma.user.update({
     where: { email: session.user.email },
     data: { image: result.secure_url },
+    select: { id: true, name: true, email: true, image: true, createdAt: true },
   });
 
   return NextResponse.json({
