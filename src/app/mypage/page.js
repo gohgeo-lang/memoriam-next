@@ -16,8 +16,68 @@ export default function MyPage() {
     detail: "",
     isDefault: false,
   });
+  const [families, setFamilies] = useState([]);
+  const [familyForm, setFamilyForm] = useState({
+    id: null,
+    name: "",
+    species: "",
+    breed: "",
+    birthDate: "",
+    memo: "",
+    photo: "",
+  });
 
   const [loading, setLoading] = useState(false);
+
+  const fetchFamilies = async () => {
+    const res = await fetch("/api/family");
+    const data = await res.json();
+    setFamilies(data);
+  };
+
+  useEffect(() => {
+    if (activeTab === "family") fetchFamilies();
+  }, [activeTab]);
+
+  const handleFamilyPhoto = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await fetch("/api/family/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+    if (data.url) {
+      setFamilyForm({ ...familyForm, photo: data.url });
+    }
+  };
+
+  const handleFamilySubmit = async (e) => {
+    e.preventDefault();
+    const method = familyForm.id ? "PATCH" : "POST";
+    const res = await fetch("/api/family", {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...familyForm, userId: user?.id }),
+    });
+    if (res.ok) {
+      alert(familyForm.id ? "수정 완료" : "등록 완료");
+      setFamilyForm({
+        id: null,
+        name: "",
+        species: "",
+        breed: "",
+        birthDate: "",
+        memo: "",
+        photo: "",
+      });
+      fetchFamilies();
+    }
+  };
 
   useEffect(() => {
     fetch("/api/users/me").then(async (res) => setUser(await res.json()));
@@ -168,7 +228,7 @@ export default function MyPage() {
                       </p>
                       {a.isDefault && (
                         <span className="text-xs text-[#7b5449] font-medium">
-                          기본배송지
+                          기본주소지
                         </span>
                       )}
                     </div>
@@ -192,7 +252,123 @@ export default function MyPage() {
             </div>
           </div>
         )}
-        {activeTab === "family" && <Placeholder text="가족 관리 화면" />}
+        {activeTab === "family" && (
+          <div>
+            <h3 className="text-lg font-semibold text-[#7b5449] mb-4">
+              가족 관리
+            </h3>
+            <form onSubmit={handleFamilySubmit} className="space-y-3">
+              <input
+                placeholder="이름"
+                className="border p-2 w-full rounded"
+                value={familyForm.name}
+                onChange={(e) =>
+                  setFamilyForm({ ...familyForm, name: e.target.value })
+                }
+              />
+              <input
+                placeholder="종(species)"
+                className="border p-2 w-full rounded"
+                value={familyForm.species}
+                onChange={(e) =>
+                  setFamilyForm({ ...familyForm, species: e.target.value })
+                }
+              />
+              <input
+                placeholder="품종(breed)"
+                className="border p-2 w-full rounded"
+                value={familyForm.breed}
+                onChange={(e) =>
+                  setFamilyForm({ ...familyForm, breed: e.target.value })
+                }
+              />
+              <input
+                type="date"
+                className="border p-2 w-full rounded"
+                value={familyForm.birthDate}
+                onChange={(e) =>
+                  setFamilyForm({ ...familyForm, birthDate: e.target.value })
+                }
+              />
+              <textarea
+                placeholder="메모"
+                className="border p-2 w-full rounded"
+                value={familyForm.memo}
+                onChange={(e) =>
+                  setFamilyForm({ ...familyForm, memo: e.target.value })
+                }
+              />
+
+              {/* ✅ 사진 업로드 */}
+              <div className="flex items-center gap-3">
+                <label className="cursor-pointer bg-gray-100 px-3 py-1 rounded border text-sm text-gray-700">
+                  이미지 선택
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleFamilyPhoto}
+                  />
+                </label>
+                {familyForm.photo && (
+                  <Image
+                    src={familyForm.photo}
+                    alt="family photo"
+                    width={60}
+                    height={60}
+                    className="rounded-md object-cover"
+                  />
+                )}
+              </div>
+
+              <button className="w-full bg-[#7b5449] text-white py-2 rounded">
+                {familyForm.id ? "수정하기" : "등록하기"}
+              </button>
+            </form>
+
+            <div className="mt-8 space-y-3">
+              {families.map((f) => (
+                <div
+                  key={f.id}
+                  className="border p-3 rounded border-gray-200 flex items-center gap-4"
+                >
+                  {f.photo && (
+                    <Image
+                      src={f.photo}
+                      alt={f.name}
+                      width={60}
+                      height={60}
+                      className="rounded-md object-cover"
+                    />
+                  )}
+                  <div className="flex-1">
+                    <p className="font-semibold">{f.name}</p>
+                    <p className="text-sm text-gray-600">
+                      {f.species} / {f.breed}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {f.birthDate?.slice(0, 10)} | {f.memo}
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setFamilyForm(f)}
+                      className="text-sm text-blue-500"
+                    >
+                      수정
+                    </button>
+                    <button
+                      onClick={() => handleFamilyDelete(f.id)}
+                      className="text-sm text-red-500"
+                    >
+                      삭제
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
