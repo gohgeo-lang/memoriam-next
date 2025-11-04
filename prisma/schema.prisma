@@ -17,6 +17,7 @@ model User {
   createdAt DateTime  @default(now())
   posts     Post[]
   comments  Comment[]
+  Family    Family[]
 }
 
 model Post {
@@ -42,4 +43,17 @@ model Comment {
   authorId  Int?
 
   @@map("Comment")
+}
+
+model Family {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id])
+  name      String
+  sapcies   String
+  breed     String?
+  birth     DateTime?
+  photo     String?
+  memo      String?
+  createdAt DateTime  @default(now())
 }
