@@ -8,12 +8,12 @@ export async function GET() {
   if (!session)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const addresses = await prisma.address.findMany({
+  const families = await prisma.family.findMany({
     where: { user: { email: session.user.email } },
-    orderBy: [{ isDefault: "desc" }, { createdAt: "desc" }],
+    orderBy: { createdAt: "desc" },
   });
 
-  return NextResponse.json(addresses);
+  return NextResponse.json(families);
 }
 
 export async function POST(req) {
@@ -23,45 +23,33 @@ export async function POST(req) {
 
   const data = await req.json();
 
-  if (data.isDefault) {
-    await prisma.address.updateMany({
-      where: { user: { email: session.user.email } },
-      data: { isDefault: false },
-    });
-  }
-
-  const newAddress = await prisma.address.create({
+  const newFamily = await prisma.family.create({
     data: {
       user: { connect: { email: session.user.email } },
       name: data.name,
-      phone: data.phone,
-      address: data.address,
-      detail: data.detail,
-      isDefault: data.isDefault || false,
+      species: data.species,
+      breed: data.breed,
+      birthDate: data.birthDate ? new Date(data.birthDate) : null,
+      memo: data.memo,
+      photo: data.photo,
     },
   });
 
-  return NextResponse.json(newAddress);
+  return NextResponse.json(newFamily);
 }
 
 export async function PATCH(req) {
   const data = await req.json();
 
-  if (data.isDefault) {
-    await prisma.address.updateMany({
-      where: { userId: data.userId },
-      data: { isDefault: false },
-    });
-  }
-
-  const updated = await prisma.address.update({
+  const updated = await prisma.family.update({
     where: { id: data.id },
     data: {
       name: data.name,
-      phone: data.phone,
-      address: data.address,
-      detail: data.detail,
-      isDefault: data.isDefault,
+      species: data.species,
+      breed: data.breed,
+      memo: data.memo,
+      birthDate: data.birthDate ? new Date(data.birthDate) : null,
+      photo: data.photo,
     },
   });
 
@@ -70,6 +58,6 @@ export async function PATCH(req) {
 
 export async function DELETE(req) {
   const { id } = await req.json();
-  await prisma.address.delete({ where: { id } });
+  await prisma.family.delete({ where: { id } });
   return NextResponse.json({ message: "삭제 완료" });
 }

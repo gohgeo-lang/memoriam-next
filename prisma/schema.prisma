@@ -18,6 +18,7 @@ model User {
   posts     Post[]
   comments  Comment[]
   Family    Family[]
+  Address   Address[]
 }
 
 model Post {
@@ -50,10 +51,23 @@ model Family {
   userId    Int
   user      User      @relation(fields: [userId], references: [id])
   name      String
-  sapcies   String
+  species   String
   breed     String?
-  birth     DateTime?
+  birthDate DateTime?
   photo     String?
   memo      String?
   createdAt DateTime  @default(now())
+}
+
+model Address {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  name      String
+  phone     String
+  address   String
+  detail    String?
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
