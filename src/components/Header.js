@@ -35,9 +35,7 @@ export default function Header() {
     { path: "/guide", label: "안심가이드" },
     { label: "서비스", hasSubmenu: true },
     { path: "/support", label: "고객센터" },
-    ...(session
-      ? [{ label: "로그아웃", action: handleLogout }]
-      : [{ path: "/login", label: "로그인" }]),
+    ...(session ? [] : [{ path: "/login", label: "로그인" }]),
   ];
 
   const submenuItems = [
@@ -85,31 +83,44 @@ export default function Header() {
         {activeMenu && <span className="text-xs font-thin">{activeMenu}</span>}
       </div>
 
-      {!isOpen ? (
-        <button
-          className="text-base text-[#7b5449] cursor-pointer"
-          onClick={() => setIsOpen(true)}
-        >
-          <FaBars />
-        </button>
-      ) : submenuOpen ? (
-        <button
-          className="text-base text-[#7b5449] cursor-pointer z-20"
-          onClick={() => setSubmenuOpen(false)}
-        >
-          <IoChevronBack />
-        </button>
-      ) : (
-        <button
-          className="text-base text-[#7b5449] cursor-pointer z-30"
-          onClick={() => {
-            setIsOpen(false);
-            setSubmenuOpen(false);
-          }}
-        >
-          <IoClose />
-        </button>
-      )}
+      <div className="flex items-center gap-2">
+        {session && session.user ? (
+          <Link href="/mypage">
+            <Image
+              src={session.user.image || "/default-avatar.png"}
+              alt="프"
+              width={28}
+              height={28}
+              className="rounded-full border border-gray-300 object-cover"
+            />
+          </Link>
+        ) : null}
+        {!isOpen ? (
+          <button
+            className="text-base text-[#7b5449] cursor-pointer"
+            onClick={() => setIsOpen(true)}
+          >
+            <FaBars />
+          </button>
+        ) : submenuOpen ? (
+          <button
+            className="text-base text-[#7b5449] cursor-pointer z-20"
+            onClick={() => setSubmenuOpen(false)}
+          >
+            <IoChevronBack />
+          </button>
+        ) : (
+          <button
+            className="text-base text-[#7b5449] cursor-pointer z-30"
+            onClick={() => {
+              setIsOpen(false);
+              setSubmenuOpen(false);
+            }}
+          >
+            <IoClose />
+          </button>
+        )}
+      </div>
 
       <nav
         className={`fixed top-2.5 left-0 right-0 flex justify-center gap-3 p-0
