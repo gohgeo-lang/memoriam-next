@@ -22,7 +22,7 @@ export async function GET() {
           },
           orderBy: { createdAt: "asc" },
         },
-        memorial: true,
+        PostMemorial: true,
       },
     });
     return NextResponse.json(posts);
@@ -63,7 +63,7 @@ export async function POST(request) {
           },
         },
 
-        memorial: {
+        PostMemorial: {
           create: {
             petName: petName,
             ownerName: ownerName,
@@ -75,7 +75,7 @@ export async function POST(request) {
 
       include: {
         author: true,
-        memorial: true,
+        PostMemorial: true,
         comments: true,
       },
     });
