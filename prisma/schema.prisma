@@ -9,16 +9,17 @@ datasource db {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  email     String    @unique
-  password  String
-  name      String?
-  image     String?
-  createdAt DateTime  @default(now())
-  posts     Post[]
-  comments  Comment[]
-  Family    Family[]
-  Address   Address[]
+  id            Int             @id @default(autoincrement())
+  email         String          @unique
+  password      String
+  name          String?
+  image         String?
+  createdAt     DateTime        @default(now())
+  posts         Post[]
+  comments      Comment[]
+  Family        Family[]
+  Address       Address[]
+  PaymentMethod PaymentMethod[]
 }
 
 model Post {
@@ -70,4 +71,15 @@ model Address {
   isDefault Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model PaymentMethod {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  carName    String
+  cardNumber String
+  expiry     String
+  isDefault  Boolean  @default(false)
+  createdAt  DateTime @default(now())
 }
