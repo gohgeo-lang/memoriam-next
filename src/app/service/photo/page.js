@@ -122,6 +122,16 @@ export default function Photo() {
     { id: 4, name: "필름노이즈", type: "noise" },
   ];
 
+  const handleDownload = () => {
+    const canvas = document.querySelector("canvas");
+    if (!canvas) return alert("저장할 이미지가 없습니다.");
+
+    const link = document.createElement("a");
+    link.download = `photo-${Date.now()}.png`;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  };
+
   const handleUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -307,10 +317,14 @@ export default function Photo() {
           )}
 
           {activeStep === 7 && (
-            <div>
-              <p className="text-sm text-center">저장하기</p>
-              <p>사진 저장하기</p>
-              <p>사진 공유하기</p>
+            <div className="flex flex-col items-center gap-3 py-6">
+              <p className="text-sm text-center mb-3">사진 저장하기</p>
+              <button
+                onClick={handleDownload}
+                className="cursor-pointer border-2 border-dashed border-[#7b5449] w-100 text-stone-500 font-base text-center py-3 rounded-xl shadow-md hover:bg-[#694237] hover:text-white transition text-lg"
+              >
+                저장하기
+              </button>
             </div>
           )}
         </div>

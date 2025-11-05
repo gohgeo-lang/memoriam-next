@@ -16,7 +16,6 @@ export const authOptions = {
           return null;
         }
 
-        // 사용자 찾기
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
         });
@@ -25,7 +24,6 @@ export const authOptions = {
           return null;
         }
 
-        // 비밀번호 확인
         const isPasswordValid = await bcrypt.compare(
           credentials.password,
           user.password
@@ -35,7 +33,6 @@ export const authOptions = {
           return null;
         }
 
-        // 로그인 성공!
         return {
           id: user.id + "",
           email: user.email,
@@ -50,6 +47,8 @@ export const authOptions = {
   pages: {
     signIn: "/login",
   },
+
+  secret: process.env.NEXTAUTH_SECRET,
 };
 
 const handler = NextAuth(authOptions);

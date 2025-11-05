@@ -3,6 +3,7 @@
 import Input from "@/components/Input";
 import Section from "@/components/Section";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -34,7 +35,7 @@ export default function Home() {
           <div className="bg-white rounded-lg p-6 shadow-sm">
             <h3 className="text-[#7b5449] font-semibold text-lg">동행</h3>
             <p className="text-gray-600">
-              사람과 반려동물 모두를 위한 추모 서비스.
+              사랑하는 우리아이를 위한 추모 서비스.
             </p>
           </div>
         </div>
@@ -55,9 +56,12 @@ export default function Home() {
             <p className="text-gray-500 text-sm">“내새깽이”</p>
           </div>
         </div>
-        <button className="mt-6 bg-[#7b5449] text-white px-6 py-3 rounded-xl active:bg-[#5a3e36] active:text-stone-500 active:scale-[0.98]">
-          더 많은 이야기 보기
-        </button>
+        <Link href="/service/photo">
+          {/** 메모리얼페이지 만들면 변경할 것 **/}
+          <button className="mt-6 bg-[#7b5449] text-white px-6 py-3 rounded-xl active:bg-[#5a3e36] active:text-stone-500 active:scale-[0.98]">
+            더 많은 이야기 보기
+          </button>
+        </Link>
       </Section>
 
       <Section

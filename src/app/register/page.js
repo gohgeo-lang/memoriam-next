@@ -1,10 +1,8 @@
-// app/register/page.js
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
-  // 입력 값을 저장할 상태
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
@@ -12,15 +10,13 @@ export default function RegisterPage() {
 
   const router = useRouter();
 
-  // 폼 제출 처리 함수
   const handleSubmit = async (e) => {
-    e.preventDefault(); // 페이지 새로고침 방지
+    e.preventDefault();
 
     setLoading(true);
     setError("");
 
     try {
-      // API로 요청 보내기
       const response = await fetch("/api/users", {
         method: "POST",
         headers: {
@@ -30,7 +26,6 @@ export default function RegisterPage() {
       });
 
       if (response.ok) {
-        // 성공하면 홈으로 이동
         router.push("/");
       } else {
         setError("등록에 실패했습니다. 다시 시도해주세요.");
