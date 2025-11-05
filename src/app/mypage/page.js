@@ -28,6 +28,8 @@ export default function MyPage() {
   });
 
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
 
   const fetchFamilies = async () => {
     const res = await fetch("/api/family");
@@ -42,17 +44,29 @@ export default function MyPage() {
   const handleFamilyPhoto = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
+
+    setUploading(true);
+    setUploadError("");
+
     const formData = new FormData();
     formData.append("file", file);
 
-    const res = await fetch("/api/family/upload", {
-      method: "POST",
-      body: formData,
-    });
+    try {
+      const res = await fetch("/api/family/upload", {
+        method: "POST",
+        body: formData,
+      });
+      if (!res.ok) throw new Error("업로드 실패");
 
-    const data = await res.json();
-    if (data.url) {
-      setFamilyForm({ ...familyForm, photo: data.url });
+      const data = await res.json();
+      if (data.url) {
+        setFamilyForm({ ...familyForm, photo: data.url });
+      }
+    } catch (err) {
+      console.error(err);
+      setUploadError("이미지 업로드 실패");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -76,6 +90,8 @@ export default function MyPage() {
         photo: "",
       });
       fetchFamilies();
+    } else {
+      alert("실패했습니다.");
     }
   };
 
@@ -299,27 +315,38 @@ export default function MyPage() {
                 }
               />
 
-              {/* ✅ 사진 업로드 */}
               <div className="flex items-center gap-3">
                 <label className="cursor-pointer bg-gray-100 px-3 py-1 rounded border text-sm text-gray-700">
-                  이미지 선택
+                  {uploading ? "업로드 중..." : "이미지 선택"}
                   <input
                     type="file"
                     accept="image/*"
                     className="hidden"
                     onChange={handleFamilyPhoto}
+                    disabled={uploading}
                   />
                 </label>
-                {familyForm.photo && (
+
+                {familyForm.photo && !uploading && (
                   <Image
                     src={familyForm.photo}
                     alt="family photo"
                     width={60}
                     height={60}
-                    className="rounded-md object-cover"
+                    className="rounded-md object-cover border"
                   />
                 )}
+
+                {uploading && (
+                  <div className="w-[60px] h-[60px] flex items-center justify-center border rounded-md text-gray-400 text-xs animate-pulse">
+                    업로드중…
+                  </div>
+                )}
               </div>
+
+              {uploadError && (
+                <p className="text-sm text-red-500 mt-1">{uploadError}</p>
+              )}
 
               <button className="w-full bg-[#7b5449] text-white py-2 rounded">
                 {familyForm.id ? "수정하기" : "등록하기"}

@@ -1,29 +1,31 @@
-import { v2 as cloudinary } from "cloudinary";
 import { NextResponse } from "next/server";
-
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+import fs from "fs";
+import path from "path";
 
 export async function POST(req) {
-  const formData = await req.fomData();
-  const file = formData.get("file");
+  try {
+    const formData = await req.formData();
+    const file = formData.get("file");
+    if (!file)
+      return NextResponse.json({ error: "파일 없음" }, { status: 400 });
 
-  if (!file)
-    return NextResponse.json({ error: "파일이 없습니다." }, { status: 400 });
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
 
-  const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
+    const uploadDir = path.join(process.cwd(), "public", "uploads");
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
 
-  const result = await new Promise((resolve, reject) => {
-    cloudinary.uploader
-      .upload_stream({ folder: "family_photos" }, (err, res) => {
-        if (err) reject(err);
-        else resolve(res);
-      })
-      .end(buffer);
-  });
-  return NextResponse.json({ url: result.secure_url });
+    const fileName = `${Date.now()}_${file.name}`;
+    const filePath = path.join(uploadDir, fileName);
+
+    fs.writeFileSync(filePath, buffer);
+
+    const fileUrl = `/uploads/${fileName}`;
+    return NextResponse.json({ url: fileUrl });
+  } catch (err) {
+    console.error("파일 업로드 오류:", err);
+    return NextResponse.json({ error: "업로드 실패" }, { status: 500 });
+  }
 }
