@@ -4,7 +4,7 @@ export default function CompanyCard({ company }) {
   const path = "/service/estimate";
 
   return (
-    <div className="rounded-xl border p-4 m-4 bg-[#fdf8f6] shadow hover:shadow-xl hover:bg-[#f5d5c8] transition ">
+    <div className="rounded-xl border p-4 m-4 bg-[#fdf8f6] shadow hover:shadow-xl hover:bg-[#c5a79d] transition ">
       <div className="flex items-start justify-between">
         <h3 className="text-base font-semibold">{company.name}</h3>
         <div className="flex items-center gap-1 text-amber-600">

@@ -8,18 +8,20 @@ const costs = [
 
 export default function CostGuide() {
   return (
-    <section className="py-12 lg:py-16 bg-gray-50">
+    <section className="py-12 lg:py-16 bg-[#b09c92]">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-3xl font-bold text-center mb-12">비용 안내</h2>
+        <h2 className="text-3xl font-bold text-center mb-12 text-[#856056]">
+          비용 안내
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {costs.map((item, idx) => (
             <div
               key={idx}
-              className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2 text-center"
+              className="bg-[#7d6a64] p-8 rounded-2xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2 text-center"
             >
               <FaPaw
                 size={16 * (idx + 1)}
-                className="text-indigo-600 mb-3 mx-auto"
+                className="text-[#e3beb3] mb-3 mx-auto"
               />
               <h3 className="text-xl font-semibold mb-2">{item.size}</h3>
               <p className="text-gray-700">{item.price}</p>

@@ -3,15 +3,15 @@ import FrameCard from "./FrameCard";
 export default function ServiceGuide() {
   return (
     <>
-      <section className="py-12 bg-gray-100 px-4 md:px-16">
-        <h2 className="text-3xl font-bold text-center mb-12">
+      <section className="py-12 bg-[#b09c92] px-4 md:px-16">
+        <h2 className="text-3xl font-bold text-center mb-12 text-[#856056]">
           서비스 종류 & 선택 가이드
         </h2>
         <div className="max-w-6xl mx-auto">
-          <h3 className="text-2xl sm:text-3xl font-bold mb-6 text-center">
+          <h3 className="text-2xl sm:text-3xl font-bold mb-6 text-center text-[#856056]">
             합동 화장
           </h3>
-          <p className="text-center text-gray-700 mb-8 sm:text-lg">
+          <p className="text-center text-[#856056] mb-8 sm:text-lg">
             여러 반려동물을 함께 보내며, 존엄하게 마지막을 맞이할 수 있는
             서비스입니다.
           </p>
@@ -26,11 +26,11 @@ export default function ServiceGuide() {
               </FrameCard>
             </div>
             <div className="p-4 sm:p-6 md:p-8">
-              <p className="text-gray-700 mb-4">
+              <p className="text-[#856056] mb-4">
                 합동 화장은 가족과 함께하는 장례가 어려운 경우, 부담 없이 선택할
                 수 있으며, 떠나가는 아이를 존중하는 마음으로 진행됩니다.
               </p>
-              <p className="text-gray-700">
+              <p className="text-[#856056]">
                 상징적인 이미지와 차분한 분위기를 통해 유가족이 마음의 위안을
                 얻을 수 있도록 도와드립니다.
               </p>
@@ -39,21 +39,21 @@ export default function ServiceGuide() {
         </div>
       </section>
 
-      <section className="py-12 bg-white px-4 md:px-16">
+      <section className="py-12 bg-[#f9f5f3] px-4 md:px-16">
         <div className="max-w-6xl mx-auto">
-          <h3 className="text-2xl sm:text-3xl font-bold mb-6 text-center">
+          <h3 className="text-2xl sm:text-3xl font-bold mb-6 text-center text-[#856056]">
             개별 화장
           </h3>
-          <p className="text-center text-gray-700 mb-8 sm:text-lg">
+          <p className="text-center text-[#856056] mb-8 sm:text-lg">
             소중한 반려동물을 가족처럼 정성껏 보내드리는 1:1 화장 서비스입니다.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
             <div className="p-4 sm:p-6 md:p-8">
-              <p className="text-gray-700 mb-4">
+              <p className="text-[#856056] mb-4">
                 개별 화장은 모든 과정을 고객님이 직접 확인 가능하며, 유골은
                 안전하게 전달됩니다.
               </p>
-              <p className="text-gray-700">
+              <p className="text-[#856056]">
                 존엄성과 추억을 최우선으로 하여, 평화롭고 안심할 수 있는 환경을
                 제공합니다.
               </p>

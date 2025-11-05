@@ -25,8 +25,6 @@ export default function CompanyDetailPage() {
     fetchCompany();
   }, [params.id, router]);
 
-  console.log("paramsId", params.id);
-
   if (!company && !loading) {
     notFound();
   }
@@ -34,7 +32,7 @@ export default function CompanyDetailPage() {
   if (loading) return <p className="p-4">로딩중...</p>;
 
   return (
-    <div className="space-y-6">
+    <div className="p-4 space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold">{company.name}</h1>

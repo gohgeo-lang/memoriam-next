@@ -1,6 +1,6 @@
 export default function SupportGuide() {
   return (
-    <section className="py-12 lg:py-20 bg-indigo-50">
+    <section className="py-12 lg:py-20 bg-[#f9f5f3]">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center gap-8">
         <img
           src="/image/counsel.png"

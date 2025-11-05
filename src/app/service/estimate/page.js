@@ -8,7 +8,7 @@ import { loadCompanies } from "./lib/companiesCache";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
-const ITEMS_PER_PAGE = 10; // 한 페이지에 10개씩 보여주기
+const ITEMS_PER_PAGE = 12; // 한 페이지에 12개씩 보여주기
 
 export default function EstimatePage() {
   const [companies, setCompanies] = useState([]);
@@ -21,8 +21,6 @@ export default function EstimatePage() {
   // 현재 페이지 번호 가져오기 (기본값: 1)
   const searchParams = useSearchParams();
   const currentPage = Number(searchParams.get("page")) || 1;
-
-  console.log("searchParams", searchParams);
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
