@@ -27,18 +27,21 @@ export default function MemorialForm({ onStorySubmit, onCancel }) {
     }
   };
 
+  // src/app/service/memoriam/components/MemorialForm.js
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // 이미지 미리보기 URL을 thumbnailUrl로 사용하고, 나머지 초기값들을 설정합니다.
-    const newStory = {
-      id: Date.now(),
+
+    // 1. 폼의 텍스트 데이터(petName, ownerName 등)를 가져옵니다.
+    const storyDataForApi = {
       ...formData,
-      // 이미지가 없으면 기본 플레이스홀더 URL을 사용합니다.
-      thumbnailUrl: imagePreview || "/image/dog-cat1.webp",
-      rememberCount: 0,
-      comments: [],
+      // 2. [수정됨] thumbnailUrl을 'null'로 설정합니다.
+      //    이렇게 하면 API에서 이 값을 받고 기본 이미지로 처리합니다.
+      thumbnailUrl: null,
     };
-    onStorySubmit(newStory);
+
+    // 3. 수정된 데이터를 page.js로 전송합니다.
+    onStorySubmit(storyDataForApi);
   };
 
   const isFormValid =

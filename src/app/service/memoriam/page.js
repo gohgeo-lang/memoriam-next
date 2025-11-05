@@ -1,57 +1,56 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import Section from "@/components/Section";
 import MemorialCard from "./components/MemorialCard";
 import MemorialModal from "./components/MemorialModal";
 import MemorialForm from "./components/MemorialForm";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
-const initialStories = [
-  {
-    id: 1,
-    petName: "댕청이",
-    ownerName: "김집사",
-    thumbnailUrl: "/image/pet.jpg",
-    title: "내새깽이, 하늘의 별이 되다",
-    content: `댕청아, 널 처음 만난 날을 기억해. 작고 하얀 솜뭉치 같던 네가 내게 와서 가족이 되었지.
-    
-너와 함께한 15년은 내 인생 가장 큰 선물이었어. 너의 발소리, 너의 꼬리치던 모습, 너의 따뜻한 체온... 모든 것이 아직도 선명해. 
-    
-하늘에서는 아프지 말고, 친구들이랑 신나게 뛰어놀아. 언젠가 다시 만날 날을 기다릴게. 사랑해.`,
-    rememberCount: 128,
-    comments: [
-      { id: 1, author: "이웃주민", text: "좋은 곳으로 갔을 거예요. 힘내세요." },
-      {
-        id: 2,
-        author: "친구",
-        text: "함께한 기억은 영원할 거예요. 댕청이도 행복했을 겁니다.",
-      },
-    ],
-  },
-  {
-    id: 2,
-    petName: "야옹이",
-    ownerName: "박애옹",
-    // 예시용 플레이스홀더 이미지는 그대로 둡니다.
-    thumbnailUrl: "https://placehold.co/600x400/a0a0a0/ffffff?text=Yaong",
-    title: "무릎 위에서 잠들던 너",
-    content:
-      "우리 야옹이는 세상에서 가장 애교 많은 고양이였어요. 제 무릎은 항상 야옹이 차지였죠. 골골송을 불러주던 네가 너무 그립다.",
-    rememberCount: 94,
-    comments: [
-      {
-        id: 1,
-        author: "랜선집사",
-        text: "사진만 봐도 너무 사랑스럽네요. ㅠㅠ",
-      },
-    ],
-  },
-];
+const mapStoryData = (post) => {
+  return {
+    id: post.id,
+    title: post.title,
+    content: post.content,
+
+    petName: post.Postmemorial?.petName || "댕냥이",
+    ownerName: post.Postmemorial?.ownerName || post.author?.name || "보호자",
+    thumbnailUrl: post.Postmemorial?.thumbnailUrl || "/image/dog-cat1.webp",
+    rememberCount: post.Postmemorial?.rememberCount || 0,
+
+    comments: (post.comments || []).map((comment) => ({
+      id: comment.id,
+      author: comment.author?.name || "방문자",
+      text: comment.content,
+    })),
+  };
+};
 
 export default function MemorialPage() {
-  const [stories, setStories] = useState(initialStories);
+  const [stories, setStories] = useState([]);
   const [selectedStory, setSelectedStory] = useState(null);
   const [isWriting, setIsWriting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const { data: session } = useSession();
+
+  useEffect(() => {
+    const fetchStories = async () => {
+      setIsLoading(true);
+      try {
+        const res = await fetch("/api/posts");
+        if (res.ok) {
+          const data = await res.json();
+          setStories(data.map(mapStoryData));
+        }
+      } catch (error) {
+        console.error("Failed to fetch stories:", error);
+      }
+      setIsLoading(false);
+    };
+
+    fetchStories();
+  }, []);
 
   const handleOpenModal = (story) => {
     setSelectedStory(story);
@@ -61,7 +60,7 @@ export default function MemorialPage() {
     setSelectedStory(null);
   };
 
-  const handleRememberClick = (storyId) => {
+  const handleRememberClick = async (storyId) => {
     setStories((prevStories) =>
       prevStories.map((story) =>
         story.id === storyId
@@ -69,47 +68,81 @@ export default function MemorialPage() {
           : story
       )
     );
+    try {
+      await fetch(`/api/posts/${storyId}/remember`, { method: "POST" });
+    } catch (error) {
+      console.error("failed to update remember count:", error);
+    }
   };
 
-  const handleCommentSubmit = (storyId, commentText) => {
-    const newComment = {
-      id: Date.now(),
-      author: "방문자",
-      text: commentText,
-    };
+  const handleCommentSubmit = async (storyId, commentText) => {
+    try {
+      const res = await fetch("/api/comments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: commentText, postId: storyId }),
+      });
 
-    setStories((prevStories) =>
-      prevStories.map((story) => {
-        if (story.id === storyId) {
-          const updatedStory = {
-            ...story,
-            comments: [...story.comments, newComment],
-          };
-          if (selectedStory && selectedStory.id === storyId) {
-            setSelectedStory(updatedStory);
+      if (!res.ok) throw new Error("댓글 등록 실패");
+
+      const newCommentFromDb = await res.json();
+
+      const newCommentMapped = {
+        id: newCommentFromDb.id,
+        author:
+          newCommentFromDb.author?.name || session?.user?.name || "방문자",
+        text: newCommentFromDb.content,
+      };
+
+      setStories((prevStories) =>
+        prevStories.map((story) => {
+          if (story.id === storyId) {
+            const updatedStory = {
+              ...story,
+              comments: [...story.comments, newCommentMapped],
+            };
+
+            if (selectedStory && selectedStory.id === storyId) {
+              setSelectedStory(updatedStory);
+            }
+            return updatedStory;
           }
-          return updatedStory;
-        }
-        return story;
-      })
-    );
+          return story;
+        })
+      );
+    } catch (error) {
+      console.error("Failed to submit comment:", error);
+      alert("냥! 댓글 등록 중 오류가 발생했다냥!");
+    }
   };
 
-  const handleStorySubmit = (newStory) => {
-    // 임시 ID와 썸네일 등을 할당하여 새로운 스토리를 추가
-    const storyWithDefaults = {
-      ...newStory,
-      id: Date.now(),
-      thumbnailUrl: newStory.thumbnailUrl || "/image/dog-cat1.webp",
-      rememberCount: 0,
-      comments: [],
-    };
-    setStories((prevStories) => [storyWithDefaults, ...prevStories]);
-    setIsWriting(false);
+  const handleStorySubmit = async (formData) => {
+    if (!session) {
+      alert("이야기 작성은 로그인이 필요하다멍!.");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/posts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (!res.ok) throw new Error("게시글 등록 실패다멍!");
+
+      const newPostFromDb = await res.json();
+      const newPostMapped = mapStoryData(newPostFromDb);
+
+      setStories((prevStories) => [newPostMapped, ...prevStories]);
+      setIsWriting(false);
+    } catch (error) {
+      console.error("Failed to submit story:", error);
+      alert("이야기 등록 중 오류가 발생했다냥!");
+    }
   };
 
   return (
-    // Next.js App Router의 <main> 영역에 맞게 상단 padding 클래스 제거
     <div className="memoriam-page">
       <Section title="우리의 이야기">
         {isWriting ? (
@@ -125,22 +158,37 @@ export default function MemorialPage() {
                 이야기를 나눠주세요
               </p>
               <button
-                onClick={() => setIsWriting(true)}
+                onClick={() => {
+                  if (!session) {
+                    alert("로그인이 필요합니다.");
+                  } else {
+                    setIsWriting(true);
+                  }
+                }}
                 className="bg-[#7b5449] text-white px-4 py-2 rounded-md hover:bg-[#694237] transition-colors active:scale-95"
               >
                 내 이야기 나누기
               </button>
             </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 px-5 sm:px-0">
-              {stories.map((story) => (
-                <MemorialCard
-                  key={story.id}
-                  story={story}
-                  onOpenModal={handleOpenModal}
-                  onRemember={handleRememberClick}
-                />
-              ))}
-            </div>
+
+            {isLoading ? (
+              <LoadingSpinner text="이야기를 불러오는 중..." />
+            ) : stories.length === 0 ? (
+              <p className="text-center text-gray-500">
+                아직 등록된 이야기가 없습니다냥!
+              </p>
+            ) : (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 px-5 sm:px-0">
+                {stories.map((story) => (
+                  <MemorialCard
+                    key={story.id}
+                    story={story}
+                    onOpenModal={handleOpenModal}
+                    onRemember={handleRememberClick}
+                  />
+                ))}
+              </div>
+            )}
           </>
         )}
       </Section>
