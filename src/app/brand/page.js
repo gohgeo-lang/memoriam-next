@@ -2,17 +2,49 @@ export default function Brand() {
   return (
     <div className="w-full p-0 m-0 bg-[rgb(245,240,230)] text-[rgb(101,67,33)] font-serif leading-normal">
       {/* Hero Section */}
+      <div className="mb-[100px]">
+        <div
+          className="relative w-full max-w-[1728px] aspect-[16/9] bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: 'url("/image/sad1.jpg")',
+          }}
+        >
+          {/* 어두운 오버레이 (글씨 가독성용) */}
+          <div className="absolute inset-0 bg-[rgba(0,0,0,0.25)] rounded-b-lg"></div>
+
+          {/* 텍스트 영역 */}
+          <div className="relative w-[1320px] max-w-[1320px] pt-[117px] mx-[204px]">
+            <h2 className="text-[34px] text-[#f8f5f0] leading-[48px] text-left font-bold mb-[35px] font-serif drop-shadow-md">
+              <span className="text-[#f1dfcf]">Memoriam</span>
+            </h2>
+
+            <p className="font-normal text-[18px] leading-[30px] text-[#f8f5f0] text-left block mb-5">
+              함께한 시간이 너무도 짧게만 느껴지던 순간, 우리는 알게 되었습니다.
+              <br />
+              이별에도 준비가 필요하다는 것을, 그리고 그 준비는 사랑의 또 다른
+              이름이어야 한다는 것을.
+            </p>
+
+            <p className="font-normal text-[18px] leading-[30px] text-[#f8f5f0] text-left block">
+              Memoriam은 반려가족과의 마지막 시간을 따뜻하게 지키며 마음속 깊이
+              남을 추억을 함께 만들어갑니다.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Hero Section */}
       <div className="max-w-[1324px] mx-[202px] mb-[100px] flex items-center gap-[52px] pt-[80px]">
         <div className="flex-1">
           <h2 className="font-serif font-bold text-4xl leading-[48px] mb-[35px]">
             추억을 보관하는 공간, Memoriam
           </h2>
-          <p className="text-lg mb-5 leading-[28px] text-[rgb(121,85,54)]">
+          <p className="text-lg mb-5 leading-[28px] text-[#7b5449]">
             소중한 순간들을 기억하고, 사랑하는 마음을 담아
             <br />
             언제든 다시 찾아볼 수 있는 공간을 제공합니다.
           </p>
-          <p className="text-lg leading-[28px] text-[rgb(121,85,54)]">
+          <p className="text-lg leading-[28px] text-[#7b5449]">
             함께한 시간을 추억하며,
             <br />
             기억 속 소중한 순간들을 안전하게 보관합니다.
@@ -147,14 +179,14 @@ export default function Brand() {
       <div className="block max-w-[1340px] w-[1340px] mx-[194px] mb-[140px]">
         <div className="flex justify-between">
           <div className="w-[670px]">
-            <span className="font-normal block text-left text-[#431f88] text-base leading-[21px] mb-[10px]">
+            <span className="font-normal block text-left text-[#7b5449] text-base leading-[21px] mb-[10px]">
               서비스 소개
             </span>
-            <h3 className="font-bold block text-left text-[#2a303c] text-2xl leading-[34px] mb-4">
+            <h3 className="font-bold block text-left text-[#7b5449] text-2xl leading-[34px] mb-4">
               많은 보호자들이 선택한 <br />
               반려동물 장례 서비스 'Memoriam'
             </h3>
-            <p className="font-normal block text-left text-[#2a303c] text-[15px] leading-6">
+            <p className="font-normal block text-left text-[#7b5449] text-[15px] leading-6">
               단순한 장례가 아닌, 의미 있는 이별의 여정.
               <br />
               Memoriam은 보호자님과 반려동물의 마지막 시간을
@@ -166,21 +198,21 @@ export default function Brand() {
           <div className="w-[670px] pt-[100px]">
             <ul>
               <li className="font-medium border-b border-[#999999] pb-[25px] mb-[25px]">
-                <span className="text-[15px] text-[#431f88] block leading-[23px] text-left">
+                <span className="text-[15px] text-[#7b5449] block leading-[23px] text-left">
                   누적 장례 진행 건 수
                 </span>
-                <p className="font-bold text-[28.5px] text-[#2a303c] leading-[34.5px] text-right">
+                <p className="font-bold text-[28.5px] text-[#7b5449] leading-[34.5px] text-right">
                   100,000 +
                 </p>
               </li>
               <li className="font-medium">
-                <span className="text-[15px] text-[#431f88] block leading-[23px] text-left">
+                <span className="text-[15px] text-[#7b5449] block leading-[23px] text-left">
                   전국 Memoriam 지점 수
-                  <span className="block text-[#2a303c] text-xs leading-[23px] mt-[3px]">
+                  <span className="block text-[#7b5449] text-xs leading-[23px] mt-[3px]">
                     * 전국 주요 도시 상담 가능
                   </span>
                 </span>
-                <p className="font-bold text-[28.5px] text-[#2a303c] leading-[34.5px] text-right -mt-[25px]">
+                <p className="font-bold text-[28.5px] text-[#7b5449] leading-[34.5px] text-right -mt-[25px]">
                   4개 지점
                 </p>
               </li>
@@ -231,7 +263,25 @@ export default function Brand() {
         <div className="flex justify-center w-[1728px]">
           <a
             href="service/memoriam"
-            className="font-normal text-[#431f88] text-[12.5px] flex items-center justify-center w-[162px] h-[38px] border border-[#431f88] rounded-[40px]"
+            className="
+      font-serif
+      text-[18px]
+      font-medium
+      px-[42px]
+      py-[13px]
+      rounded-full
+      text-[#fffaf5]
+      bg-gradient-to-r from-[#7b5449] to-[#a67b68]
+      shadow-md
+      transition-all
+      duration-300
+      ease-in-out
+      hover:shadow-[0_0_15px_rgba(166,123,104,0.6)]
+      hover:scale-[1.05]
+      hover:brightness-[1.05]
+      hover:translate-y-[-2px]
+      whitespace-nowrap
+    "
           >
             디지털추모관 바로가기
           </a>
