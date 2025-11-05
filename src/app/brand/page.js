@@ -143,6 +143,100 @@ export default function Brand() {
           ))}
         </ul>
       </div>
+      {/* ✅ Service Introduction Section 추가 */}
+      <div className="block max-w-[1340px] w-[1340px] mx-[194px] mb-[140px]">
+        <div className="flex justify-between">
+          <div className="w-[670px]">
+            <span className="font-normal block text-left text-[#431f88] text-base leading-[21px] mb-[10px]">
+              서비스 소개
+            </span>
+            <h3 className="font-bold block text-left text-[#2a303c] text-2xl leading-[34px] mb-4">
+              많은 보호자들이 선택한 <br />
+              반려동물 장례 서비스 'Memoriam'
+            </h3>
+            <p className="font-normal block text-left text-[#2a303c] text-[15px] leading-6">
+              단순한 장례가 아닌, 의미 있는 이별의 여정.
+              <br />
+              Memoriam은 보호자님과 반려동물의 마지막 시간을
+              <br />
+              가장 따뜻하게 만들어드립니다.
+            </p>
+          </div>
+
+          <div className="w-[670px] pt-[100px]">
+            <ul>
+              <li className="font-medium border-b border-[#999999] pb-[25px] mb-[25px]">
+                <span className="text-[15px] text-[#431f88] block leading-[23px] text-left">
+                  누적 장례 진행 건 수
+                </span>
+                <p className="font-bold text-[28.5px] text-[#2a303c] leading-[34.5px] text-right">
+                  100,000 +
+                </p>
+              </li>
+              <li className="font-medium">
+                <span className="text-[15px] text-[#431f88] block leading-[23px] text-left">
+                  전국 Memoriam 지점 수
+                  <span className="block text-[#2a303c] text-xs leading-[23px] mt-[3px]">
+                    * 전국 주요 도시 상담 가능
+                  </span>
+                </span>
+                <p className="font-bold text-[28.5px] text-[#2a303c] leading-[34.5px] text-right -mt-[25px]">
+                  4개 지점
+                </p>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      {/* Blissland Section */}
+      <div className="mb-[120px]">
+        <h3 className="font-bold text-[#2a303c] text-[30px] leading-[43px] text-center mb-[30px]">
+          사랑을 기억하는는 곳,
+          <br />
+          Memoriam 디지털추모관
+        </h3>
+        <div>
+          <div className="relative overflow-clip z-[1] block touch-pan-y w-[1728px] mb-10">
+            <div className="relative w-[1728px] h-[345px] z-[1] flex transition-transform duration-0 ease-[ease]">
+              <div className="flex-shrink-0 w-[556px] h-[345px] relative block text-center overflow-hidden rounded-[10px] mr-[30px]">
+                <div>
+                  <img
+                    src="https://fourpaws.co.kr/img/new-brand-section05-01.png"
+                    alt=""
+                    className="w-[556px] h-[342px] object-cover rounded-[10px]"
+                  />
+                </div>
+              </div>
+              <div className="flex-shrink-0 w-[556px] h-[345px] relative block text-center overflow-hidden rounded-[10px] mr-[30px]">
+                <div>
+                  <img
+                    src="https://fourpaws.co.kr/img/new-brand-section05-02.png"
+                    alt=""
+                    className="w-[556px] h-[342px] object-cover rounded-[10px]"
+                  />
+                </div>
+              </div>
+              <div className="flex-shrink-0 w-[556px] h-[345px] relative block text-center overflow-hidden rounded-[10px] mr-[30px]">
+                <div>
+                  <img
+                    src="https://fourpaws.co.kr/img/new-brand-section05-03.png"
+                    alt=""
+                    className="w-[556px] h-[342px] object-cover rounded-[10px]"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="flex justify-center w-[1728px]">
+          <a
+            href="service/memoriam"
+            className="font-normal text-[#431f88] text-[12.5px] flex items-center justify-center w-[162px] h-[38px] border border-[#431f88] rounded-[40px]"
+          >
+            디지털추모관 바로가기
+          </a>
+        </div>
+      </div>
     </div>
   );
 }
