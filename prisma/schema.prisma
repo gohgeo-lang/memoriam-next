@@ -20,6 +20,7 @@ model User {
   Family        Family[]
   Address       Address[]
   PaymentMethod PaymentMethod[]
+  PointHistory  PointHistory[]
 }
 
 model Post {
@@ -82,4 +83,14 @@ model PaymentMethod {
   expiry     String
   isDefault  Boolean  @default(false)
   createdAt  DateTime @default(now())
+}
+
+model PointHistory {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  type        String
+  amount      Int
+  description String?
+  createdAt   DateTime @default(now())
 }
