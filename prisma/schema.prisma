@@ -29,12 +29,6 @@ model PostCategory {
   posts Post[]
 }
 
-model PostCategory {
-  id    Int    @id @default(autoincrement())
-  name  String @unique
-  posts Post[]
-}
-
 model Post {
   id        Int      @id @default(autoincrement())
   title     String
