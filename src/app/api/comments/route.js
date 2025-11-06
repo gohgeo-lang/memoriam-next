@@ -1,7 +1,7 @@
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function POST(request) {
   const session = await getServerSession(authOptions);
@@ -19,7 +19,7 @@ export async function POST(request) {
 
     const userId = session?.user?.id ? parseInt(session.user.id, 10) : null;
 
-    const newComment = await prisma.comment.created({
+    const newComment = await prisma.comment.create({
       data: {
         content: content,
         postId: parseInt(postId, 10),
