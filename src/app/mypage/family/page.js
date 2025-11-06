@@ -7,6 +7,7 @@ export const runtime = "nodejs";
 
 export default function FamilyPage() {
   const [families, setFamilies] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({
     id: null,
     name: "",
@@ -20,9 +21,26 @@ export default function FamilyPage() {
   const [uploadError, setUploadError] = useState("");
 
   const fetchFamilies = async () => {
-    const res = await fetch("/api/family");
-    const data = await res.json();
-    setFamilies(data);
+    try {
+      const res = await fetch("/api/family");
+      if (!res.ok) {
+        if (res.status === 401) {
+          console.warn("로그인이 필요합니다.");
+          setFamilies([]);
+          return;
+        }
+        throw new Error("가족 정보를 불러오지 못했습니다.");
+      }
+
+      const data = await res.json();
+
+      setFamilies(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("가족 정보 로드 실패:", err);
+      setFamilies([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -88,10 +106,9 @@ export default function FamilyPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-5">
       <h2 className="text-lg font-semibold text-[#7b5449] mb-6 flex items-center gap-2">
-        🐾 가족 관리
+        가족 관리
       </h2>
 
-      {/* 등록/수정 폼 */}
       <form
         onSubmit={handleSubmit}
         className="bg-white rounded-xl shadow p-6 space-y-4 max-w-xl mx-auto"
@@ -129,7 +146,6 @@ export default function FamilyPage() {
           onChange={(e) => setForm({ ...form, memo: e.target.value })}
         />
 
-        {/* 이미지 업로드 */}
         <div className="flex items-center gap-3">
           <label className="cursor-pointer bg-gray-100 px-3 py-2 rounded border text-sm text-gray-700 hover:bg-gray-200">
             {uploading ? "업로드 중..." : "이미지 선택"}
@@ -160,48 +176,55 @@ export default function FamilyPage() {
         </button>
       </form>
 
-      {/* 목록 */}
-      <div className="mt-10 grid gap-4 md:grid-cols-2 max-w-3xl mx-auto">
-        {families.map((f) => (
-          <div
-            key={f.id}
-            className="bg-white rounded-xl shadow-sm p-4 flex items-center gap-4 hover:shadow-md transition"
-          >
-            {f.photo && (
-              <Image
-                src={f.photo}
-                alt={f.name}
-                width={64}
-                height={64}
-                className="rounded-md object-cover border"
-              />
-            )}
-            <div className="flex-1">
-              <p className="font-semibold text-[#7b5449]">{f.name}</p>
-              <p className="text-sm text-gray-600">
-                {f.species} / {f.breed}
-              </p>
-              <p className="text-xs text-gray-500">
-                {f.birthDate?.slice(0, 10)} | {f.memo}
-              </p>
+      {loading ? (
+        <p className="text-center text-gray-500 mt-10">불러오는 중...</p>
+      ) : Array.isArray(families) && families.length > 0 ? (
+        <div className="mt-10 grid gap-4 md:grid-cols-2 max-w-3xl mx-auto">
+          {families.map((f) => (
+            <div
+              key={f.id}
+              className="bg-white rounded-xl shadow-sm p-4 flex items-center gap-4 hover:shadow-md transition"
+            >
+              {f.photo && (
+                <Image
+                  src={f.photo}
+                  alt={f.name}
+                  width={64}
+                  height={64}
+                  className="rounded-md object-cover border"
+                />
+              )}
+              <div className="flex-1">
+                <p className="font-semibold text-[#7b5449]">{f.name}</p>
+                <p className="text-sm text-gray-600">
+                  {f.species} / {f.breed}
+                </p>
+                <p className="text-xs text-gray-500">
+                  {f.birthDate?.slice(0, 10)} | {f.memo}
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setForm(f)}
+                  className="text-xs text-blue-500 hover:underline"
+                >
+                  수정
+                </button>
+                <button
+                  onClick={() => handleDelete(f.id)}
+                  className="text-xs text-red-500 hover:underline"
+                >
+                  삭제
+                </button>
+              </div>
             </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setForm(f)}
-                className="text-xs text-blue-500 hover:underline"
-              >
-                수정
-              </button>
-              <button
-                onClick={() => handleDelete(f.id)}
-                className="text-xs text-red-500 hover:underline"
-              >
-                삭제
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-center text-gray-400 mt-10">
+          등록된 가족이 없습니다.
+        </p>
+      )}
     </div>
   );
 }

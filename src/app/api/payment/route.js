@@ -5,6 +5,67 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export const runtime = "nodejs";
 
+export async function GET() {
+  const session = await getServerSession(authOptions);
+  if (!session)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email },
+    include: { paymentMethods: true },
+  });
+
+  if (!user)
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+
+  return NextResponse.json(user.paymentMethods || []);
+}
+
+export async function PUT(req) {
+  const session = await getServerSession(authOptions);
+  if (!session)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const data = await req.json();
+  const { cardName, cardNumber, isDefault } = data;
+
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email },
+  });
+  if (!user)
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+
+  if (isDefault) {
+    await prisma.paymentMethod.updateMany({
+      where: { userId: user.id },
+      data: { isDefault: false },
+    });
+  }
+
+  const newMethod = await prisma.paymentMethod.create({
+    data: {
+      userId: user.id,
+      cardName,
+      cardNumber,
+      isDefault: !!isDefault,
+    },
+  });
+
+  return NextResponse.json(newMethod);
+}
+
+export async function DELETE(req) {
+  const session = await getServerSession(authOptions);
+  if (!session)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { id } = await req.json();
+
+  await prisma.paymentMethod.delete({ where: { id } });
+
+  return NextResponse.json({ message: "삭제 완료" });
+}
+
 export async function POST(req) {
   const session = await getServerSession(authOptions);
   if (!session)
@@ -17,7 +78,6 @@ export async function POST(req) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
 
   const { amount, description } = await req.json();
-
   const earned = Math.floor(amount * 0.03);
 
   await prisma.pointHistory.create({
@@ -53,7 +113,6 @@ export async function PATCH(req) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
 
   const { amount, description } = await req.json();
-
   const deducted = Math.floor(amount * 0.03);
 
   await prisma.pointHistory.create({
