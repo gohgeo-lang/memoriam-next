@@ -20,3 +20,11 @@ export async function getCompanyById(id) {
 
   return companiesCache.find((c) => c.id === id) || null;
 }
+
+export async function getCompanyList() {
+  if (!companiesCache) {
+    await loadCompanies();
+  }
+
+  return companiesCache;
+}

@@ -17,6 +17,11 @@ export default function Header() {
   const { data: session } = useSession();
 
   const menuItems = [
+    // 임시로 role 추가 전까지 hong@gmail.com만 관리자페이지 노출, 비번: 12341234
+    // ...(session?.user?.role === "admin" && { path: "/dashboard", label: "관리자페이지" }),
+    ...(session?.user?.email === "hong@gmail.com"
+      ? [{ path: "/dashboard", label: "관리자페이지" }]
+      : []),
     { path: "/about", label: "브랜드" },
     { path: "/guide", label: "안심가이드" },
     { label: "서비스", hasSubmenu: true },
