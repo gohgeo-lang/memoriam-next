@@ -40,7 +40,6 @@ export async function uploadFileToS3(file, pathPrefix = "uploads") {
     Key: uniqueKey,
     Body: fileBuffer,
     ContentType: file.type,
-    ACL: "public-read",
   };
 
   const command = new PutObjectCommand(params);

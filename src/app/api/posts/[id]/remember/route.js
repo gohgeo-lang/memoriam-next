@@ -27,7 +27,7 @@ export async function POST(request, { params }) {
 
     // 2. PostRemember 테이블에 기록을 생성하여 중복을 방지합니다.
     //    이미 기록이 있다면 이 시점에서 데이터베이스의 UNIQUE 제약 조건에 의해 에러(P2002)가 발생합니다.
-    await prisma.postRemember.create({
+    await prisma.postremember.create({
       data: {
         userId: userId,
         postId: postId,
