@@ -29,6 +29,8 @@ function getDistance(userLat, userLon, x5174, y5174) {
     return NaN;
   }
 
+  const companiesList = [{}];
+
   const R = 6371;
   const dLat = ((lat - userLat) * Math.PI) / 180;
   const dLon = ((lon - userLon) * Math.PI) / 180;
