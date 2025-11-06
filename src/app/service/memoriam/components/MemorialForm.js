@@ -12,6 +12,7 @@ export default function MemorialForm({ onStorySubmit, onCancel }) {
   });
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -20,28 +21,17 @@ export default function MemorialForm({ onStorySubmit, onCancel }) {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview);
+    }
+
     if (file) {
       setImageFile(file);
-      // 브라우저 메모리에 임시 URL을 생성하여 미리보기를 보여줌
       setImagePreview(URL.createObjectURL(file));
+    } else {
+      setImageFile(null);
+      setImagePreview(null);
     }
-  };
-
-  // src/app/service/memoriam/components/MemorialForm.js
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    // 1. 폼의 텍스트 데이터(petName, ownerName 등)를 가져옵니다.
-    const storyDataForApi = {
-      ...formData,
-      // 2. [수정됨] thumbnailUrl을 'null'로 설정합니다.
-      //    이렇게 하면 API에서 이 값을 받고 기본 이미지로 처리합니다.
-      thumbnailUrl: null,
-    };
-
-    // 3. 수정된 데이터를 page.js로 전송합니다.
-    onStorySubmit(storyDataForApi);
   };
 
   const isFormValid =
@@ -49,6 +39,56 @@ export default function MemorialForm({ onStorySubmit, onCancel }) {
     formData.ownerName &&
     formData.title &&
     formData.content;
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!isFormValid) return;
+
+    setLoading(true);
+    let thumbnailUrl = null;
+
+    if (imageFile) {
+      const uploadFormData = new FormData();
+      uploadFormData.append("file", imageFile);
+      uploadFormData.append("pathPrefix", "memorial");
+
+      try {
+        const uploadRes = await fetch("/api/s3-upload", {
+          method: "POST",
+          body: uploadFormData,
+        });
+
+        if (!uploadRes.ok) {
+          const errorData = await uploadRes.json();
+          throw new Error(errorData.error || "이미지 업로드 실패");
+        }
+
+        const data = await uploadRes.json();
+        thumbnailUrl = data.url;
+
+        if (imagePreview) {
+          URL.revokeObjectURL(imagePreview);
+        }
+      } catch (error) {
+        console.error("S3 이미지 업로드 중 오류 발생:", error);
+        alert(
+          `이야기는 등록되지만, 이미지 업로드에 실패했습니다: ${error.message}.`
+        );
+        thumbnailUrl = null;
+      }
+    }
+
+    // 3. 폼 데이터에 최종 thumbnailUrl을 포함하여 page.js로 전송
+    const storyDataForApi = {
+      ...formData,
+      thumbnailUrl: thumbnailUrl,
+    };
+
+    // 최종 게시글 등록 요청
+    onStorySubmit(storyDataForApi);
+    setLoading(false);
+  };
 
   return (
     <form
@@ -164,10 +204,10 @@ export default function MemorialForm({ onStorySubmit, onCancel }) {
         </button>
         <button
           type="submit"
-          disabled={!isFormValid}
+          disabled={!isFormValid || loading} // 로딩 중 버튼 비활성화
           className="px-6 py-2 bg-[#7b5449] text-white rounded-md disabled:bg-gray-400 hover:bg-[#694237] transition-colors active:scale-95"
         >
-          등록하기
+          {loading ? "업로드 및 등록 중..." : "등록하기"}
         </button>
       </div>
     </form>
