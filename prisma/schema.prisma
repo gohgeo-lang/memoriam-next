@@ -9,13 +9,24 @@ datasource db {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  email     String    @unique
-  password  String
-  name      String?
-  createdAt DateTime  @default(now())
-  posts     Post[]
-  comments  Comment[]
+  id             Int             @id @default(autoincrement())
+  email          String          @unique
+  password       String
+  name           String?
+  image          String?
+  createdAt      DateTime        @default(now())
+  posts          Post[]
+  comments       Comment[]
+  Family         Family[]
+  Address        Address[]
+  paymentMethods PaymentMethod[]
+  pointHistories PointHistory[]
+}
+
+model PostCategory {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  posts Post[]
 }
 
 model PostCategory {
@@ -66,4 +77,51 @@ model Comment {
   authorId Int?
 
   @@map("Comment")
+}
+
+model Family {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id])
+  name      String
+  species   String
+  breed     String?
+  birthDate DateTime?
+  photo     String?
+  memo      String?
+  createdAt DateTime  @default(now())
+}
+
+model Address {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  name      String
+  phone     String
+  address   String
+  detail    String?
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PaymentMethod {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  carName    String
+  cardNumber String
+  expiry     String
+  isDefault  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
+
+model PointHistory {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  type        String
+  amount      Int
+  description String?
+  createdAt   DateTime @default(now())
 }
