@@ -41,12 +41,14 @@ export default function MemorialModal({ story, onClose, onCommentSubmit }) {
         </header>
 
         <main className="p-6 overflow-y-auto">
-          <div className="relative w-full h-64 rounded-md mb-4 overflow-hidden">
+          <div className="relative w-full rounded-md mb-4">
             <Image
+              key={story.id}
               src={story.thumbnailUrl || "/image/dog-cat1.webp"}
               alt={story.petName}
-              fill
-              className="object-cover"
+              width={1200}
+              height={1200}
+              className="w-full h-auto roudned-md"
               sizes="(max-width: 768px) 100vw, 50vw"
             />
           </div>

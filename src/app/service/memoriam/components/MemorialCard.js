@@ -1,16 +1,13 @@
 "use client";
 
 import Image from "next/image";
-// 프로젝트에 설치된 react-icons에서 필요한 아이콘을 가져옵니다.
 import { FaHeart, FaEye } from "react-icons/fa";
 
 export default function MemorialCard({ story, onOpenModal, onRemember }) {
-  // 카드 전체를 클릭하면 모달이 열리도록 설정합니다.
   const handleCardClick = () => {
     onOpenModal(story);
   };
 
-  // '함께 기억하기' 버튼 클릭 시, 카드 전체 클릭 이벤트가 발생하는 것을 막습니다.
   const handleRememberClick = (e) => {
     e.stopPropagation(); // 이벤트 버블링 방지
     onRemember(story.id);
@@ -22,7 +19,7 @@ export default function MemorialCard({ story, onOpenModal, onRemember }) {
       onClick={handleCardClick}
     >
       {/* Next.js의 Image 컴포넌트 사용을 위해 div로 래핑하고 fill 속성 적용 */}
-      <div className="relative h-48 w-full">
+      <div className="relative h-64 w-full">
         <Image
           src={story.thumbnailUrl || "/image/dog-cat1.webp"}
           alt={story.petName}

@@ -9,7 +9,7 @@ import MemorialForm from "./components/MemorialForm";
 import LoadingSpinner from "@/components/LoadingSpinner";
 
 const mapStoryData = (post) => {
-  const memorial = post.PostMemorial || post.Postmemorial; // (camelCase) 혼용 테스트
+  const memorial = post.PostMemorial;
   const thumbnailUrl = memorial?.thumbnailUrl;
 
   return {
@@ -17,13 +17,13 @@ const mapStoryData = (post) => {
     title: post.title,
     content: post.content,
 
-    petName: post.Postmemorial?.petName || "댕냥이",
-    ownerName: post.Postmemorial?.ownerName || post.author?.name || "보호자",
+    petName: memorial?.petName || "댕냥이",
+    ownerName: memorial?.ownerName || post.author?.name || "보호자",
     thumbnailUrl:
       thumbnailUrl && thumbnailUrl.trim()
         ? thumbnailUrl
         : "/image/dog-cat1.webp",
-    rememberCount: post.Postmemorial?.rememberCount || 0,
+    rememberCount: memorial?.rememberCount || 0,
 
     comments: (post.comments || []).map((comment) => ({
       id: comment.id,
