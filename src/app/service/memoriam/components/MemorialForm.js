@@ -79,13 +79,12 @@ export default function MemorialForm({ onStorySubmit, onCancel }) {
       }
     }
 
-    // 3. 폼 데이터에 최종 thumbnailUrl을 포함하여 page.js로 전송
     const storyDataForApi = {
       ...formData,
       thumbnailUrl: thumbnailUrl,
     };
 
-    // 최종 게시글 등록 요청
+    
     onStorySubmit(storyDataForApi);
     setLoading(false);
   };
