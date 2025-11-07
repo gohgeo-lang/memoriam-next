@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Section from "@/components/Section";
-import MemorialCard from "@/app/memorial/components/MemorialCard";
-import MemorialModal from "@/app/memorial/components/MemorialModal";
+import MemorialCard from "@/app/service/memoriam/components/MemorialCard";
+import MemorialModal from "@/app/service/memoriam/components/MemorialModal";
 import LoadingSpinner from "@/components/LoadingSpinner";
 
 const mapStoryData = (post) => {
