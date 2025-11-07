@@ -1,9 +1,10 @@
 "use client";
 
-import { MapPin, PawPrint, CreditCard, Coins } from "lucide-react";
+import { MapPin, PawPrint, CreditCard, Coins, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { signOut } from "next-auth/react"; // 👈 추가
 
 export default function MyPage() {
   const [user, setUser] = useState(null);
@@ -40,7 +41,6 @@ export default function MyPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-5">
-      {/* 프로필 카드 */}
       <div className="bg-white rounded-2xl shadow p-6 flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
           <Image
@@ -66,6 +66,7 @@ export default function MyPage() {
         </div>
       </div>
 
+      {/* 상단 메뉴 */}
       <div className="grid grid-cols-4 gap-3 mb-6">
         {menuItems.map((item) => (
           <Link
@@ -83,7 +84,7 @@ export default function MyPage() {
         ))}
       </div>
 
-      <div className="bg-white rounded-2xl shadow divide-y">
+      <div className="bg-white rounded-2xl shadow divide-y mb-8">
         {[
           { href: "/mypage/info", label: "내 정보 관리" },
           { href: "/mypage/address", label: "주소 관리" },
@@ -100,6 +101,16 @@ export default function MyPage() {
             <span className="text-gray-400">›</span>
           </Link>
         ))}
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-sm py-4 text-center hover:bg-gray-50 transition">
+        <button
+          onClick={() => signOut({ callbackUrl: "/" })}
+          className="flex items-center justify-center gap-2 mx-auto text-sm text-gray-500 hover:text-red-500 transition"
+        >
+          <LogOut className="w-4 h-4" />
+          로그아웃
+        </button>
       </div>
     </div>
   );
