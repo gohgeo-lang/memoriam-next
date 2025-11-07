@@ -39,6 +39,22 @@ export default function MyPage() {
     },
   ];
 
+  const detailLinks = [
+    { href: "/mypage/info", label: "내 정보 관리" },
+    { href: "/mypage/address", label: "주소 관리" },
+    { href: "/mypage/family", label: "가족 관리" },
+    { href: "/mypage/payment", label: "결제수단 관리" },
+    { href: "/mypage/points", label: "포인트 내역" },
+    {
+      href: "/mypage/posts",
+      label: "내가 쓴 게시물",
+    },
+    {
+      href: "/mypage/comments",
+      label: "내가 쓴 댓글",
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-5">
       <div className="bg-white rounded-2xl shadow p-6 flex items-center justify-between mb-6">
@@ -84,19 +100,16 @@ export default function MyPage() {
       </div>
 
       <div className="bg-white rounded-2xl shadow divide-y mb-8">
-        {[
-          { href: "/mypage/info", label: "내 정보 관리" },
-          { href: "/mypage/address", label: "주소 관리" },
-          { href: "/mypage/family", label: "가족 관리" },
-          { href: "/mypage/payment", label: "결제수단 관리" },
-          { href: "/mypage/points", label: "포인트 내역" },
-        ].map((item) => (
+        {detailLinks.map((item) => (
           <Link
             key={item.href}
             href={item.href}
             className="flex justify-between items-center px-5 py-4 hover:bg-gray-50 transition"
           >
-            <span className="text-sm text-gray-700">{item.label}</span>
+            <div className="flex items-center gap-2">
+              {item.icon && item.icon}
+              <span className="text-sm text-gray-700">{item.label}</span>
+            </div>
             <span className="text-gray-400">›</span>
           </Link>
         ))}
