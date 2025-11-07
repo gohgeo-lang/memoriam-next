@@ -68,15 +68,7 @@ export default function EstimatePage() {
         break;
       case "추천":
       default:
-        data.sort(
-          (a, b) =>
-            b.rating * 2 +
-            Math.min(b.reviews, 200) / 100 -
-            b.distanceKm * 0.05 -
-            (a.rating * 2 +
-              Math.min(a.reviews, 200) / 100 -
-              a.distanceKm * 0.05)
-        );
+        data.sort((a, b) => a.name.localeCompare(b.name, "ko"));
         break;
     }
     return data;

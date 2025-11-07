@@ -64,7 +64,11 @@ export default async function getCompanies(userLat, userLon) {
     );
     return {
       id: row.getElementsByTagName("mgtNo")[0]?.textContent ?? "",
-      name: row.getElementsByTagName("bplcNm")[0]?.textContent ?? "",
+      name:
+        row
+          .getElementsByTagName("bplcNm")[0]
+          ?.textContent.replace(/\(주\)|㈜/g, "")
+          .trim() ?? "",
       approvedDate:
         row.getElementsByTagName("apvPermYmd")[0]?.textContent ?? "",
       state: row.getElementsByTagName("trdStateNm")[0]?.textContent ?? "",

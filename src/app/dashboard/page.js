@@ -17,6 +17,7 @@ export default function DashboardPage() {
       async (pos) => {
         const { latitude, longitude } = pos.coords;
         const datas = await loadCompanies(latitude, longitude);
+        datas.sort((a, b) => a.name.localeCompare(b.name, "ko"));
         setCompanies(datas);
       },
       async () => {
