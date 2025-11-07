@@ -28,3 +28,17 @@ export async function getCompanyList() {
 
   return companiesCache;
 }
+
+export async function saveCompayInfo(company) {
+  console.log(companiesCache);
+  const index = companiesCache.findIndex((c) => c.id === company.id);
+
+  if (index === -1) {
+    return null;
+  }
+
+  companiesCache[index] = company;
+  localStorage.setItem("companiesData", JSON.stringify(companiesCache));
+
+  return true;
+}

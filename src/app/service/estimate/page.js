@@ -37,7 +37,7 @@ export default function EstimatePage() {
   }, []);
 
   const companyList = useMemo(() => {
-    let data = [...companies];
+    let data = companies.filter((company) => company.registered);
 
     if (query.keyword) {
       const kw = query.keyword.trim();
@@ -50,11 +50,7 @@ export default function EstimatePage() {
     }
 
     if (query.city)
-      data = data.filter(
-        (company) =>
-          company.city[0].includes(query.city) ||
-          company.city[1].includes(query.city)
-      );
+      data = data.filter((company) => company.city.includes(query.city));
     if (query.tags.length)
       data = data.filter((company) =>
         query.tags.every((t) => company.tags.includes(t))
@@ -95,7 +91,14 @@ export default function EstimatePage() {
   const currentCompanies = companyList.slice(startIndex, endIndex);
 
   // 페이지 번호가 올바른 범위인지 확인
-  if (currentPage < 1 || currentPage > totalPages) {
+  if (companyList.length === 0) {
+    return (
+      <div className="container mx-auto p-4">
+        <h1 className="text-2xl font-bold mb-4">등록된 업체가 없습니다</h1>
+        <p>관리자에게 문의해주세요.</p>
+      </div>
+    );
+  } else {
     return (
       <div className="container mx-auto p-4">
         <h1 className="text-2xl font-bold mb-4">잘못된 페이지입니다</h1>
@@ -129,11 +132,14 @@ export default function EstimatePage() {
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {currentCompanies.map((company) => (
-            <div key={company.id}>
-              <CompanyCard key={company.id} company={company} />
-            </div>
-          ))}
+          {currentCompanies.map(
+            (company) =>
+              company.registered && (
+                <div key={company.id}>
+                  <CompanyCard key={company.id} company={company} />
+                </div>
+              )
+          )}
         </div>
       )}
 

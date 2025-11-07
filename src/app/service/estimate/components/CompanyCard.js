@@ -30,9 +30,7 @@ export default function CompanyCard({ company }) {
               : `${company.distanceKm} km`}
           </span>
           <span className="text-gray-300">•</span>
-          <span>
-            📍 {company.city[0] || company.city[1] || "지역 정보 없음"}
-          </span>
+          <span>📍 {company.city || "지역 정보 없음"}</span>
         </div>
 
         <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
