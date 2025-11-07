@@ -4,9 +4,9 @@ export default function Brand() {
       {/* Hero Section */}
       <div className="mb-[100px]">
         <div
-          className="relative w-full max-w-[1728px] aspect-[16/9] bg-cover bg-center bg-no-repeat"
+          className="relative w-full max-w-[1728px] h-[500px] aspect-[16/9] bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: 'url("/image/sad1.jpg")',
+            backgroundImage: 'url("/image/promise2.jpg")',
           }}
         >
           {/* 어두운 오버레이 (글씨 가독성용) */}
@@ -65,7 +65,7 @@ export default function Brand() {
         <div className="flex items-center mb-[58px]">
           <div className="relative w-[634px] h-[367px]">
             <img
-              src="https://fourpaws.co.kr/img/new-brand-section01-01.png"
+              src="/image/dogcat.jpg"
               alt=""
               className="absolute top-0 left-0 w-full h-full object-cover rounded-lg shadow-md"
             />
@@ -233,7 +233,7 @@ export default function Brand() {
               <div className="flex-shrink-0 w-[556px] h-[345px] relative block text-center overflow-hidden rounded-[10px] mr-[30px]">
                 <div>
                   <img
-                    src="https://fourpaws.co.kr/img/new-brand-section05-01.png"
+                    src="/image/dc1.jpg"
                     alt=""
                     className="w-[556px] h-[342px] object-cover rounded-[10px]"
                   />
@@ -242,7 +242,7 @@ export default function Brand() {
               <div className="flex-shrink-0 w-[556px] h-[345px] relative block text-center overflow-hidden rounded-[10px] mr-[30px]">
                 <div>
                   <img
-                    src="https://fourpaws.co.kr/img/new-brand-section05-02.png"
+                    src="/image/dc2.jpg"
                     alt=""
                     className="w-[556px] h-[342px] object-cover rounded-[10px]"
                   />
@@ -251,7 +251,7 @@ export default function Brand() {
               <div className="flex-shrink-0 w-[556px] h-[345px] relative block text-center overflow-hidden rounded-[10px] mr-[30px]">
                 <div>
                   <img
-                    src="https://fourpaws.co.kr/img/new-brand-section05-03.png"
+                    src="/image/dc3.jpg"
                     alt=""
                     className="w-[556px] h-[342px] object-cover rounded-[10px]"
                   />
