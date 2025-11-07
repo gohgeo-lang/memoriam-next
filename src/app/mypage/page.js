@@ -4,7 +4,7 @@ import { MapPin, PawPrint, CreditCard, Coins, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { signOut } from "next-auth/react"; // 👈 추가
+import { signOut } from "next-auth/react";
 
 export default function MyPage() {
   const [user, setUser] = useState(null);
@@ -66,7 +66,6 @@ export default function MyPage() {
         </div>
       </div>
 
-      {/* 상단 메뉴 */}
       <div className="grid grid-cols-4 gap-3 mb-6">
         {menuItems.map((item) => (
           <Link
