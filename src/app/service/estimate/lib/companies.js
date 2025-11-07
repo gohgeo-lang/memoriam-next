@@ -113,7 +113,7 @@ export default async function getCompanies(userLat, userLon) {
         site: "https://example.com/v1",
       },
       options: ["픽업 가능(유료)", "유골함 기본 제공", "추모실 예약제"],
-      registered: false,
+      registered: true,
     };
   });
 

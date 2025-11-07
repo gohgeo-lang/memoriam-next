@@ -98,16 +98,6 @@ export default function EstimatePage() {
         <p>관리자에게 문의해주세요.</p>
       </div>
     );
-  } else {
-    return (
-      <div className="container mx-auto p-4">
-        <h1 className="text-2xl font-bold mb-4">잘못된 페이지입니다</h1>
-        <p>요청하신 페이지가 존재하지 않습니다.</p>
-        <a href="/estimate" className="text-blue-500 underline">
-          첫 페이지로 돌아가기
-        </a>
-      </div>
-    );
   }
 
   return (
