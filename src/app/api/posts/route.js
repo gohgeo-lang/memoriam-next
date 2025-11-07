@@ -1,4 +1,4 @@
-import pirsma from "@/lib/prisma";
+import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
@@ -45,7 +45,7 @@ export async function POST(request) {
   try {
     const body = await request.json();
     const { title, content, petName, ownerName, thumbnailUrl } = body;
-    const userId = parseInt(session.user.id, 10);
+    const userEmail = session.user.email;
 
     const newPost = await prisma.post.create({
       data: {
@@ -53,7 +53,7 @@ export async function POST(request) {
         content,
         published: true,
         author: {
-          connect: { id: userId },
+          connect: { email: userEmail },
         },
 
         category: {

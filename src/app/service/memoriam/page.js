@@ -9,15 +9,21 @@ import MemorialForm from "./components/MemorialForm";
 import LoadingSpinner from "@/components/LoadingSpinner";
 
 const mapStoryData = (post) => {
+  const memorial = post.PostMemorial;
+  const thumbnailUrl = memorial?.thumbnailUrl;
+
   return {
     id: post.id,
     title: post.title,
     content: post.content,
 
-    petName: post.Postmemorial?.petName || "댕냥이",
-    ownerName: post.Postmemorial?.ownerName || post.author?.name || "보호자",
-    thumbnailUrl: post.Postmemorial?.thumbnailUrl || "/image/dog-cat1.webp",
-    rememberCount: post.Postmemorial?.rememberCount || 0,
+    petName: memorial?.petName || "댕냥이",
+    ownerName: memorial?.ownerName || post.author?.name || "보호자",
+    thumbnailUrl:
+      thumbnailUrl && thumbnailUrl.trim()
+        ? thumbnailUrl
+        : "/image/dog-cat1.webp",
+    rememberCount: memorial?.rememberCount || 0,
 
     comments: (post.comments || []).map((comment) => ({
       id: comment.id,
@@ -61,17 +67,35 @@ export default function MemorialPage() {
   };
 
   const handleRememberClick = async (storyId) => {
-    setStories((prevStories) =>
-      prevStories.map((story) =>
-        story.id === storyId
-          ? { ...story, rememberCount: story.rememberCount + 1 }
-          : story
-      )
-    );
     try {
-      await fetch(`/api/posts/${storyId}/remember`, { method: "POST" });
+      const res = await fetch(`/api/posts/${storyId}/remember`, {
+        method: "POST",
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "공감 처리 실패");
+      }
+
+      const data = await res.json();
+
+      if (data.message === "이미 공감했습니다.") {
+        alert("이미 공감하셨습니다.");
+        return;
+      }
+
+      const newRememberCount = data.rememberCount;
+
+      setStories((prevStories) =>
+        prevStories.map((story) =>
+          story.id === storyId
+            ? { ...story, rememberCount: newRememberCount } // 👈 서버에서 받은 값으로 업데이트
+            : story
+        )
+      );
     } catch (error) {
-      console.error("failed to update remember count:", error);
+      console.error("Failed to update remember count:", error);
+      alert(error.message || "공감 처리 중 오류가 발생했습니다.");
     }
   };
 
