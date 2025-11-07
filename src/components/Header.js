@@ -22,7 +22,7 @@ export default function Header() {
     ...(session?.user?.email === "hong@gmail.com"
       ? [{ path: "/dashboard", label: "관리자페이지" }]
       : []),
-    { path: "/about", label: "브랜드" },
+    { path: "/brand", label: "브랜드" },
     { path: "/guide", label: "안심가이드" },
     { label: "서비스", hasSubmenu: true },
     { path: "/support", label: "고객센터" },

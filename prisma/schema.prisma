@@ -13,14 +13,15 @@ model User {
   email          String          @unique
   password       String
   name           String?
-  image          String?
   createdAt      DateTime        @default(now())
-  posts          Post[]
+  image          String?
+  Address        Address[]
   comments       Comment[]
   Family         Family[]
-  Address        Address[]
   paymentMethods PaymentMethod[]
   pointHistories PointHistory[]
+  posts          Post[]
+  remembers      Postremember[]
 }
 
 model PostCategory {
@@ -30,20 +31,18 @@ model PostCategory {
 }
 
 model Post {
-  id        Int      @id @default(autoincrement())
-  title     String
-  content   String
-  published Boolean  @default(false)
-  createdAt DateTime @default(now())
-
-  author   User @relation(fields: [authorId], references: [id])
-  authorId Int
-
-  category   PostCategory @relation(fields: [categoryId], references: [id])
-  categoryId Int
-
+  id           Int            @id @default(autoincrement())
+  title        String
+  content      String
+  published    Boolean        @default(false)
+  createdAt    DateTime       @default(now())
+  authorId     Int
+  categoryId   Int
   comments     Comment[]
+  author       User           @relation(fields: [authorId], references: [id])
+  category     PostCategory   @relation(fields: [categoryId], references: [id])
   PostMemorial PostMemorial?
+  remembers    Postremember[]
 
   @@map("Post")
 }
@@ -54,29 +53,37 @@ model PostMemorial {
   ownerName     String
   thumbnailUrl  String?
   rememberCount Int     @default(0)
-
-  post   Post @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId Int  @unique
+  postId        Int     @unique
+  post          Post    @relation(fields: [postId], references: [id], onDelete: Cascade)
 }
 
 model Comment {
   id        Int      @id @default(autoincrement())
   content   String
   createdAt DateTime @default(now())
-
-  post   Post @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId Int
-
-  author   User? @relation(fields: [authorId], references: [id], onDelete: SetNull)
-  authorId Int?
+  postId    Int
+  authorId  Int?
+  author    User?    @relation(fields: [authorId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@map("Comment")
+}
+
+model Postremember {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  postId    Int
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@map("Postremember")
 }
 
 model Family {
   id        Int       @id @default(autoincrement())
   userId    Int
-  user      User      @relation(fields: [userId], references: [id])
   name      String
   species   String
   breed     String?
@@ -84,12 +91,12 @@ model Family {
   photo     String?
   memo      String?
   createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id])
 }
 
 model Address {
   id        Int      @id @default(autoincrement())
   userId    Int
-  user      User     @relation(fields: [userId], references: [id])
   name      String
   phone     String
   address   String
@@ -97,25 +104,26 @@ model Address {
   isDefault Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model PaymentMethod {
   id         Int      @id @default(autoincrement())
   userId     Int
-  user       User     @relation(fields: [userId], references: [id])
   carName    String
   cardNumber String
   expiry     String
   isDefault  Boolean  @default(false)
   createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
 }
 
 model PointHistory {
   id          Int      @id @default(autoincrement())
   userId      Int
-  user        User     @relation(fields: [userId], references: [id])
   type        String
   amount      Int
   description String?
   createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
 }

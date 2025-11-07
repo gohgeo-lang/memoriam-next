@@ -1,4 +1,3 @@
-// src/app/api/auth/register/route.js
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
@@ -33,7 +32,7 @@ export async function POST(req) {
       { status: 201 }
     );
   } catch (err) {
-    console.error("❌ register error:", err);
+    console.error("register error:", err);
     return NextResponse.json({ error: "서버 오류" }, { status: 500 });
   }
 }
