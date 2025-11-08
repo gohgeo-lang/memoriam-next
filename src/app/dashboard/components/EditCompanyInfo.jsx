@@ -56,14 +56,14 @@ export default function EditCompanyInfo({
     "
         onClick={(e) => e.stopPropagation()} // 내부 클릭 닫기 방지
       >
-        {/* <div className="flex justify-end">
+        <div className="flex justify-end">
           <button
             onClick={handleCloseModal}
             className="text-gray-500 hover:text-gray-800"
           >
             <MdClose size={28} />
           </button>
-        </div> */}
+        </div>
         <h2 className="text-2xl font-bold mb-4 text-center">업체 정보 수정</h2>
 
         {/* 기본 정보 */}
