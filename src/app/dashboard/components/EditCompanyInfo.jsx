@@ -32,9 +32,29 @@ export default function EditCompanyInfo({
     }
   };
 
+  const UserRole = Object.freeze({
+    Admin: 1,
+    User: 2,
+  });
+
+  console.log(UserRole.Admin, UserRole.User);
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 overflow-y-auto max-h-[90vh]">
+    <div
+      className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
+      onClick={handleCloseModal} // 외부 클릭 닫기
+    >
+      <div
+        className="
+      bg-white rounded-lg shadow-lg 
+      w-[90%] max-w-sm sm:max-w-md md:max-w-lg lg:max-w-2xl
+      p-4 sm:p-6 
+      overflow-y-auto 
+      max-h-[85vh] sm:max-h-[90vh]
+      transition-all duration-300
+    "
+        onClick={(e) => e.stopPropagation()} // 내부 클릭 닫기 방지
+      >
         <h2 className="text-2xl font-bold mb-4 text-center">업체 정보 수정</h2>
 
         {/* 기본 정보 */}
@@ -115,9 +135,11 @@ export default function EditCompanyInfo({
         </section>
 
         {/* 연락처 */}
-        <section className="mb-6">
-          <h3 className="font-semibold mb-2 text-lg text-gray-700">연락처</h3>
-          <div className="space-y-2">
+        <section className="mb-6 space-y-1">
+          <div className="flex items-center justify-between">
+            <label className="w-24 text-sm font-medium text-gray-700">
+              전화번호
+            </label>
             <input
               type="text"
               name="contacts.phone"
@@ -128,9 +150,14 @@ export default function EditCompanyInfo({
                   contacts: { ...prev.contacts, phone: e.target.value },
                 }))
               }
-              className="w-full border rounded-md p-2"
+              className="w-full text-sm border rounded-md p-2"
               placeholder="전화번호"
             />
+          </div>
+          <div className="flex items-center justify-between">
+            <label className="w-24 text-sm font-medium text-gray-700">
+              지번주소
+            </label>
             <input
               type="text"
               value={formData.contacts?.addressSite || ""}
@@ -140,9 +167,14 @@ export default function EditCompanyInfo({
                   contacts: { ...prev.contacts, addressSite: e.target.value },
                 }))
               }
-              className="w-full border rounded-md p-2"
+              className="w-full text-sm border rounded-md p-2"
               placeholder="도로명 주소"
             />
+          </div>
+          <div className="flex items-center justify-between">
+            <label className="w-24 text-sm font-medium text-gray-700">
+              도로명주소
+            </label>
             <input
               type="text"
               value={formData.contacts?.addressRdn || ""}
@@ -152,8 +184,25 @@ export default function EditCompanyInfo({
                   contacts: { ...prev.contacts, addressRdn: e.target.value },
                 }))
               }
-              className="w-full border rounded-md p-2"
+              className="w-full text-sm border rounded-md p-2"
               placeholder="지번 주소"
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <label className="w-24 text-sm font-medium text-gray-700">
+              웹사이트
+            </label>
+            <input
+              type="text"
+              value={formData.contacts?.site || ""}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  contacts: { ...prev.contacts, site: e.target.value },
+                }))
+              }
+              className="w-full text-sm border rounded-md p-2"
+              placeholder="웹사이트"
             />
           </div>
         </section>
@@ -161,43 +210,50 @@ export default function EditCompanyInfo({
         {/* 영업시간 */}
         <section className="mb-6">
           <h3 className="font-semibold mb-2 text-lg text-gray-700">영업시간</h3>
-          <div className="grid grid-cols-2 gap-3">
-            <input
-              type="text"
-              value={formData.hours?.weekdays || ""}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  hours: { ...prev.hours, weekdays: e.target.value },
-                }))
-              }
-              className="border rounded-md p-2"
-              placeholder="평일"
-            />
-            <input
-              type="text"
-              value={formData.hours?.weekend || ""}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  hours: { ...prev.hours, weekend: e.target.value },
-                }))
-              }
-              className="border rounded-md p-2"
-              placeholder="주말"
-            />
-            <input
-              type="text"
-              value={formData.hours?.emergency || ""}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  hours: { ...prev.hours, emergency: e.target.value },
-                }))
-              }
-              className="border rounded-md p-2"
-              placeholder="긴급"
-            />
+
+          <div
+            className="
+      grid grid-cols-1 sm:grid-cols-2 gap-4
+      items-center
+    "
+          >
+            {/* 평일 */}
+            <div className="flex flex-col">
+              <label className="text-sm font-medium text-gray-700 mb-1">
+                평일
+              </label>
+              <input
+                type="text"
+                value={formData.hours?.weekdays || ""}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    hours: { ...prev.hours, weekdays: e.target.value },
+                  }))
+                }
+                className="border rounded-md p-2 w-full"
+                placeholder="예: 09:00 ~ 20:00"
+              />
+            </div>
+
+            {/* 주말 */}
+            <div className="flex flex-col">
+              <label className="text-sm font-medium text-gray-700 mb-1">
+                주말
+              </label>
+              <input
+                type="text"
+                value={formData.hours?.weekend || ""}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    hours: { ...prev.hours, weekend: e.target.value },
+                  }))
+                }
+                className="border rounded-md p-2 w-full"
+                placeholder="예: 10:00 ~ 18:00"
+              />
+            </div>
           </div>
         </section>
 

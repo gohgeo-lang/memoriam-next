@@ -85,7 +85,6 @@ export default function DashboardPage() {
                     {company.name}
                   </h2>
 
-                  {/* 등록 상태 텍스트 표시 */}
                   <p
                     className={`text-xs font-semibold mb-2 ${
                       company.registered ? "text-green-600" : "text-red-500"

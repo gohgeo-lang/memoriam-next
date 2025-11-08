@@ -6,7 +6,7 @@ import CompanyCard from "./components/CompanyCard";
 import Pagination from "./components/Pagination";
 import { loadCompanies } from "./lib/companiesCache";
 import { useSearchParams } from "next/navigation";
-import Link from "next/link";
+import CompareCompanies from "./components/Compare";
 
 const ITEMS_PER_PAGE = 12; // 한 페이지에 12개씩 보여주기
 
@@ -18,6 +18,36 @@ export default function EstimatePage() {
     tags: [],
     sort: "추천",
   });
+
+  const SortType = Object.freeze({
+    Recommend: 1,
+    Distance: 2,
+    PriceLow: 3,
+    PriceHigh: 4,
+    RatingHigh: 5,
+  });
+
+  const roll_a = SortType.Recommend;
+  console.log(roll_a);
+
+  const [selectedCompanies, setSelectedCompanies] = useState([]);
+  const [isCompareOpen, setIsCompareOpen] = useState(false);
+
+  const handleSelect = (company) => {
+    setSelectedCompanies((prev) =>
+      prev.find((c) => c.id === company.id)
+        ? prev.filter((c) => c.id !== company.id)
+        : [...prev, company]
+    );
+  };
+
+  const handleOpenCompare = () => {
+    if (selectedCompanies.length >= 2) setIsCompareOpen(true);
+    else alert("2개 이상의 업체를 선택해주세요!");
+  };
+
+  const handleCloseCompare = () => setIsCompareOpen(false);
+
   // 현재 페이지 번호 가져오기 (기본값: 1)
   const searchParams = useSearchParams();
   const currentPage = Number(searchParams.get("page")) || 1;
@@ -93,32 +123,61 @@ export default function EstimatePage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-2">
       <FilterBar onChange={setQuery} />
-      <div className="flex items-center justify-between mx-5 my-0">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-6 px-2 py-2">
         {/* 현재 페이지 정보 */}
-        <div className="mb-4 p-3 bg-[#856056] rounded">
-          <p className="text-sm text-white">
+        <div className="bg-[#856056] px-4 py-2 rounded-md shadow-sm w-full sm:w-auto text-center sm:text-left">
+          <p className="text-sm text-white whitespace-nowrap">
             전체 {companyList.length}개 중 {startIndex + 1}-
-            {Math.min(endIndex, companyList.length)}번째 업체 (페이지{" "}
-            {currentPage}/{totalPages})
+            {Math.min(endIndex, companyList.length)}번째 업체
+            <span className="ml-1">
+              (페이지 {currentPage}/{totalPages})
+            </span>
           </p>
         </div>
-        <button className="text-sm text-gray-500 hover:text-gray-800 active:scale-95">
-          지도로 보기(준비중)
-        </button>
+
+        {/* 버튼 영역 */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setSelectedCompanies([])}
+            className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 active:scale-95 transition"
+          >
+            선택 초기화
+          </button>
+          <button
+            onClick={handleOpenCompare}
+            className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 active:scale-95 transition"
+          >
+            비교하기 ({selectedCompanies.length})
+          </button>
+        </div>
+
+        {/* 비교 모달 */}
+        {isCompareOpen && (
+          <CompareCompanies
+            companies={selectedCompanies}
+            onClose={handleCloseCompare}
+          />
+        )}
       </div>
       {currentCompanies.length === 0 ? (
         <div className="rounded-xl border bg-white p-8 text-center text-gray-500">
           조건에 맞는 업체가 없어요. 필터를 조정해보세요.
         </div>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mx-2">
           {currentCompanies.map(
             (company) =>
               company.registered && (
                 <div key={company.id}>
-                  <CompanyCard key={company.id} company={company} />
+                  <CompanyCard
+                    company={company}
+                    isSelected={selectedCompanies.some(
+                      (c) => c.id === company.id
+                    )}
+                    onSelect={() => handleSelect(company)}
+                  />
                 </div>
               )
           )}
