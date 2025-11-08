@@ -125,7 +125,10 @@ export default function CompareCompanies({ companies, onClose }) {
                     key={c.id}
                     className="py-3 px-4 border-l font-semibold text-[#61443b]"
                   >
-                    ⭐ {c.rating}점 ({c.reviews}개)
+                    ⭐{" "}
+                    {c.reviews.reduce((acc, cur) => acc + cur.rating, 0) /
+                      c.reviews.length}
+                    점 ({c.reviews.length}개)
                   </td>
                 ))}
               </tr>

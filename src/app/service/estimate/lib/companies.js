@@ -74,8 +74,7 @@ export default async function getCompanies(userLat, userLon) {
       state: row.getElementsByTagName("trdStateNm")[0]?.textContent ?? "",
       coordX: coordX,
       coordY: coordY,
-      reviews: Math.floor(Math.random() * 100),
-      reviewsList: [
+      reviews: [
         {
           author: "user1",
           content: "좋아요",

@@ -42,6 +42,10 @@ export default function CompanyDetailPage() {
   if (!company && !loading) notFound();
   if (loading) return <p className="p-4">로딩중...</p>;
 
+  const rating =
+    company.reviews.reduce((acc, cur) => acc + cur.rating, 0) /
+    company.reviews.length;
+
   return (
     <div className="p-4 space-y-6 max-w-5xl mx-auto">
       {/* 상단 로고 + 기본 정보 */}
@@ -55,7 +59,7 @@ export default function CompanyDetailPage() {
           <h1 className="text-2xl md:text-3xl font-bold">{company.name}</h1>
           <p className="mt-2 text-gray-600">
             {company.city} • 최저 {company.priceFrom?.toLocaleString() ?? ""}원
-            • 평점 {company.rating} ({company.reviews})
+            • 평점 {rating} ({company.reviews.length})
           </p>
           <div className="mt-2 flex flex-wrap gap-2">
             {company.tags.map((t) => (
@@ -206,13 +210,13 @@ export default function CompanyDetailPage() {
       </section>
 
       {/* 리뷰 */}
-      {company.reviewsList?.length > 0 && (
+      {company.reviews?.length > 0 && (
         <section className="bg-white rounded-xl shadow p-4 print:shadow-none print:p-0">
           <h2 className="text-xl font-semibold mb-3 flex items-center gap-2 print:text-lg">
             <MdStar /> 리뷰
           </h2>
           <div className="space-y-3 max-h-64 overflow-y-auto print:max-h-full print:overflow-visible">
-            {company.reviewsList.map((r, idx) => (
+            {company.reviews.map((r, idx) => (
               <div
                 key={idx}
                 className="border-l-4 border-yellow-400 rounded p-3 flex flex-col gap-1 hover:shadow-sm transition print:border-black print:p-2 print:shadow-none"
