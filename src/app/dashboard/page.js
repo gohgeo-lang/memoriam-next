@@ -2,9 +2,11 @@
 import { loadCompanies } from "@/app/service/estimate/lib/companiesCache";
 import { useState, useEffect } from "react";
 import EditCompanyInfo from "./components/EditCompanyInfo";
+import LiveSearchBar from "./components/LiveSearchBar";
 
 export default function DashboardPage() {
   const [companies, setCompanies] = useState([]);
+  const [filteredCompanies, setFilteredCompanies] = useState([]);
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [isClickedEdit, setIsClickedEdit] = useState(false);
   const [users, setUsers] = useState(null);
@@ -37,6 +39,24 @@ export default function DashboardPage() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (companies.length > 0) {
+      setFilteredCompanies(companies);
+    }
+  }, [companies]);
+
+  const handleSearch = (keyword) => {
+    if (!keyword) {
+      setFilteredCompanies(companies);
+      return;
+    }
+
+    const filtered = companies.filter((c) =>
+      c.name.toLowerCase().includes(keyword.toLowerCase())
+    );
+    setFilteredCompanies(filtered);
+  };
+
   const handleEditClick = (company) => {
     setSelectedCompany(company);
     setIsClickedEdit(true);
@@ -68,43 +88,46 @@ export default function DashboardPage() {
       </div>
 
       {activeTab === "업체 관리" && (
-        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-          <div className="px-2 py-2 sm:px-0">
-            <div className="bg-gray-400 grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 p-2 gap-1">
-              {companies?.map((company) => (
-                <div
-                  key={company.id}
-                  className={`p-4 rounded-lg shadow-md flex flex-col justify-between transition
+        <div>
+          <LiveSearchBar onSearch={handleSearch} />
+          <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <div className="px-2 py-2 sm:px-0">
+              <div className="bg-gray-400 grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 p-2 gap-1">
+                {filteredCompanies?.map((company) => (
+                  <div
+                    key={company.id}
+                    className={`p-4 rounded-lg shadow-md flex flex-col justify-between transition
               ${
                 company.registered
                   ? "bg-white border border-gray-200"
                   : "bg-gray-100 border-2 border-red-400 opacity-80"
               }`}
-                >
-                  <h2 className="text-sm md:text-xl lg:text-2xl font-semibold mb-2">
-                    {company.name}
-                  </h2>
-
-                  <p
-                    className={`text-xs font-semibold mb-2 ${
-                      company.registered ? "text-green-600" : "text-red-500"
-                    }`}
                   >
-                    {company.registered ? "등록됨" : "미등록"}
-                  </p>
+                    <h2 className="text-sm md:text-xl lg:text-2xl font-semibold mb-2">
+                      {company.name}
+                    </h2>
 
-                  <p className="text-gray-600 text-sm md:text-xl lg:text-2xl">
-                    {company.city || "지역 정보 없음"}
-                  </p>
+                    <p
+                      className={`text-xs font-semibold mb-2 ${
+                        company.registered ? "text-green-600" : "text-red-500"
+                      }`}
+                    >
+                      {company.registered ? "등록됨" : "미등록"}
+                    </p>
 
-                  <button
-                    onClick={() => handleEditClick(company)}
-                    className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-                  >
-                    수정
-                  </button>
-                </div>
-              ))}
+                    <p className="text-gray-600 text-sm md:text-xl lg:text-2xl">
+                      {company.city || "지역 정보 없음"}
+                    </p>
+
+                    <button
+                      onClick={() => handleEditClick(company)}
+                      className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                    >
+                      수정
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>

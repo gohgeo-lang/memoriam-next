@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { MdClose } from "react-icons/md";
 import { saveCompayInfo } from "@/app/service/estimate/lib/companiesCache";
 
 export default function EditCompanyInfo({
@@ -55,6 +56,14 @@ export default function EditCompanyInfo({
     "
         onClick={(e) => e.stopPropagation()} // 내부 클릭 닫기 방지
       >
+        {/* <div className="flex justify-end">
+          <button
+            onClick={handleCloseModal}
+            className="text-gray-500 hover:text-gray-800"
+          >
+            <MdClose size={28} />
+          </button>
+        </div> */}
         <h2 className="text-2xl font-bold mb-4 text-center">업체 정보 수정</h2>
 
         {/* 기본 정보 */}
@@ -274,34 +283,36 @@ export default function EditCompanyInfo({
               {formData.priceTable.map((row, idx) => (
                 <tr key={idx}>
                   <td className="p-2 border">{row.weight}</td>
+
                   <td className="p-2 border">
                     <input
-                      type="number"
-                      value={row.indiv}
+                      type="text" // number -> text로 변경
+                      value={row.indiv.toLocaleString()} // 화면에는 콤마 표시
                       onChange={(e) => {
-                        const value = e.target.value;
+                        const value = e.target.value.replace(/,/g, ""); // 콤마 제거
                         setFormData((prev) => {
                           const updated = [...prev.priceTable];
-                          updated[idx].indiv = Number(value);
+                          updated[idx].indiv = Number(value) || 0; // 숫자로 변환
                           return { ...prev, priceTable: updated };
                         });
                       }}
-                      className="w-full border rounded-md p-1"
+                      className="w-full border rounded-md p-1 text-right"
                     />
                   </td>
+
                   <td className="p-2 border">
                     <input
-                      type="number"
-                      value={row.group}
+                      type="text"
+                      value={row.group.toLocaleString()}
                       onChange={(e) => {
-                        const value = e.target.value;
+                        const value = e.target.value.replace(/,/g, "");
                         setFormData((prev) => {
                           const updated = [...prev.priceTable];
-                          updated[idx].group = Number(value);
+                          updated[idx].group = Number(value) || 0;
                           return { ...prev, priceTable: updated };
                         });
                       }}
-                      className="w-full border rounded-md p-1"
+                      className="w-full border rounded-md p-1 text-right"
                     />
                   </td>
                 </tr>
