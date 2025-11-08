@@ -234,11 +234,16 @@ export default function CompanyDetailPage() {
         </section>
       )}
 
-      {/* 견적 요청 버튼 */}
-      <div className="flex justify-center print:hidden">
-        <button className="rounded-lg bg-[#7b5449] px-6 py-2 text-white text-sm hover:scale-105 active:scale-95">
+      <div className="flex justify-center print:hidden gap-x-2">
+        <button className="rounded-lg bg-[#7b5449] px-6 py-2 min-w-35 text-white text-sm hover:scale-105 active:scale-95">
           견적 요청
         </button>
+        <Link
+          href="/service/estimate"
+          className="inline-block rounded-lg bg-[#7b5449] px-6 py-2 min-w-[140px] text-white text-sm text-center hover:scale-105 active:scale-95 transition"
+        >
+          목록으로
+        </Link>
       </div>
     </div>
   );
