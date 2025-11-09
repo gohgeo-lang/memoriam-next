@@ -1,11 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Image from "next/image";
+import CommentItem from "./CommentItem"; // 🔽 임포트
+import CommentForm from "./CommentForm"; // 🔽 임포트
 
-export default function MemorialModal({ story, onClose, onCommentSubmit }) {
-  const [commentText, setCommentText] = useState("");
-
+export default function MemorialModal({
+  story,
+  onClose,
+  onCommentSubmit,
+  onCommentEdit,
+  onCommentDelete,
+}) {
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => {
@@ -13,12 +19,8 @@ export default function MemorialModal({ story, onClose, onCommentSubmit }) {
     };
   }, []);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (commentText.trim()) {
-      onCommentSubmit(story.id, commentText);
-      setCommentText("");
-    }
+  const handleNewCommentSubmit = (text) => {
+    onCommentSubmit(story.id, text, null);
   };
 
   return (
@@ -59,30 +61,20 @@ export default function MemorialModal({ story, onClose, onCommentSubmit }) {
             <h4 className="font-bold mb-4">댓글</h4>
             <div className="space-y-4">
               {story.comments.map((comment) => (
-                <div key={comment.id} className="bg-gray-50 p-3 rounded-md">
-                  <p className="font-semibold text-sm">{comment.author}</p>
-                  <p className="text-gray-600">{comment.text}</p>
-                </div>
+                <CommentItem
+                  key={comment.id}
+                  comment={comment}
+                  postId={story.id}
+                  onCommentSubmit={onCommentSubmit}
+                  onCommentEdit={onCommentEdit}
+                  onCommentDelete={onCommentDelete}
+                />
               ))}
             </div>
 
-            <form onSubmit={handleSubmit} className="mt-4 flex gap-2">
-              <input
-                type="text"
-                name="comment"
-                placeholder="따뜻한 위로의 말을 남겨주세요."
-                value={commentText}
-                onChange={(e) => setCommentText(e.target.value)}
-                className="flex-grow border rounded-md p-2 focus:ring-2 focus:ring-[#7b5449] focus:outline-none"
-              />
-              <button
-                type="submit"
-                disabled={!commentText.trim()}
-                className="bg-[#7b5449] text-white px-4 py-2 rounded-md hover:bg-[#694237] transition-colors disabled:bg-gray-400"
-              >
-                등록
-              </button>
-            </form>
+            <div className="mt-6">
+              <CommentForm onSubmit={handleNewCommentSubmit} />
+            </div>
           </div>
         </main>
       </div>

@@ -8,7 +8,7 @@ export async function POST(request) {
 
   try {
     const body = await request.json();
-    const { content, postId } = body;
+    const { content, postId, parentId } = body;
 
     if (!content || !postId) {
       return NextResponse.json(
@@ -19,12 +19,18 @@ export async function POST(request) {
 
     const userId = session?.user?.id ? parseInt(session.user.id, 10) : null;
 
+    const dataToCreate = {
+      content: content,
+      postId: parseInt(postId, 10),
+      authorId: userId,
+    };
+
+    if (parentId && typeof parentId === "number") {
+      dataToCreate.parentId = parentId;
+    }
+
     const newComment = await prisma.comment.create({
-      data: {
-        content: content,
-        postId: parseInt(postId, 10),
-        authorId: userId,
-      },
+      data: dataToCreate,
       include: {
         author: true,
       },
