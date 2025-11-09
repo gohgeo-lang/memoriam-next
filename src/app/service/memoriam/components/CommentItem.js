@@ -100,7 +100,7 @@ export default function CommentItem({
       )}
 
       {comment.replies && comment.replies.length > 0 && (
-        <div className="ml-5 mt-3 space-y-3 border-l-2 pl-3">
+        <div className="ml-5 mt-3 space-y-3 border-l-2 border-[#7b5449] pl-3">
           {comment.replies.map((reply) => (
             <CommentItem
               key={reply.id}

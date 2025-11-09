@@ -8,14 +8,13 @@ import MemorialModal from "./components/MemorialModal";
 import MemorialForm from "./components/MemorialForm";
 import LoadingSpinner from "@/components/LoadingSpinner";
 
-// 🔽 재귀적으로 댓글을 매핑하는 헬퍼 함수
 const mapCommentData = (comment) => ({
   id: comment.id,
   author: comment.author?.name || "방문자",
-  authorId: comment.authorId, // 👈 권한 확인용
+  authorId: comment.authorId,
   text: comment.content,
-  isDeleted: comment.isDeleted, // 👈 삭제 상태
-  replies: (comment.replies || []).map(mapCommentData), // 👈 재귀 호출
+  isDeleted: comment.isDeleted,
+  replies: (comment.replies || []).map(mapCommentData),
 });
 
 const mapStoryData = (post) => {
@@ -24,6 +23,7 @@ const mapStoryData = (post) => {
 
   return {
     id: post.id,
+    authorId: post.authorId,
     title: post.title,
     content: post.content,
     petName: memorial?.petName || "댕냥이",
@@ -33,12 +33,10 @@ const mapStoryData = (post) => {
         ? thumbnailUrl
         : "/image/dog-cat1.webp",
     rememberCount: memorial?.rememberCount || 0,
-    // 🔽 mapCommentData 헬퍼 함수 사용
     comments: (post.comments || []).map(mapCommentData),
   };
 };
 
-// 🔽 댓글 상태 업데이트를 위한 재귀 헬퍼 함수
 /**
  * 불변성을 유지하며 중첩된 댓글/답글 상태를 업데이트합니다.
  * @param {Array} comments - 현재 댓글 배열
@@ -46,17 +44,17 @@ const mapStoryData = (post) => {
  * @param {String} mode - 'update' 또는 'add-reply'
  * @returns {Array} 갱신된 댓글 배열
  */
+
 const updateCommentInState = (comments, updatedComment, mode = "update") => {
   return comments.map((c) => {
-    // 1. 답글 추가 모드
     if (mode === "add-reply" && c.id === updatedComment.parentId) {
       return { ...c, replies: [...c.replies, updatedComment] };
     }
-    // 2. 댓글 수정 모드
+
     if (mode === "update" && c.id === updatedComment.id) {
-      return { ...c, ...updatedComment }; // 갱신 (text, isDeleted 등)
+      return { ...c, ...updatedComment };
     }
-    // 3. 재귀 (답글의 답글... 처리)
+
     if (c.replies && c.replies.length > 0) {
       return {
         ...c,
@@ -91,13 +89,13 @@ export default function MemorialPage() {
   const [selectedStory, setSelectedStory] = useState(null);
   const [isWriting, setIsWriting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [editingStory, setEditingStory] = useState(null);
   const { data: session } = useSession();
 
   useEffect(() => {
     const fetchStories = async () => {
       setIsLoading(true);
       try {
-        // 🔽 API 호출 시 답글까지 모두 가져오도록 확인
         const res = await fetch("/api/posts");
         if (res.ok) {
           const data = await res.json();
@@ -120,15 +118,121 @@ export default function MemorialPage() {
     setSelectedStory(null);
   };
 
-  // ... (handleRememberClick, handleStorySubmit은 이전과 동일)
   const handleRememberClick = async (storyId) => {
-    // ... (기존 로직 동일) ...
-  };
-  const handleStorySubmit = async (formData) => {
-    // ... (기존 로직 동일) ...
+    if (!session) {
+      alert("로그인이 필요합니다냥!");
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/posts/${storyId}/remember`, {
+        method: "POST",
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "공감에 실패했다냥!");
+      }
+
+      const data = await res.json();
+
+      if (data.message === "이미 공감했습니다.") {
+        alert("이미 공감한 이야기입니다냥!");
+        return;
+      }
+
+      const updatedRememberCount = data.rememberCount;
+
+      setStories((prevStories) =>
+        prevStories.map((story) =>
+          story.id === storyId
+            ? { ...story, rememberCount: updatedRememberCount }
+            : story
+        )
+      );
+
+      if (selectedStory && selectedStory.id === storyId) {
+        setSelectedStory((prev) => ({
+          ...prev,
+          rememberCount: updatedRememberCount,
+        }));
+      }
+    } catch (error) {
+      console.error("Failed to remember story:", error);
+      alert(error.message);
+    }
   };
 
-  // 🔽 댓글 제출 핸들러 (답글 포함)
+  const handleStorySubmit = async (formData) => {
+    const isEditing = !!editingStory;
+    const url = isEditing ? `/api/posts/${editingStory.id}` : "/api/posts";
+    const method = isEditing ? "PATCH" : "POST";
+
+    try {
+      const res = await fetch(url, {
+        method: method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "이야기 등록에 실패했습니다.");
+      }
+
+      const newPostFromDb = await res.json();
+      const newStoryMapped = mapStoryData(newPostFromDb);
+
+      if (isEditing) {
+        setStories((prevStories) =>
+          prevStories.map((story) =>
+            story.id === newStoryMapped.id ? newStoryMapped : story
+          )
+        );
+      } else {
+        setStories((prevStories) => [newStoryMapped, ...prevStories]);
+      }
+
+      setIsWriting(false);
+      setEditingStory(null);
+    } catch (error) {
+      console.error("Failed to submit story:", error);
+      alert(`이야기 등록 중 오류 발생: ${error.message}`);
+    }
+  };
+
+  const handleStartEdit = (story) => {
+    setEditingStory(story);
+    setIsWriting(true);
+    setSelectedStory(null);
+  };
+
+  const handleStoryDelete = async (storyId) => {
+    if (!confirm("정말 이 이야기를 삭제하겠습니까?")) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/posts/${storyId}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "이야기 삭제에 실패했습니다.");
+      }
+
+      setStories((prevStories) =>
+        prevStories.filter((story) => story.id !== storyId)
+      );
+
+      setSelectedStory(null);
+    } catch (error) {
+      console.error("Failed to delete Story:", error);
+      alert(`삭제 중 오류 발생 : ${error.message}  `);
+    }
+  };
+
   const handleCommentSubmit = async (storyId, commentText, parentId = null) => {
     try {
       const res = await fetch("/api/comments", {
@@ -145,7 +249,6 @@ export default function MemorialPage() {
 
       const newCommentFromDb = await res.json();
 
-      // 🔽 API에서 받은 데이터를 프론트엔드 형식으로 매핑
       const newCommentMapped = {
         id: newCommentFromDb.id,
         author:
@@ -300,12 +403,26 @@ export default function MemorialPage() {
       <Section title="우리의 이야기">
         {isWriting ? (
           <MemorialForm
+            initialData={editingStory}
             onStorySubmit={handleStorySubmit}
-            onCancel={() => setIsWriting(false)}
+            onCancel={() => {
+              setIsWriting(false);
+              setEditingStory(null);
+            }}
           />
         ) : (
           <>
-            {/* ... (기존 UI) ... */}
+            {/* 🔽 [수정] '이야기 등록하기' 버튼 추가 */}
+            <div className="flex justify-end mb-4 px-5 sm:px-0">
+              {session && (
+                <button
+                  onClick={() => setIsWriting(true)}
+                  className="bg-[#7b5449] text-white px-4 py-2 rounded-md hover:bg-[#5a3e35] transition-colors"
+                >
+                  이야기 등록하기
+                </button>
+              )}
+            </div>
 
             {isLoading ? (
               <LoadingSpinner text="이야기를 불러오는 중..." />
@@ -332,10 +449,13 @@ export default function MemorialPage() {
       {selectedStory && (
         <MemorialModal
           story={selectedStory}
+          session={session}
           onClose={handleCloseModal}
           onCommentSubmit={handleCommentSubmit}
-          onCommentEdit={handleCommentEdit} // 👈 추가
-          onCommentDelete={handleCommentDelete} // 👈 추가
+          onCommentEdit={handleCommentEdit}
+          onCommentDelete={handleCommentDelete}
+          onStoryEdit={handleStartEdit}
+          onStoryDelete={handleStoryDelete}
         />
       )}
     </div>

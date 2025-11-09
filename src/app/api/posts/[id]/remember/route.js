@@ -4,7 +4,11 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function POST(request, context) {
-  const { params } = context;
+  // 🔽 [수정] 이 라인을 추가하여 Next.js가 이 라우트를
+  // 🔽 동적으로 처리하도록 명시합니다. (경고 해결용)
+  // 이 변수를 사용하지 않아도 괜찮습니다.
+  const { searchParams } = new URL(request.url);
+
   const session = await getServerSession(authOptions);
   if (!session || !session.user || !session.user.id) {
     return NextResponse.json(
@@ -14,7 +18,7 @@ export async function POST(request, context) {
   }
 
   try {
-    const postId = parseInt(params.id, 10);
+    const postId = parseInt(context.params.id, 10);
     const userId = parseInt(session.user.id, 10);
 
     if (isNaN(postId) || isNaN(userId)) {
