@@ -74,18 +74,7 @@ export default async function getCompanies(userLat, userLon) {
       state: row.getElementsByTagName("trdStateNm")[0]?.textContent ?? "",
       coordX: coordX,
       coordY: coordY,
-      reviews: [
-        {
-          author: "user1",
-          content: "좋아요",
-          rating: Math.floor(Math.random() * 5),
-        },
-        {
-          author: "user2",
-          content: "조금 좋아요",
-          rating: Math.floor(Math.random() * 5),
-        },
-      ],
+      reviews: [],
       distanceKm: getDistance(userLat, userLon, coordX, coordY).toFixed(2),
       priceFrom: Math.floor(Math.random() * 1000000),
       tags: ["24시간", "픽업", "개별화장", "유골함제공", "추모실"],

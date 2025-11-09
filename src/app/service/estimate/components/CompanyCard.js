@@ -4,7 +4,7 @@ export default function CompanyCard({ company, isSelected, onSelect }) {
   const rating =
     company.reviews.reduce((acc, cur) => acc + cur.rating, 0) /
     company.reviews.length;
-  const reviews = company.reviews.length;
+  const reviews = company.reviews.length || "-";
   return (
     <div
       className={`border rounded-xl p-5 shadow-sm relative cursor-pointer transition
@@ -20,7 +20,9 @@ export default function CompanyCard({ company, isSelected, onSelect }) {
       <div className="flex justify-between items-start mb-3">
         <h3 className="text-lg font-semibold text-[#3d2a25]">{company.name}</h3>
         <div className="flex items-center gap-1 text-amber-600">
-          <span className="font-semibold">{rating.toFixed(1)}</span>
+          <span className="font-semibold">
+            {isNaN(rating) ? "-" : rating.toFixed(1)}
+          </span>
           <span className="text-xs text-gray-500">({reviews})</span>
         </div>
       </div>

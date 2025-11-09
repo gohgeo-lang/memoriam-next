@@ -1,8 +1,9 @@
 "use client";
 import Link from "next/link";
-import { getCompanyById } from "../lib/companiesCache";
+import { getCompanyById, saveCompayInfo } from "../lib/companiesCache";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { notFound } from "next/navigation";
 import {
   MdLocationOn,
@@ -12,6 +13,7 @@ import {
   MdOutlineCategory,
   MdAccessTime,
   MdWeb,
+  MdDelete,
 } from "react-icons/md";
 
 export default function CompanyDetailPage() {
@@ -19,6 +21,14 @@ export default function CompanyDetailPage() {
   const router = useRouter();
   const [company, setCompany] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [newReview, setNewReview] = useState({
+    author: "",
+    rating: 0,
+    content: "",
+  });
+  const { data: session } = useSession();
+
+  const userEmail = session?.user?.email || null;
 
   // 임시 로고 URL 생성 (Placehold.co)
   const getLogoUrl = (name) => {
@@ -41,6 +51,59 @@ export default function CompanyDetailPage() {
 
   if (!company && !loading) notFound();
   if (loading) return <p className="p-4">로딩중...</p>;
+
+  const handleRatingSelect = (value) => {
+    setNewReview((prev) => ({ ...prev, rating: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!newReview.author || !newReview.content || newReview.rating === 0) {
+      alert("이름, 별점, 내용을 모두 입력해주세요.");
+      return;
+    }
+
+    const updatedCompany = {
+      ...company,
+      reviews: [
+        ...(company.reviews || []),
+        {
+          ...newReview,
+          email: session.user?.email || "anonymous",
+        },
+      ],
+    };
+
+    const isSuccess = await saveCompayInfo(updatedCompany);
+
+    if (isSuccess) {
+      setCompany(updatedCompany);
+    }
+
+    // 폼 초기화
+    setNewReview({ author: "", rating: 0, content: "" });
+  };
+
+  const handleDeleteReview = async (index) => {
+    const confirmDelete = confirm("이 리뷰를 삭제하시겠습니까?");
+    if (!confirmDelete) return;
+
+    // index 기준으로 해당 리뷰 삭제
+    const updatedReviews = company.reviews.filter((_, i) => i !== index);
+
+    // 회사 데이터 업데이트
+    const updatedCompany = {
+      ...company,
+      reviews: updatedReviews,
+    };
+
+    const isSuccess = await saveCompayInfo(updatedCompany);
+
+    if (isSuccess) {
+      setCompany(updatedCompany);
+    }
+  };
 
   const rating =
     company.reviews.reduce((acc, cur) => acc + cur.rating, 0) /
@@ -209,12 +272,64 @@ export default function CompanyDetailPage() {
         </div>
       </section>
 
-      {/* 리뷰 */}
-      {company.reviews?.length > 0 && (
-        <section className="bg-white rounded-xl shadow p-4 print:shadow-none print:p-0">
-          <h2 className="text-xl font-semibold mb-3 flex items-center gap-2 print:text-lg">
-            <MdStar /> 리뷰
-          </h2>
+      <section className="bg-white rounded-xl shadow p-4 print:shadow-none print:p-0">
+        <h2 className="text-xl font-semibold mb-3 flex items-center gap-2 print:text-lg">
+          <MdStar /> 리뷰
+        </h2>
+
+        {/* 리뷰 등록 폼 */}
+        <form onSubmit={handleSubmit} className="mb-4 space-y-3">
+          <input
+            type="text"
+            placeholder="표시될 이름을 입력하세요"
+            value={newReview.author}
+            onChange={(e) =>
+              setNewReview((prev) => ({ ...prev, author: e.target.value }))
+            }
+            className="w-full border rounded p-2"
+          />
+
+          {/* 별점 선택 */}
+          <div className="flex gap-1 items-center">
+            {[1, 2, 3, 4, 5].map((value) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => handleRatingSelect(value)}
+                className={`text-2xl ${
+                  value <= newReview.rating
+                    ? "text-yellow-400"
+                    : "text-gray-300"
+                }`}
+              >
+                <MdStar />
+              </button>
+            ))}
+            <span className="ml-2 text-sm text-gray-600">
+              {newReview.rating > 0 ? `${newReview.rating}점` : ""}
+            </span>
+          </div>
+
+          <textarea
+            maxLength={200}
+            placeholder="리뷰입력(최대 200자까지 입력할 수 있습니다)"
+            value={newReview.content}
+            onChange={(e) =>
+              setNewReview((prev) => ({ ...prev, content: e.target.value }))
+            }
+            className="w-full border rounded p-2 h-20"
+          />
+
+          <button
+            type="submit"
+            className="bg-[#856056] text-white px-4 py-2 rounded hover:bg-[#7b5449]"
+          >
+            등록
+          </button>
+        </form>
+
+        {/* 리뷰 목록 */}
+        {company.reviews?.length > 0 && (
           <div className="space-y-3 max-h-64 overflow-y-auto print:max-h-full print:overflow-visible">
             {company.reviews.map((r, idx) => (
               <div
@@ -225,18 +340,33 @@ export default function CompanyDetailPage() {
                   <span className="font-medium print:text-black">
                     {r.author}
                   </span>
-                  <span className="flex items-center gap-1 text-yellow-400 print:text-black">
-                    <MdStar /> {r.rating.toFixed(1)}
-                  </span>
+
+                  <div className="flex items-center gap-2">
+                    <span className="flex items-center gap-1 text-yellow-400 print:text-black">
+                      <MdStar /> {r.rating?.toFixed(1)}
+                    </span>
+
+                    {/* 로그인 사용자의 이메일과 같을 때만 삭제 버튼 표시 */}
+                    {userEmail && r.email === userEmail && (
+                      <button
+                        onClick={() => handleDeleteReview(idx)}
+                        className="text-[#856056] hover:text-[#cbc2bf]"
+                        title="리뷰 삭제"
+                      >
+                        <MdDelete size={20} />
+                      </button>
+                    )}
+                  </div>
                 </div>
+
                 <p className="text-sm text-gray-600 print:text-black">
                   {r.content}
                 </p>
               </div>
             ))}
           </div>
-        </section>
-      )}
+        )}
+      </section>
 
       <div className="flex justify-center print:hidden gap-x-2">
         <button className="rounded-lg bg-[#7b5449] px-6 py-2 min-w-35 text-white text-sm hover:scale-105 active:scale-95">

@@ -25,7 +25,6 @@ export default function EditCompanyInfo({
       ...formData,
     };
 
-    console.log(updatedData);
     const isSuccess = await saveCompayInfo(updatedData);
 
     if (isSuccess) {
