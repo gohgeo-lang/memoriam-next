@@ -7,7 +7,8 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
+import { useEffect } from "react";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,11 +18,6 @@ export default function Header() {
   const { data: session } = useSession();
 
   const menuItems = [
-    // 임시로 role 추가 전까지 hong@gmail.com만 관리자페이지 노출, 비번: 12341234
-    // ...(session?.user?.role === "admin" && { path: "/dashboard", label: "관리자페이지" }),
-    ...(session?.user?.email === "hong@gmail.com"
-      ? [{ path: "/dashboard", label: "관리자페이지" }]
-      : []),
     { path: "/brand", label: "브랜드" },
     { path: "/guide", label: "안심가이드" },
     { label: "서비스", hasSubmenu: true },
@@ -77,25 +73,34 @@ export default function Header() {
       <div className="flex items-center gap-2">
         {session && session.user ? (
           <Link href="/mypage">
-            <Image
-              src={session.user.image || "/default-avatar.png"}
-              alt="프"
-              width={28}
-              height={28}
-              className="rounded-full border border-gray-300 object-cover"
-            />
+            {session.user.image ? (
+              <Image
+                src={session.user.image}
+                alt="프로필"
+                width={28}
+                height={28}
+                className="rounded-full border border-gray-300 object-cover"
+              />
+            ) : (
+              <div className="w-7 h-7 flex items-center justify-center rounded-full bg-gray-300 text-white text-xs font-semibold border border-gray-300">
+                {session.user.name
+                  ? session.user.name.charAt(0).toUpperCase()
+                  : session.user.email.charAt(0).toUpperCase()}
+              </div>
+            )}
           </Link>
         ) : null}
+
         {!isOpen ? (
           <button
-            className="text-base text-[#7b5449] cursor-pointer"
+            className="text-base text-[#7b5449] cursor-pointer "
             onClick={() => setIsOpen(true)}
           >
             <FaBars />
           </button>
         ) : submenuOpen ? (
           <button
-            className="text-base text-[#7b5449] cursor-pointer z-20"
+            className="text-base text-[#7b5449] cursor-pointer z-20 "
             onClick={() => setSubmenuOpen(false)}
           >
             <IoChevronBack />
