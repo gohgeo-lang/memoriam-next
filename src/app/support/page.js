@@ -1,286 +1,157 @@
-import React from "react";
-export default function support() {
+"use client";
+import React, { useState } from "react";
+
+export default function SupportPage() {
+  const faqs = [
+    {
+      category: "서비스 이용 관련",
+      items: [
+        {
+          q: "반려동물 장례 중계 플랫폼은 어떤 서비스인가요?",
+          a: "전국의 인증된 장례식장 정보를 비교하고, 장례 절차를 예약·중계해드리는 서비스입니다. 디지털 추모관, 장례비용 견적, 영정사진 제작 등도 함께 이용할 수 있습니다.",
+        },
+        {
+          q: "직접 장례식장에 가지 않아도 되나요?",
+          a: "온라인으로 예약과 절차 안내가 가능하지만, 마지막 작별 인사를 위해 직접 방문하실 수도 있습니다.",
+        },
+        {
+          q: "중계 플랫폼을 이용하면 어떤 점이 좋은가요?",
+          a: "비용 투명성, 거리·평가 기반 추천, 후기 검증 시스템을 통해 안심하고 선택하실 수 있습니다.",
+        },
+      ],
+    },
+    {
+      category: "장례 절차 및 비용 관련",
+      items: [
+        {
+          q: "반려동물 장례 절차는 어떻게 진행되나요?",
+          a: "접수 → 픽업(또는 방문) → 장례 절차 → 수목장/납골/자택 유골함 선택 → 디지털 추모관 등록 순으로 진행됩니다.",
+        },
+        {
+          q: "장례비용은 어떻게 계산되나요?",
+          a: "체중, 화장 방식(개별/공동), 추가 서비스(영정사진, 추모함 등)에 따라 자동 견적이 산출됩니다.",
+        },
+        {
+          q: "견적이 실제 비용과 다른 경우도 있나요?",
+          a: "현장 상황에 따라 소폭 차이가 있을 수 있지만, 모든 추가 비용은 사전 동의 후 진행됩니다.",
+        },
+      ],
+    },
+    {
+      category: "디지털 추모관 관련",
+      items: [
+        {
+          q: "디지털 추모관이란 무엇인가요?",
+          a: "반려동물의 사진, 영상, 추억글을 등록하여 영원히 기억할 수 있는 온라인 공간입니다.",
+        },
+        {
+          q: "추모관은 무료인가요?",
+          a: "기본형은 무료 제공, 프리미엄(맞춤 디자인, 음악 삽입 등)은 유료로 이용 가능합니다.",
+        },
+        {
+          q: "가족이나 친구와 공유할 수 있나요?",
+          a: "링크로 공유하거나, 함께 작성 권한을 부여할 수 있습니다.",
+        },
+      ],
+    },
+    {
+      category: "영정사진 서비스 관련",
+      items: [
+        {
+          q: "영정사진은 어떻게 만들어지나요?",
+          a: "업로드한 사진을 기반으로 AI 및 전문 디자이너가 합성·보정하여 제작합니다.",
+        },
+        {
+          q: "사진 퀄리티가 좋지 않아도 괜찮나요?",
+          a: "해상도가 높을수록 좋지만, 보정 서비스를 통해 보완할 수 있습니다.",
+        },
+        {
+          q: "제작된 영정사진은 어디서 받나요?",
+          a: "장례 당일 출력본과 함께, 디지털 파일 형태로 이메일/문자로 전송됩니다.",
+        },
+      ],
+    },
+    {
+      category: "예약 및 취소 관련",
+      items: [
+        {
+          q: "예약은 언제까지 가능한가요?",
+          a: "24시간 실시간 접수 가능합니다. 단, 일부 지역은 야간 픽업이 제한될 수 있습니다.",
+        },
+        {
+          q: "예약 취소나 변경은 어떻게 하나요?",
+          a: "장례 진행 2시간 전까지는 무료 취소 가능하며, 이후에는 일부 위약금이 발생할 수 있습니다.",
+        },
+      ],
+    },
+    {
+      category: "기타 문의",
+      items: [
+        {
+          q: "반려동물의 종에 따라 장례 방식이 다른가요?",
+          a: "네, 체중과 종에 따라 장례 절차와 비용이 달라집니다. 견적 시 자동 반영됩니다.",
+        },
+        {
+          q: "유골 보관은 어떻게 하나요?",
+          a: "수목장, 납골당, 유골함 보관 등 여러 옵션을 안내드립니다.",
+        },
+        {
+          q: "사람처럼 제사도 가능한가요?",
+          a: "추모관의 ‘기일 알림’ 기능을 통해 매년 헌화 서비스를 제공합니다.",
+        },
+      ],
+    },
+  ];
+
+  const [openIndex, setOpenIndex] = useState(null);
+
   return (
-    <div className="w-full bg-transparent text-[rgb(42,48,60)] text-[13.6px] leading-normal font-['Roboto','Noto_Sans_KR','맑은_고딕','Malgun_Gothic',sans-serif]">
-      {/* Spacer */}
-      <div className="block max-w-[1320px] w-[1320px] my-5 mx-[204px]"></div>
-      {/* Main Content */}
-      <div className="max-w-[1320px] w-[1320px] mx-[204px]">
-        {/* Title */}
-        <h1 className="font-semibold text-center text-[32px] leading-[43px] tracking-[-0.1px] mb-4">
-          FAQ
-        </h1>
-        {/* Subtitle */}
-        <h2 className="font-normal text-center text-base leading-[22px] tracking-[-0.5px] text-[rgb(92,98,114)] mb-[60px]">
-          자주 문의하는 질문에 대한 <br className="hidden" />
-          답변을 확인하실 수 있습니다.
-        </h2>
-        {/* Category Filter Buttons */}
-        <div className="w-[1320px]">
-          <ul className="w-[1320px] flex justify-center flex-row items-center flex-wrap list-none mb-[60px] gap-3 p-0 m-0">
-            <li>
-              <a
-                href="/service/faq"
-                className="font-bold text-white block h-[50.5px] leading-[26.5px] text-lg bg-[rgb(42,48,60)] text-center tracking-[-0.5px] rounded-[50px] px-5 py-3 no-underline"
+    <div className="max-w-[800px] mx-auto py-16 px-6">
+      <h1 className="text-3xl font-bold text-center mb-10 text-[#5D4037]">
+        자주 묻는 질문 (FAQ)
+      </h1>
+
+      {faqs.map((section, i) => (
+        <div key={i} className="mb-10">
+          <h2 className="text-xl font-semibold text-[#6D4C41] mb-4 border-b pb-2">
+            {section.category}
+          </h2>
+          {section.items.map((item, j) => {
+            const index = `${i}-${j}`;
+            const isOpen = openIndex === index;
+            return (
+              <div
+                key={index}
+                className="border border-[#D7CCC8] rounded-xl mb-2 transition-all duration-200"
               >
-                전체
-              </a>
-            </li>
-            <li>
-              <a
-                href="/service/faq/1"
-                className="font-bold text-[rgb(42,48,60)] block h-[50.5px] leading-[26.5px] text-lg bg-[rgb(246,247,248)] text-center tracking-[-0.5px] rounded-[50px] px-5 py-3 no-underline"
-              >
-                기초 수습
-              </a>
-            </li>
-            <li>
-              <a
-                href="/service/faq/2"
-                className="font-bold text-[rgb(42,48,60)] block h-[50.5px] leading-[26.5px] text-lg bg-[rgb(246,247,248)] text-center tracking-[-0.5px] rounded-[50px] px-5 py-3 no-underline"
-              >
-                장례 서비스
-              </a>
-            </li>
-            <li>
-              <a
-                href="/service/faq/20"
-                className="font-bold text-[rgb(42,48,60)] block h-[50.5px] leading-[26.5px] text-lg bg-[rgb(246,247,248)] text-center tracking-[-0.5px] rounded-[50px] px-5 py-3 no-underline"
-              >
-                차량 지원 서비스
-              </a>
-            </li>
-            <li>
-              <a
-                href="/service/faq/4"
-                className="font-bold text-[rgb(42,48,60)] block h-[50.5px] leading-[26.5px] text-lg bg-[rgb(246,247,248)] text-center tracking-[-0.5px] rounded-[50px] px-5 py-3 no-underline"
-              >
-                블리스 스톤
-              </a>
-            </li>
-            <li>
-              <a
-                href="/service/faq/21"
-                className="font-bold text-[rgb(42,48,60)] block h-[50.5px] leading-[26.5px] text-lg bg-[rgb(246,247,248)] text-center tracking-[-0.5px] rounded-[50px] px-5 py-3 no-underline"
-              >
-                봉안당
-              </a>
-            </li>
-            <li>
-              <a
-                href="/service/faq/22"
-                className="font-bold text-[rgb(42,48,60)] block h-[50.5px] leading-[26.5px] text-lg bg-[rgb(246,247,248)] text-center tracking-[-0.5px] rounded-[50px] px-5 py-3 no-underline"
-              >
-                디지털 추모
-              </a>
-            </li>
-            <li>
-              <a
-                href="/service/faq/5"
-                className="font-bold text-[rgb(42,48,60)] block h-[50.5px] leading-[26.5px] text-lg bg-[rgb(246,247,248)] text-center tracking-[-0.5px] rounded-[50px] px-5 py-3 no-underline"
-              >
-                기타
-              </a>
-            </li>
-          </ul>
+                <button
+                  onClick={() => setOpenIndex(isOpen ? null : index)}
+                  className="w-full text-left px-5 py-3 flex justify-between items-center"
+                >
+                  <span className="font-medium text-[#4E342E]">{item.q}</span>
+                  <span className="text-[#A1887F] text-lg">
+                    {isOpen ? "−" : "+"}
+                  </span>
+                </button>
+                {isOpen && (
+                  <div className="px-5 pb-4 pt-4 text-[#5D4037] bg-[#EFEBE9]">
+                    {item.a}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
-        {/* FAQ List */}
-        <div className="w-[1320px]">
-          <ul className="w-[1320px] flex flex-row justify-between items-center flex-wrap list-none p-0 m-0">
-            {/* FAQ Item 1 */}
-            <li className="w-[1320px] flex flex-col cursor-pointer border-t border-b border-[rgb(234,236,240)] p-5">
-              <span className="font-normal text-sm leading-[22px] tracking-[-0.5px] text-[rgb(92,98,114)] w-[120px] text-center">
-                봉안당
-              </span>
-              <strong className="font-bold text-lg relative leading-[23px] tracking-[-0.5px] text-[rgb(42,48,60)] -top-[22px] left-[170px] h-0 pr-[30px]">
-                포포즈 봉안당은 어떻게 이용 가능한가요?
-                <span className="absolute text-lg leading-[23px] text-[rgb(42,48,60)] top-[10px] left-[1090px] h-5"></span>
-              </strong>
-              <div className="hidden relative mt-7 mb-2 mx-[170px] mr-[15px] pl-[23px]">
-                {/* Answer content hidden by default */}
-              </div>
-            </li>
-            {/* FAQ Item 2 */}
-            <li className="w-[1320px] flex flex-col cursor-pointer border-b border-[rgb(234,236,240)] p-5">
-              <span className="font-normal text-sm leading-[22px] tracking-[-0.5px] text-[rgb(92,98,114)] w-[120px] text-center">
-                봉안당
-              </span>
-              <strong className="font-bold text-lg relative leading-[23px] tracking-[-0.5px] text-[rgb(42,48,60)] -top-[22px] left-[170px] h-0 pr-[30px]">
-                봉안당 운영 시간은 어떻게 되나요?
-                <span className="absolute text-lg leading-[23px] text-[rgb(42,48,60)] top-[10px] left-[1090px] h-5"></span>
-              </strong>
-              <div className="hidden relative mt-7 mb-2 mx-[170px] mr-[15px] pl-[23px]">
-                {/* Answer content hidden by default */}
-              </div>
-            </li>
-            {/* FAQ Item 3 */}
-            <li className="w-[1320px] flex flex-col cursor-pointer border-b border-[rgb(234,236,240)] p-5">
-              <span className="font-normal text-sm leading-[22px] tracking-[-0.5px] text-[rgb(92,98,114)] w-[120px] text-center">
-                봉안당
-              </span>
-              <strong className="font-bold text-lg relative leading-[23px] tracking-[-0.5px] text-[rgb(42,48,60)] -top-[22px] left-[170px] h-0 pr-[30px]">
-                실내 추모 공간이 궁금해요.
-                <span className="absolute text-lg leading-[23px] text-[rgb(42,48,60)] top-[10px] left-[1090px] h-5"></span>
-              </strong>
-              <div className="hidden relative mt-7 mb-2 mx-[170px] mr-[15px] pl-[23px]">
-                {/* Answer content hidden by default */}
-              </div>
-            </li>
-            {/* FAQ Item 4 */}
-            <li className="w-[1320px] flex flex-col cursor-pointer border-b border-[rgb(234,236,240)] p-5">
-              <span className="font-normal text-sm leading-[22px] tracking-[-0.5px] text-[rgb(92,98,114)] w-[120px] text-center">
-                봉안당
-              </span>
-              <strong className="font-bold text-lg relative leading-[23px] tracking-[-0.5px] text-[rgb(42,48,60)] -top-[22px] left-[170px] h-0 pr-[30px]">
-                야외 추모 공간이 궁금해요.
-                <span className="absolute text-lg leading-[23px] text-[rgb(42,48,60)] top-[10px] left-[1090px] h-5"></span>
-              </strong>
-              <div className="hidden relative mt-7 mb-2 mx-[170px] mr-[15px] pl-[23px]">
-                {/* Answer content hidden by default */}
-              </div>
-            </li>
-            {/* FAQ Item 5 */}
-            <li className="w-[1320px] flex flex-col cursor-pointer border-b border-[rgb(234,236,240)] p-5">
-              <span className="font-normal text-sm leading-[22px] tracking-[-0.5px] text-[rgb(92,98,114)] w-[120px] text-center">
-                블리스 스톤
-              </span>
-              <strong className="font-bold text-lg relative leading-[23px] tracking-[-0.5px] text-[rgb(42,48,60)] -top-[22px] left-[170px] h-0 pr-[30px]">
-                블리스 스톤 루미의 색상은 어떻게 정해지나요?
-                <span className="absolute text-lg leading-[23px] text-[rgb(42,48,60)] top-[10px] left-[1090px] h-5"></span>
-              </strong>
-              <div className="hidden relative mt-7 mb-2 mx-[170px] mr-[15px] pl-[23px]">
-                {/* Answer content hidden by default */}
-              </div>
-            </li>
-            {/* FAQ Item 6 */}
-            <li className="w-[1320px] flex flex-col cursor-pointer border-b border-[rgb(234,236,240)] p-5">
-              <span className="font-normal text-sm leading-[22px] tracking-[-0.5px] text-[rgb(92,98,114)] w-[120px] text-center">
-                차량 지원 서비스
-              </span>
-              <strong className="font-bold text-lg relative leading-[23px] tracking-[-0.5px] text-[rgb(42,48,60)] -top-[22px] left-[170px] h-0 pr-[30px]">
-                보호자 비동행 서비스가 무엇인가요?
-                <span className="absolute text-lg leading-[23px] text-[rgb(42,48,60)] top-[10px] left-[1090px] h-5"></span>
-              </strong>
-              <div className="hidden relative mt-7 mb-2 mx-[170px] mr-[15px] pl-[23px]">
-                {/* Answer content hidden by default */}
-              </div>
-            </li>
-            {/* FAQ Item 7 */}
-            <li className="w-[1320px] flex flex-col cursor-pointer border-b border-[rgb(234,236,240)] p-5">
-              <span className="font-normal text-sm leading-[22px] tracking-[-0.5px] text-[rgb(92,98,114)] w-[120px] text-center">
-                차량 지원 서비스
-              </span>
-              <strong className="font-bold text-lg relative leading-[23px] tracking-[-0.5px] text-[rgb(42,48,60)] -top-[22px] left-[170px] h-0 pr-[30px]">
-                보호자 동행 서비스가 무엇인가요?
-                <span className="absolute text-lg leading-[23px] text-[rgb(42,48,60)] top-[10px] left-[1090px] h-5"></span>
-              </strong>
-              <div className="hidden relative mt-7 mb-2 mx-[170px] mr-[15px] pl-[23px]">
-                {/* Answer content hidden by default */}
-              </div>
-            </li>
-            {/* FAQ Item 8 */}
-            <li className="w-[1320px] flex flex-col cursor-pointer border-b border-[rgb(234,236,240)] p-5">
-              <span className="font-normal text-sm leading-[22px] tracking-[-0.5px] text-[rgb(92,98,114)] w-[120px] text-center">
-                기초 수습
-              </span>
-              <strong className="font-bold text-lg relative leading-[23px] tracking-[-0.5px] text-[rgb(42,48,60)] -top-[22px] left-[170px] h-0 pr-[30px]">
-                사후 기초 수습은 어떻게 해야 할까요?
-                <span className="absolute text-lg leading-[23px] text-[rgb(42,48,60)] top-[10px] left-[1090px] h-5"></span>
-              </strong>
-              <div className="hidden relative mt-7 mb-2 mx-[170px] mr-[15px] pl-[23px]">
-                {/* Answer content hidden by default */}
-              </div>
-            </li>
-            {/* FAQ Item 9 */}
-            <li className="w-[1320px] flex flex-col cursor-pointer border-b border-[rgb(234,236,240)] p-5">
-              <span className="font-normal text-sm leading-[22px] tracking-[-0.5px] text-[rgb(92,98,114)] w-[120px] text-center">
-                디지털 추모
-              </span>
-              <strong className="font-bold text-lg relative leading-[23px] tracking-[-0.5px] text-[rgb(42,48,60)] -top-[22px] left-[170px] h-0 pr-[30px]">
-                AVERE 이용하려면 어떻게 해야해요?
-                <span className="absolute text-lg leading-[23px] text-[rgb(42,48,60)] top-[10px] left-[1090px] h-5"></span>
-              </strong>
-              <div className="hidden relative mt-7 mb-2 mx-[170px] mr-[15px] pl-[23px]">
-                {/* Answer content hidden by default */}
-              </div>
-            </li>
-            {/* FAQ Item 10 */}
-            <li className="w-[1320px] flex flex-col cursor-pointer border-b border-[rgb(234,236,240)] p-5">
-              <span className="font-normal text-sm leading-[22px] tracking-[-0.5px] text-[rgb(92,98,114)] w-[120px] text-center">
-                디지털 추모
-              </span>
-              <strong className="font-bold text-lg relative leading-[23px] tracking-[-0.5px] text-[rgb(42,48,60)] -top-[22px] left-[170px] h-0 pr-[30px]">
-                AVERE 가 뭐예요?
-                <span className="absolute text-lg leading-[23px] text-[rgb(42,48,60)] top-[10px] left-[1090px] h-5"></span>
-              </strong>
-              <div className="hidden relative mt-7 mb-2 mx-[170px] mr-[15px] pl-[23px]">
-                {/* Answer content hidden by default */}
-              </div>
-            </li>
-          </ul>
-          {/* Pagination */}
-          <nav>
-            <ul className="w-[1320px] flex flex-row justify-center items-center flex-wrap list-none mt-10 p-0 m-0">
-              <li
-                aria-disabled="true"
-                aria-label="« Previous"
-                className="w-6 mx-[5px]"
-              >
-                <span
-                  aria-hidden="true"
-                  className="font-normal inline-block w-6 h-6 text-center leading-6 text-[rgb(121,132,147)] text-[15px]"
-                >
-                  ‹
-                </span>
-              </li>
-              <li aria-current="page" className="w-6 mx-[5px]">
-                <span className="font-semibold inline-block w-6 h-6 text-center leading-6 text-[rgb(67,31,136)] text-[15px]">
-                  1
-                </span>
-              </li>
-              <li className="w-6 mx-[5px]">
-                <a
-                  href="http://fourpaws.co.kr/service/faq?page=2"
-                  className="font-normal text-[rgb(121,132,147)] inline-block w-6 h-6 text-center leading-6 text-[15px] no-underline"
-                >
-                  2
-                </a>
-              </li>
-              <li className="w-6 mx-[5px]">
-                <a
-                  href="http://fourpaws.co.kr/service/faq?page=3"
-                  className="font-normal text-[rgb(121,132,147)] inline-block w-6 h-6 text-center leading-6 text-[15px] no-underline"
-                >
-                  3
-                </a>
-              </li>
-              <li className="w-6 mx-[5px]">
-                <a
-                  href="http://fourpaws.co.kr/service/faq?page=2"
-                  rel="next"
-                  aria-label="Next »"
-                  className="font-normal text-[rgb(121,132,147)] inline-block w-6 h-6 text-center leading-6 text-[15px] no-underline"
-                >
-                  ›
-                </a>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </div>
-      {/* Bottom CTA Section (Hidden) */}
-      <div className="hidden bg-[rgb(241,242,243)] text-center w-[calc(100%-48px)] leading-[17px] tracking-[-0.5px] text-[rgb(42,48,60)] py-[25px] mt-[31px] mx-auto">
-        <h3 className="font-normal text-[12.5px] mb-[15px]">
-          원하시는 정보가 없으신가요?
-          <br />
-          문의하기를 통해 궁금증을 해소해보세요.
-        </h3>
-        <a
-          href="/service/quest/write"
-          className="font-bold text-white w-auto inline-block h-[47px] leading-[47px] bg-[rgb(67,31,136)] text-[15px] rounded-[2px] px-[26px] no-underline"
-        >
-          문의하기
-        </a>
+      ))}
+
+      {/* 하단 CTA 버튼들 */}
+      <div className="flex flex-col sm:flex-row gap-4 justify-center mt-12">
+        <button className="bg-[#6D4C41] hover:bg-[#5D4037] text-white px-6 py-3 rounded-xl shadow-md transition-all">
+          장례비용 간단 계산
+        </button>
+        <button className="bg-[#6D4C41] hover:bg-[#5D4037] text-white px-6 py-3 rounded-xl shadow-md transition-all">
+          디지털 추모관 이용하기
+        </button>
       </div>
     </div>
   );
