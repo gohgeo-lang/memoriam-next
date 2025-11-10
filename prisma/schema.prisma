@@ -23,9 +23,8 @@ model User {
   pointHistories PointHistory[]
   posts          Post[]
   remembers      Postremember[]
-  FAQ            String
 
-  faqs      FAQ[]    @relation("AuthorFAQs")
+  faqs FAQ[] @relation("AuthorFAQs")
 }
 
 model PostCategory {
@@ -135,7 +134,6 @@ model PointHistory {
   createdAt   DateTime @default(now())
   user        User     @relation(fields: [userId], references: [id])
 }
-
 
 model FAQ {
   id        Int      @id @default(autoincrement())
