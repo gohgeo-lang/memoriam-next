@@ -8,7 +8,7 @@ const MEMORIAL_CATEGORY_NAME = "MEMORIAL";
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
-    const sort = searchParams.get("sort") || "lastest";
+    const sort = searchParams.get("sort") || "latest";
 
     const orderBy =
       sort === "remember"
@@ -21,7 +21,7 @@ export async function GET(request) {
           name: MEMORIAL_CATEGORY_NAME,
         },
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: orderBy,
       include: {
         author: true,
         comments: {

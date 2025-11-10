@@ -90,25 +90,31 @@ export default function MemorialPage() {
   const [isWriting, setIsWriting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [editingStory, setEditingStory] = useState(null);
+  const [sortOrder, setSortOrder] = useState("latest"); // 👈 [신규] 정렬 상태
   const { data: session } = useSession();
 
   useEffect(() => {
     const fetchStories = async () => {
       setIsLoading(true);
       try {
-        const res = await fetch("/api/posts");
+        // 🔽 [수정] API 호출 시 sortOrder 파라미터 추가
+        const res = await fetch(`/api/posts?sort=${sortOrder}`);
         if (res.ok) {
           const data = await res.json();
           setStories(data.map(mapStoryData));
+        } else {
+          // API 에러 시 빈 배열 처리
+          setStories([]);
         }
       } catch (error) {
         console.error("Failed to fetch stories:", error);
+        setStories([]);
       }
       setIsLoading(false);
     };
 
     fetchStories();
-  }, []);
+  }, [sortOrder]); // 👈 [수정] sortOrder가 변경될 때마다 fetchStories 실행
 
   const handleOpenModal = (story) => {
     setSelectedStory(story);
@@ -151,6 +157,13 @@ export default function MemorialPage() {
         )
       );
 
+      // 공감순 정렬 상태일 때, 공감 클릭 시 즉시 재정렬 (선택 사항)
+      if (sortOrder === "remember") {
+        setStories((prevStories) =>
+          [...prevStories].sort((a, b) => b.rememberCount - a.rememberCount)
+        );
+      }
+
       if (selectedStory && selectedStory.id === storyId) {
         setSelectedStory((prev) => ({
           ...prev,
@@ -190,7 +203,12 @@ export default function MemorialPage() {
           )
         );
       } else {
-        setStories((prevStories) => [newStoryMapped, ...prevStories]);
+        // [수정] 새 글 등록 시, '최신순'이 아니면 '최신순'으로 변경
+        if (sortOrder !== "latest") {
+          setSortOrder("latest");
+        } else {
+          setStories((prevStories) => [newStoryMapped, ...prevStories]);
+        }
       }
 
       setIsWriting(false);
@@ -412,8 +430,34 @@ export default function MemorialPage() {
           />
         ) : (
           <>
-            {/* 🔽 [수정] '이야기 등록하기' 버튼 추가 */}
-            <div className="flex justify-end mb-4 px-5 sm:px-0">
+            {/* 🔽 [수정] 정렬 버튼 디자인 간소화 및 좌측 정렬 */}
+            <div className="flex justify-between items-center mb-4 px-5 sm:px-0">
+              {/* [신규] 정렬 버튼 (간소화된 텍스트 디자인) */}
+              <div className="flex items-center gap-2 text-sm">
+                <button
+                  onClick={() => setSortOrder("latest")}
+                  className={`font-medium transition-colors ${
+                    sortOrder === "latest"
+                      ? "text-[#7b5449] font-bold" // 활성
+                      : "text-gray-500 hover:text-gray-800" // 비활성
+                  }`}
+                >
+                  최신순
+                </button>
+                <span className="text-gray-300">|</span>
+                <button
+                  onClick={() => setSortOrder("remember")}
+                  className={`font-medium transition-colors ${
+                    sortOrder === "remember"
+                      ? "text-[#7b5449] font-bold" // 활성
+                      : "text-gray-500 hover:text-gray-800" // 비활성
+                  }`}
+                >
+                  공감순
+                </button>
+              </div>
+
+              {/* '이야기 등록하기' 버튼 */}
               {session && (
                 <button
                   onClick={() => setIsWriting(true)}
