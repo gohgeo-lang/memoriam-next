@@ -1,7 +1,11 @@
 "use client";
+
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import ChatBot from "../guide/components/ChatBot";
 
 export default function SupportPage() {
+  const router = useRouter();
   const faqs = [
     {
       category: "서비스 이용 관련",
@@ -146,13 +150,27 @@ export default function SupportPage() {
 
       {/* 하단 CTA 버튼들 */}
       <div className="flex flex-col sm:flex-row gap-4 justify-center mt-12">
-        <button className="bg-[#6D4C41] hover:bg-[#5D4037] text-white px-6 py-3 rounded-xl shadow-md transition-all">
+        <button
+          onClick={() => router.push("/service/estimate")}
+          className="bg-[#6D4C41] hover:bg-[#5D4037] text-white px-6 py-3 rounded-xl shadow-md transition-all"
+        >
           장례비용 간단 계산
         </button>
-        <button className="bg-[#6D4C41] hover:bg-[#5D4037] text-white px-6 py-3 rounded-xl shadow-md transition-all">
+        <button
+          onClick={() => router.push("/service/memoriam")}
+          className="bg-[#6D4C41] hover:bg-[#5D4037] text-white px-6 py-3 rounded-xl shadow-md transition-all"
+        >
           디지털 추모관 이용하기
         </button>
+        <button
+          onClick={() => router.push("/service/photo")}
+          className="bg-[#6D4C41] hover:bg-[#5D4037] text-white px-6 py-3 rounded-xl shadow-md transition-all"
+        >
+          영정사진 제작하기
+        </button>
       </div>
+      {/* 챗봇 고정 */}
+      <ChatBot className="fixed bottom-4 right-4 w-80 h-96 z-50" faqs={faqs} />
     </div>
   );
 }
