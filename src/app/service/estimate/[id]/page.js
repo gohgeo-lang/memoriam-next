@@ -108,6 +108,7 @@ export default function CompanyDetailPage() {
   const rating =
     company.reviews.reduce((acc, cur) => acc + cur.rating, 0) /
     company.reviews.length;
+  const reviews = company.reviews.length || "-";
 
   return (
     <div className="p-4 space-y-6 max-w-5xl mx-auto">
@@ -122,7 +123,7 @@ export default function CompanyDetailPage() {
           <h1 className="text-2xl md:text-3xl font-bold">{company.name}</h1>
           <p className="mt-2 text-gray-600">
             {company.city} • 최저 {company.priceFrom?.toLocaleString() ?? ""}원
-            • 평점 {rating} ({company.reviews.length})
+            • 평점 {isNaN(rating) ? "-" : rating.toFixed(1)} ({reviews})
           </p>
           <div className="mt-2 flex flex-wrap gap-2">
             {company.tags.map((t) => (
