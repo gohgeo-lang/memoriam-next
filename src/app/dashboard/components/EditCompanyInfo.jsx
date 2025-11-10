@@ -37,8 +37,6 @@ export default function EditCompanyInfo({
     User: 2,
   });
 
-  console.log(UserRole.Admin, UserRole.User);
-
   return (
     <div
       className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
