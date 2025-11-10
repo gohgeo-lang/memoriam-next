@@ -6,7 +6,7 @@ import Section from "@/components/Section";
 import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function MyCommentsPage() {
-  const { data: session } = useState();
+  const { data: session } = useSession();
   const [comments, setComments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
