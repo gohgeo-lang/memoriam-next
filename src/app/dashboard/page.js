@@ -52,7 +52,7 @@ export default function DashboardPage() {
     } else if (activeTab === tabs[2] && posts.length > 0) {
       setFilteredPosts(posts);
     }
-  }, [companies, users, posts, activeTab]);
+  }, [activeTab]);
 
   const handleSearch = (keyword) => {
     if (!keyword) {
