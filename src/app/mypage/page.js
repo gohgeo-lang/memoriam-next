@@ -1,6 +1,13 @@
 "use client";
 
-import { MapPin, PawPrint, CreditCard, Coins, LogOut } from "lucide-react";
+import {
+  MapPin,
+  PawPrint,
+  CreditCard,
+  Coins,
+  LogOut,
+  Shield,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -54,6 +61,10 @@ export default function MyPage() {
       label: "내가 쓴 댓글",
     },
   ];
+
+  // 임시로 role 추가 전까지 hong@gmail.com만 관리자페이지 노출, 비번: 12341234
+  // ...(session?.user?.role === "admin" && { path: "/dashboard", label: "관리자페이지" })
+  const isAdmin = user?.email === "hong@gmail.com";
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-5">
@@ -114,6 +125,18 @@ export default function MyPage() {
           </Link>
         ))}
       </div>
+
+      {isAdmin && (
+        <div className="bg-white rounded-2xl shadow-sm py-4 text-center hover:bg-[#7b5449]/10 transition mb-3">
+          <Link
+            href="/dashboard"
+            className="flex items-center justify-center gap-2 text-sm font-medium text-[#7b5449] hover:underline"
+          >
+            <Shield className="w-4 h-4" />
+            관리자페이지로 이동
+          </Link>
+        </div>
+      )}
 
       <div className="bg-white rounded-2xl shadow-sm py-4 text-center hover:bg-gray-50 transition">
         <button
