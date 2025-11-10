@@ -4,7 +4,11 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function POST(request, context) {
-  const { params } = context;
+  // 🔽 [수정] 이 라인을 추가하여 Next.js가 이 라우트를
+  // 🔽 동적으로 처리하도록 명시합니다. (경고 해결용)
+  // 이 변수를 사용하지 않아도 괜찮습니다.
+  const { searchParams } = new URL(request.url);
+
   const session = await getServerSession(authOptions);
   if (!session || !session.user || !session.user.id) {
     return NextResponse.json(
@@ -14,7 +18,7 @@ export async function POST(request, context) {
   }
 
   try {
-    const postId = parseInt(params.id, 10);
+    const postId = parseInt(context.params.id, 10);
     const userId = parseInt(session.user.id, 10);
 
     if (isNaN(postId) || isNaN(userId)) {
@@ -24,8 +28,6 @@ export async function POST(request, context) {
       );
     }
 
-    // 2. PostRemember 테이블에 기록을 생성하여 중복을 방지합니다.
-    //    이미 기록이 있다면 이 시점에서 데이터베이스의 UNIQUE 제약 조건에 의해 에러(P2002)가 발생합니다.
     await prisma.postremember.create({
       data: {
         userId: userId,
@@ -33,7 +35,6 @@ export async function POST(request, context) {
       },
     });
 
-    // 3. 기록 생성이 성공했다면, PostMemorial의 카운터를 1 증가시킵니다.
     const updatedMemorial = await prisma.postMemorial.update({
       where: {
         postId: postId,
@@ -47,9 +48,7 @@ export async function POST(request, context) {
 
     return NextResponse.json(updatedMemorial);
   } catch (error) {
-    // 4. 중복 공감 에러(P2002: UNIQUE constraint failed) 처리
     if (error.code === "P2002") {
-      // 이미 공감한 경우, 카운트 업데이트 없이 성공 메시지를 반환합니다.
       return NextResponse.json(
         { message: "이미 공감했습니다." },
         { status: 200 }
