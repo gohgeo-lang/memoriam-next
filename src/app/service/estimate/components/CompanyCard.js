@@ -1,65 +1,89 @@
 import Link from "next/link";
 
-export default function CompanyCard({ company }) {
-  const path = "/service/estimate";
-
+export default function CompanyCard({ company, isSelected, onSelect }) {
+  const rating =
+    company.reviews.reduce((acc, cur) => acc + cur.rating, 0) /
+    company.reviews.length;
+  const reviews = company.reviews.length || "-";
   return (
-    <div className="rounded-xl border p-4 m-4 bg-[#fdf8f6] shadow hover:shadow-xl hover:bg-[#c5a79d] transition ">
-      <div className="flex items-start justify-between">
-        <h3 className="text-base font-semibold">{company.name}</h3>
+    <div
+      className={`border rounded-xl p-5 shadow-sm relative cursor-pointer transition
+    ${
+      isSelected
+        ? "border-[#61443b] bg-[#f7ece8]"
+        : "border-gray-200 bg-white hover:shadow-md"
+    }
+  `}
+      onClick={onSelect}
+    >
+      {/* 헤더 */}
+      <div className="flex justify-between items-start mb-3">
+        <h3 className="text-lg font-semibold text-[#3d2a25]">{company.name}</h3>
         <div className="flex items-center gap-1 text-amber-600">
-          <span className="text-sm font-medium">
-            {company.rating.toFixed(1)}
+          <span className="font-semibold">
+            {isNaN(rating) ? "-" : rating.toFixed(1)}
           </span>
-          <span className="text-xs text-gray-500">({company.reviews})</span>
+          <span className="text-xs text-gray-500">({reviews})</span>
         </div>
       </div>
 
-      <div className="p-3 border rounded-lg shadow-sm text-sm text-gray-700">
-        <div className="flex justify-between items-center mb-1">
-          <span className="text-xs text-gray-500">{company.state}</span>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2 mb-1">
-          <span>💰 {company.priceFrom.toLocaleString()}원</span>
+      {/* 본문 */}
+      <div className="text-sm text-gray-700 space-y-1 mb-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <span>💰 {company.priceFrom.toLocaleString()}원~</span>
           <span className="text-gray-300">•</span>
-          <span className="w-30">
+          <span>
             🚗{" "}
             {isNaN(company.distanceKm)
               ? "정보없음"
               : `${company.distanceKm} km`}
           </span>
           <span className="text-gray-300">•</span>
-          <span>
-            📍 {company.city[0] || company.city[1] || "지역 정보 없음"}
-          </span>
+          <span>📍 {company.city || "지역 정보 없음"}</span>
         </div>
-
-        <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
-          <span>🗓 인허가일자: {company.approvedDate || "-"}</span>
+        <div className="text-xs text-gray-500">
+          🗓 인허가일자: {company.approvedDate || "-"}
         </div>
       </div>
 
-      <div className="mt-3 flex flex-wrap gap-2.5">
-        {company.tags.map((t) => (
+      {/* 태그 */}
+      <div className="flex flex-wrap gap-1.5 mb-4">
+        {company.tags.slice(0, 5).map((t) => (
           <span
             key={t}
-            className="inline-flex items-center rounded-full bg-[#7b5449] px-2 py-1 text-xs font-medium text-white"
+            className="inline-flex items-center rounded-full bg-[#7b5449] px-2 py-0.5 text-xs text-white"
           >
             {t}
           </span>
         ))}
+        {company.tags.length > 5 && (
+          <span className="text-xs text-gray-400">
+            +{company.tags.length - 5}
+          </span>
+        )}
       </div>
 
-      <div className="mt-4 flex items-center justify-end gap-2">
+      {/* 푸터 */}
+      <div className="flex items-center justify-between">
         <Link
           href={`/service/estimate/${company.id}`}
-          className="rounded-lg border px-3 py-1.5 text-sm hover:bg-[#7b5449] hover:text-white active:scale-95"
+          onClick={(e) => e.stopPropagation()} // 이벤트 버블 방지
+          className="rounded-lg border px-3 py-1.5 text-sm hover:bg-[#7b5449] hover:text-white transition"
         >
           상세보기
         </Link>
-        <button className="rounded-lg border px-3 py-1.5 text-sm hover:bg-[#7b5449] hover:text-white active:scale-95">
-          견적 요청
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelect();
+          }}
+          className={`rounded-lg border px-3 py-1.5 text-sm transition ${
+            isSelected
+              ? "bg-[#7b5449] text-white border-[#7b5449]"
+              : "hover:bg-[#f3eae8]"
+          }`}
+        >
+          {isSelected ? "비교 제거" : "비교 선택"}
         </button>
       </div>
     </div>

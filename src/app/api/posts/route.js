@@ -5,8 +5,16 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 const MEMORIAL_CATEGORY_NAME = "MEMORIAL";
 
-export async function GET() {
+export async function GET(request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const sort = searchParams.get("sort") || "lastest";
+
+    const orderBy =
+      sort === "remember"
+        ? { PostMemorial: { rememberCount: "desc" } }
+        : { createdAt: "desc" };
+
     const posts = await prisma.post.findMany({
       where: {
         category: {
@@ -17,8 +25,13 @@ export async function GET() {
       include: {
         author: true,
         comments: {
+          where: { parentId: null },
           include: {
             author: true,
+            replies: {
+              include: { author: true },
+              orderBy: { createdAt: "asc" },
+            },
           },
           orderBy: { createdAt: "asc" },
         },

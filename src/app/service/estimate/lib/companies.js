@@ -43,6 +43,11 @@ function getDistance(userLat, userLon, x5174, y5174) {
 }
 
 export default async function getCompanies(userLat, userLon) {
+  const datas = localStorage.getItem("companiesData");
+  if (datas) {
+    return JSON.parse(datas);
+  }
+
   const res = await fetch("/data/companies.xml");
   const text = await res.text();
 
@@ -59,24 +64,26 @@ export default async function getCompanies(userLat, userLon) {
     );
     return {
       id: row.getElementsByTagName("mgtNo")[0]?.textContent ?? "",
-      name: row.getElementsByTagName("bplcNm")[0]?.textContent ?? "",
+      name:
+        row
+          .getElementsByTagName("bplcNm")[0]
+          ?.textContent.replace(/\(주\)|㈜/g, "")
+          .trim() ?? "",
       approvedDate:
         row.getElementsByTagName("apvPermYmd")[0]?.textContent ?? "",
       state: row.getElementsByTagName("trdStateNm")[0]?.textContent ?? "",
       coordX: coordX,
       coordY: coordY,
-      rating: Math.floor(Math.random() * 5),
-      reviews: Math.floor(Math.random() * 100),
+      reviews: [],
       distanceKm: getDistance(userLat, userLon, coordX, coordY).toFixed(2),
       priceFrom: Math.floor(Math.random() * 1000000),
       tags: ["24시간", "픽업", "개별화장", "유골함제공", "추모실"],
-      city: [
+      city:
         row
           .getElementsByTagName("siteWhlAddr")[0]
-          ?.textContent?.split(" ")[0] ?? "",
-        row.getElementsByTagName("rdnWhlAddr")[0]?.textContent?.split(" ")[0] ??
-          "",
-      ],
+          ?.textContent?.split(" ")[0] ||
+        row.getElementsByTagName("rdnWhlAddr")[0]?.textContent?.split(" ")[0] ||
+        "",
       cremationTypes: [
         {
           type: "개별 화장",
@@ -109,8 +116,11 @@ export default async function getCompanies(userLat, userLon) {
         site: "https://example.com/v1",
       },
       options: ["픽업 가능(유료)", "유골함 기본 제공", "추모실 예약제"],
+      registered: true,
     };
   });
+
+  localStorage.setItem("companiesData", JSON.stringify(parsed));
 
   return parsed;
 }

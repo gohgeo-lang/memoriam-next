@@ -21,10 +21,15 @@ export async function getCompanyById(id) {
   return companiesCache.find((c) => c.id === id) || null;
 }
 
-export async function getCompanyList() {
-  if (!companiesCache) {
-    await loadCompanies();
+export async function saveCompayInfo(company) {
+  const index = companiesCache.findIndex((c) => c.id === company.id);
+
+  if (index === -1) {
+    return null;
   }
 
-  return companiesCache;
+  companiesCache[index] = company;
+  localStorage.setItem("companiesData", JSON.stringify(companiesCache));
+
+  return true;
 }

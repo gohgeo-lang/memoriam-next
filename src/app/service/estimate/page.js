@@ -6,7 +6,8 @@ import CompanyCard from "./components/CompanyCard";
 import Pagination from "./components/Pagination";
 import { loadCompanies } from "./lib/companiesCache";
 import { useSearchParams } from "next/navigation";
-import Link from "next/link";
+import CompareCompanies from "./components/Compare";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 const ITEMS_PER_PAGE = 12; // 한 페이지에 12개씩 보여주기
 
@@ -18,26 +19,53 @@ export default function EstimatePage() {
     tags: [],
     sort: "추천",
   });
+
+  const [selectedCompanies, setSelectedCompanies] = useState([]);
+  const [isCompareOpen, setIsCompareOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleSelect = (company) => {
+    setSelectedCompanies((prev) =>
+      prev.find((c) => c.id === company.id)
+        ? prev.filter((c) => c.id !== company.id)
+        : [...prev, company]
+    );
+  };
+
+  const handleOpenCompare = () => {
+    if (selectedCompanies.length >= 2) setIsCompareOpen(true);
+    else alert("2개 이상의 업체를 선택해주세요!");
+  };
+
+  const handleCloseCompare = () => setIsCompareOpen(false);
+
   // 현재 페이지 번호 가져오기 (기본값: 1)
   const searchParams = useSearchParams();
   const currentPage = Number(searchParams.get("page")) || 1;
 
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        const { latitude, longitude } = pos.coords;
-        const datas = await loadCompanies(latitude, longitude);
-        setCompanies(datas);
-      },
-      async () => {
-        const datas = await loadCompanies(); // 위치 정보 없을 때
-        setCompanies(datas);
-      }
-    );
+    setLoading(true);
+    try {
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const { latitude, longitude } = pos.coords;
+          const datas = await loadCompanies(latitude, longitude);
+          setCompanies(datas);
+        },
+        async () => {
+          const datas = await loadCompanies(); // 위치 정보 없을 때
+          setCompanies(datas);
+        }
+      );
+    } catch (error) {
+      console.error("업체 데이터 로드 오류:", error);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   const companyList = useMemo(() => {
-    let data = [...companies];
+    let data = companies.filter((company) => company.registered);
 
     if (query.keyword) {
       const kw = query.keyword.trim();
@@ -50,11 +78,7 @@ export default function EstimatePage() {
     }
 
     if (query.city)
-      data = data.filter(
-        (company) =>
-          company.city[0].includes(query.city) ||
-          company.city[1].includes(query.city)
-      );
+      data = data.filter((company) => company.city.includes(query.city));
     if (query.tags.length)
       data = data.filter((company) =>
         query.tags.every((t) => company.tags.includes(t))
@@ -72,15 +96,7 @@ export default function EstimatePage() {
         break;
       case "추천":
       default:
-        data.sort(
-          (a, b) =>
-            b.rating * 2 +
-            Math.min(b.reviews, 200) / 100 -
-            b.distanceKm * 0.05 -
-            (a.rating * 2 +
-              Math.min(a.reviews, 200) / 100 -
-              a.distanceKm * 0.05)
-        );
+        data.sort((a, b) => a.name.localeCompare(b.name, "ko"));
         break;
     }
     return data;
@@ -108,32 +124,74 @@ export default function EstimatePage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-2">
       <FilterBar onChange={setQuery} />
-      <div className="flex items-center justify-between mx-5 my-0">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-6 px-2 py-2">
         {/* 현재 페이지 정보 */}
-        <div className="mb-4 p-3 bg-[#856056] rounded">
-          <p className="text-sm text-white">
+        <div className="bg-[#856056] px-4 py-2 rounded-md shadow-sm w-full sm:w-auto text-center sm:text-left">
+          <p className="text-sm text-white whitespace-nowrap">
             전체 {companyList.length}개 중 {startIndex + 1}-
-            {Math.min(endIndex, companyList.length)}번째 업체 (페이지{" "}
-            {currentPage}/{totalPages})
+            {Math.min(endIndex, companyList.length)}번째 업체
+            <span className="ml-1">
+              (페이지 {currentPage}/{totalPages})
+            </span>
           </p>
         </div>
-        <button className="text-sm text-gray-500 hover:text-gray-800 active:scale-95">
-          지도로 보기(준비중)
-        </button>
+
+        {/* 버튼 영역 */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setSelectedCompanies([])}
+            className={`rounded-md border px-3 py-1.5 text-sm font-medium text-gray-700 active:scale-95 transition ${
+              selectedCompanies.length >= 1
+                ? "bg-[#7b5449] text-white hover:bg-[#61443b]"
+                : " border-gray-300 bg-white"
+            }`}
+          >
+            선택 초기화
+          </button>
+          <button
+            onClick={handleOpenCompare}
+            className={`rounded-md border px-3 py-1.5 text-sm font-medium text-gray-700 active:scale-95 transition ${
+              selectedCompanies.length >= 2
+                ? "bg-[#7b5449] text-white hover:bg-[#61443b]"
+                : " border-gray-300 bg-white"
+            }`}
+          >
+            비교하기 ({selectedCompanies.length})
+          </button>
+        </div>
+
+        {/* 비교 모달 */}
+        {isCompareOpen && (
+          <CompareCompanies
+            companies={selectedCompanies}
+            onClose={handleCloseCompare}
+          />
+        )}
       </div>
+
       {currentCompanies.length === 0 ? (
         <div className="rounded-xl border bg-white p-8 text-center text-gray-500">
           조건에 맞는 업체가 없어요. 필터를 조정해보세요.
         </div>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {currentCompanies.map((company) => (
-            <div key={company.id}>
-              <CompanyCard key={company.id} company={company} />
-            </div>
-          ))}
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mx-2">
+          {loading && <LoadingSpinner />}
+          {currentCompanies.map(
+            (company) =>
+              company.registered && (
+                <div key={company.id}>
+                  <CompanyCard
+                    company={company}
+                    isSelected={selectedCompanies.some(
+                      (c) => c.id === company.id
+                    )}
+                    onSelect={() => handleSelect(company)}
+                  />
+                </div>
+              )
+          )}
         </div>
       )}
 
