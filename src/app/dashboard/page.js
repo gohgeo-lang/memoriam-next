@@ -1,92 +1,130 @@
 "use client";
+import { useState, useEffect, useMemo } from "react";
 import { loadCompanies } from "@/app/service/estimate/lib/companiesCache";
-import { useState, useEffect } from "react";
 import EditCompanyInfo from "./components/EditCompanyInfo";
+import LoadingSpinner from "@/components/LoadingSpinner";
 import LiveSearchBar from "./components/LiveSearchBar";
+import CompanyList from "./components/CompanyList";
+import UserList from "./components/UserList";
+import EditUserInfo from "./components/EditUserInfo";
+
+import PostList from "./components/PostList";
 
 export default function DashboardPage() {
+  const TABS = useMemo(
+    () => ({
+      COMPANY: "🏢 업체 관리",
+      USER: "👥 사용자 관리",
+      POST: "📰 게시글 관리",
+    }),
+    []
+  );
+
+  const [activeTab, setActiveTab] = useState(TABS.COMPANY);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const [companies, setCompanies] = useState([]);
-  const [filteredCompanies, setFilteredCompanies] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [posts, setPosts] = useState([]);
+
   const [selectedCompany, setSelectedCompany] = useState(null);
-  const [isClickedEdit, setIsClickedEdit] = useState(false);
-  const [users, setUsers] = useState(null);
-  const [filteredUsers, setFilteredUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [posts, setPosts] = useState(null);
-  const [filteredPosts, setFilteredPosts] = useState([]);
-  const [selectedPost, setSelectedPost] = useState(null);
-  const [activeTab, setActiveTab] = useState("🏢 업체 관리");
-  const tabs = ["🏢 업체 관리", "👥 사용자 관리", "📰 게시글 관리"];
 
+  const [isClickedEdit, setIsClickedEdit] = useState(false);
+  const [keyword, setKeyword] = useState("");
+
+  // ✅ 데이터 로드 (위치 기반)
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        const { latitude, longitude } = pos.coords;
-        const datas = await loadCompanies(latitude, longitude);
-        datas.sort((a, b) => a.name.localeCompare(b.name, "ko"));
-        setCompanies(datas);
-      },
-      async () => {
-        const datas = await loadCompanies(); // 위치 정보 없을 때
-        setCompanies(datas);
+    const fetchCompanies = async () => {
+      try {
+        setIsLoading(true);
+        navigator.geolocation.getCurrentPosition(
+          async (pos) => {
+            const { latitude, longitude } = pos.coords;
+            const data = await loadCompanies(latitude, longitude);
+            setCompanies(
+              data.sort((a, b) => a.name.localeCompare(b.name, "ko"))
+            );
+            setIsLoading(false);
+          },
+          async () => {
+            const data = await loadCompanies();
+            setCompanies(data);
+            setIsLoading(false);
+          }
+        );
+      } catch (err) {
+        setError("업체 정보를 불러오는 중 오류 발생");
+        setIsLoading(false);
       }
-    );
+    };
+    fetchCompanies();
+  }, []);
 
-    async function fetchData() {
-      const userList = await fetch("/api/users");
-      const usersData = await userList.json();
-      setUsers(usersData);
+  // ✅ 사용자 / 게시글 로드
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [userRes, postRes] = await Promise.all([
+          fetch("/api/users"),
+          fetch("/api/posts"),
+        ]);
 
-      const postList = await fetch("/api/posts");
-      const postsData = await postList.json();
-      setPosts(postsData);
-    }
+        if (!userRes.ok || !postRes.ok) throw new Error("API 오류");
+
+        const [usersData, postsData] = await Promise.all([
+          userRes.json(),
+          postRes.json(),
+        ]);
+
+        setUsers(usersData);
+        setPosts(postsData);
+      } catch (err) {
+        setError("데이터를 불러오는 중 문제가 발생했습니다.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
     fetchData();
   }, []);
 
-  useEffect(() => {
-    if (activeTab === tabs[0] && companies.length > 0) {
-      setFilteredCompanies(companies);
-    } else if (activeTab === tabs[1] && users.length > 0) {
-      setFilteredUsers(users);
-    } else if (activeTab === tabs[2] && posts.length > 0) {
-      setFilteredPosts(posts);
-    }
-  }, [activeTab]);
+  // ✅ 필터링 (탭 & 검색어 기반)
+  const filteredData = useMemo(() => {
+    const list =
+      activeTab === TABS.COMPANY
+        ? companies
+        : activeTab === TABS.USER
+        ? users
+        : posts;
 
-  const handleSearch = (keyword) => {
-    if (!keyword) {
-      if (activeTab === tabs[0]) {
-        setFilteredCompanies(companies);
-      } else if (activeTab === tabs[1]) {
-        setFilteredUsers(users);
-      } else if (activeTab === tabs[2]) {
-        setFilteredPosts(posts);
-      }
-      return;
-    }
+    if (!keyword) return list;
+    const lower = keyword.toLowerCase();
 
-    if (activeTab === tabs[0]) {
-      const filtered = companies.filter((c) =>
-        c.name.toLowerCase().includes(keyword.toLowerCase())
-      );
-      setFilteredCompanies(filtered);
-    } else if (activeTab === tabs[1]) {
-      const filtered = users.filter((u) =>
-        u.name.toLowerCase().includes(keyword.toLowerCase())
-      );
-      setFilteredUsers(filtered);
-    } else if (activeTab === tabs[2]) {
-      const filtered = posts.filter((p) =>
-        p.title.toLowerCase().includes(keyword.toLowerCase())
-      );
-      setFilteredPosts(filtered);
-    }
-  };
+    if (activeTab === TABS.COMPANY)
+      return list.filter((c) => c.name?.toLowerCase().includes(lower));
+    if (activeTab === TABS.USER)
+      return list.filter((u) => u.name?.toLowerCase().includes(lower));
+    if (activeTab === TABS.POST)
+      return list.filter((p) => p.title?.toLowerCase().includes(lower));
 
-  const handleEditClick = (company) => {
+    return list;
+  }, [activeTab, companies, users, posts, keyword]);
+
+  // ✅ 핸들러
+  const handleSearch = (kw) => setKeyword(kw);
+  const handleEditCompany = (company) => {
     setSelectedCompany(company);
     setIsClickedEdit(true);
+  };
+
+  const handleEditUser = (user) => {
+    setSelectedUser(user);
+    setIsClickedEdit(true);
+  };
+
+  const handleDeleteUser = (user) => {
+    console.log("삭제 요청:", user);
   };
 
   const handleCloseModal = () => {
@@ -94,174 +132,65 @@ export default function DashboardPage() {
     setSelectedCompany(null);
   };
 
-  console.log("-------->", users);
-  console.log("-------->", posts);
+  // ✅ 로딩 / 에러 처리
+  if (isLoading) return <LoadingSpinner />;
+  if (error)
+    return (
+      <div className="text-center text-red-500 font-semibold py-10">
+        {error}
+      </div>
+    );
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="flex items-center justify-center flex-wrap space-x-2">
-        {tabs.map((tab) => (
+      {/* 탭 버튼 */}
+      <div className="flex justify-center flex-wrap space-x-2 mb-2">
+        {Object.values(TABS).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`text-sm md:text-xl lg:text-2xl mx-2 px-2 font-bold rounded-md transition
-      whitespace-nowrap h-10 md:h-12
-      ${
-        activeTab === tab
-          ? "bg-gray-300 text-blue-600"
-          : "hover:bg-gray-100 text-gray-800"
-      }`}
+            className={`text-sm md:text-xl lg:text-2xl mx-2 px-2 font-bold rounded-md transition h-10 md:h-12
+              ${
+                activeTab === tab
+                  ? "bg-gray-300 text-blue-600"
+                  : "hover:bg-gray-100 text-gray-800"
+              }`}
           >
             {tab}
           </button>
         ))}
       </div>
 
+      {/* 검색바 */}
       <LiveSearchBar onSearch={handleSearch} activeTab={activeTab} />
 
-      {activeTab === tabs[0] && (
-        <div>
-          <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-            <div className="px-2 py-2 sm:px-0">
-              <div className="bg-gray-400 grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 p-2 gap-1">
-                {filteredCompanies?.map((company) => (
-                  <div
-                    key={company.id}
-                    className={`p-6 rounded-2xl shadow-md hover:shadow-lg transition transform hover:-translate-y-1 flex flex-col justify-between
-              ${
-                company.registered
-                  ? "bg-white border border-gray-200"
-                  : "bg-red-50 border-2 border-red-300 opacity-90"
-              }`}
-                  >
-                    {/* 이름 */}
-                    <h2 className="text-lg font-semibold text-gray-800 mb-2 truncate">
-                      {company.name || "업체명 없음"}
-                    </h2>
-
-                    {/* 등록 상태 */}
-                    <span
-                      className={`inline-block px-3 py-1 text-xs font-semibold rounded-full mb-3 self-start ${
-                        company.registered
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
-                      }`}
-                    >
-                      {company.registered ? "등록됨" : "미등록"}
-                    </span>
-
-                    {/* 지역 */}
-                    <p className="text-gray-600 text-sm mb-4">
-                      📍 {company.city || "지역 정보 없음"}
-                    </p>
-
-                    {/* 버튼 */}
-                    <button
-                      onClick={() => handleEditClick(company)}
-                      className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
-                    >
-                      수정
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
+      {/* 탭별 내용 */}
+      {activeTab === TABS.COMPANY && (
+        <>
+          <CompanyList data={filteredData} onEdit={handleEditCompany} />
+          <EditCompanyInfo
+            isClickedEdit={isClickedEdit}
+            handleCloseModal={handleCloseModal}
+            selectedCompany={selectedCompany}
+          />
+        </>
       )}
-
-      {activeTab === tabs[1] && (
-        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-          <div className="px-2 py-2 sm:px-0">
-            <div className="bg-gray-400 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 shadow-xl p-2 gap-1">
-              {filteredUsers?.map((user) => (
-                <div
-                  key={user.id}
-                  className="bg-white rounded-2xl shadow hover:shadow-lg transition transform hover:-translate-y-1 p-6 flex flex-col items-center"
-                >
-                  {/* 아바타 */}
-                  <div className="w-16 h-16 flex items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-2xl font-bold mb-4">
-                    {user.name ? user.name.charAt(0) : "?"}
-                  </div>
-
-                  {/* 사용자 정보 */}
-                  <h2 className="text-lg font-semibold text-gray-800">
-                    {user.name || "이름 정보 없음"}
-                  </h2>
-                  <p className="text-gray-500 mb-3">
-                    {user.email || "이메일 정보 없음"}
-                  </p>
-
-                  {/* 버튼 */}
-                  <div className="mt-auto flex gap-2">
-                    <button className="text-sm text-blue-600 font-medium hover:underline">
-                      수정
-                    </button>
-                    <span className="text-gray-300">|</span>
-                    <button className="text-sm text-red-500 font-medium hover:underline">
-                      삭제
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+      {activeTab === TABS.USER && (
+        <>
+          {" "}
+          <UserList
+            data={filteredData}
+            onEdit={handleEditUser}
+            onDelete={handleDeleteUser}
+          />
+          <EditUserInfo
+            isClickedEdit={isClickedEdit}
+            handleCloseModal={handleCloseModal}
+            selectedUser={selectedUser}
+          />
+        </>
       )}
-      {activeTab === tabs[2] && (
-        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-          <div className="px-2 py-2 sm:px-0">
-            <div className="bg-gray-400 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 shadow-xl p-2 gap-1">
-              {filteredPosts?.map((post) => (
-                <div
-                  key={post.id}
-                  className="bg-white rounded-2xl shadow hover:shadow-lg transition transform hover:-translate-y-1 p-6 flex flex-col"
-                >
-                  {/* 제목 + 작성자 */}
-                  <h2 className="text-lg font-semibold text-gray-800 mb-2">
-                    {post.title || "제목 없음"}
-                  </h2>
-                  <p className="text-sm text-gray-500 mb-4">
-                    ✍️ {post.author?.name || "작성자 정보 없음"}
-                  </p>
-
-                  {/* 내용 */}
-                  <p className="text-gray-700 text-sm mb-4 line-clamp-3">
-                    {post.content || "내용 정보 없음"}
-                  </p>
-
-                  {/* 댓글 */}
-                  <div className="bg-gray-100 rounded-lg p-3 text-sm text-gray-600 overflow-y-auto max-h-28">
-                    <p className="font-semibold mb-1">💬 댓글</p>
-                    {post.comments?.length > 0 ? (
-                      post.comments.map((comment) => (
-                        <p
-                          key={comment.id}
-                          className="border-b border-gray-200 py-1"
-                        >
-                          {comment.content || "댓글 없음"}{" "}
-                          <span className="text-xs text-gray-400">
-                            - {comment.author?.name || "익명"}
-                          </span>
-                        </p>
-                      ))
-                    ) : (
-                      <p className="text-gray-400">댓글이 없습니다.</p>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 모달창 */}
-      <EditCompanyInfo
-        isClickedEdit={isClickedEdit}
-        handleCloseModal={handleCloseModal}
-        selectedCompany={selectedCompany}
-      />
+      {activeTab === TABS.POST && <PostList data={filteredData} />}
     </div>
   );
 }

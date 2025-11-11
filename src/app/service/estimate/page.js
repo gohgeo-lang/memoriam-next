@@ -1,15 +1,20 @@
-// app/estimate/page.js
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  useCallback,
+  useDeferredValue,
+} from "react";
 import FilterBar from "./components/FilterBar";
 import CompanyCard from "./components/CompanyCard";
 import Pagination from "./components/Pagination";
-import { loadCompanies } from "./lib/companiesCache";
-import { useSearchParams } from "next/navigation";
 import CompareCompanies from "./components/Compare";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { loadCompanies } from "./lib/companiesCache";
+import { useSearchParams } from "next/navigation";
 
-const ITEMS_PER_PAGE = 12; // 한 페이지에 12개씩 보여주기
+const ITEMS_PER_PAGE = 12;
 
 export default function EstimatePage() {
   const [companies, setCompanies] = useState([]);
@@ -19,72 +24,71 @@ export default function EstimatePage() {
     tags: [],
     sort: "추천",
   });
-
   const [selectedCompanies, setSelectedCompanies] = useState([]);
   const [isCompareOpen, setIsCompareOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const handleSelect = (company) => {
-    setSelectedCompanies((prev) =>
-      prev.find((c) => c.id === company.id)
-        ? prev.filter((c) => c.id !== company.id)
-        : [...prev, company]
-    );
-  };
-
-  const handleOpenCompare = () => {
-    if (selectedCompanies.length >= 2) setIsCompareOpen(true);
-    else alert("2개 이상의 업체를 선택해주세요!");
-  };
-
-  const handleCloseCompare = () => setIsCompareOpen(false);
-
-  // 현재 페이지 번호 가져오기 (기본값: 1)
   const searchParams = useSearchParams();
   const currentPage = Number(searchParams.get("page")) || 1;
 
+  /** 🔹 데이터 로드 (지연 + 에러 방지) */
   useEffect(() => {
-    setLoading(true);
-    try {
-      navigator.geolocation.getCurrentPosition(
-        async (pos) => {
-          const { latitude, longitude } = pos.coords;
-          const datas = await loadCompanies(latitude, longitude);
-          setCompanies(datas);
-        },
-        async () => {
-          const datas = await loadCompanies(); // 위치 정보 없을 때
-          setCompanies(datas);
-        }
-      );
-    } catch (error) {
-      console.error("업체 데이터 로드 오류:", error);
-    } finally {
-      setLoading(false);
-    }
+    let isMounted = true;
+    const fetchCompanies = async () => {
+      setLoading(true);
+      try {
+        const getData = async (lat, lon) => {
+          const data = await loadCompanies(lat, lon);
+          if (isMounted) setCompanies(data);
+        };
+
+        navigator.geolocation.getCurrentPosition(
+          (pos) => getData(pos.coords.latitude, pos.coords.longitude),
+          () => getData() // 위치 정보 실패 시 기본 데이터
+        );
+      } catch (err) {
+        console.error("업체 데이터 로드 오류:", err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+    fetchCompanies();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  const companyList = useMemo(() => {
-    let data = companies.filter((company) => company.registered);
+  // 🔹 query가 바뀔 때 선택한 업체 초기화
+  useEffect(() => {
+    setSelectedCompanies([]);
+  }, [query]);
 
-    if (query.keyword) {
-      const kw = query.keyword.trim();
+  /** 🔹 필터 입력에 따른 렌더링 부하 줄이기 */
+  const deferredQuery = useDeferredValue(query);
+
+  /** 🔹 필터 + 정렬 */
+  const companyList = useMemo(() => {
+    if (!companies.length) return [];
+
+    let data = companies.filter((c) => c.registered);
+
+    const { keyword, city, tags, sort } = deferredQuery;
+    const kw = keyword.trim();
+
+    if (kw) {
       data = data.filter(
-        (company) =>
-          company.name.includes(kw) ||
-          company.tags.some((t) => t.includes(kw)) ||
-          company.city.includes(kw)
+        (c) =>
+          c.name.includes(kw) ||
+          c.tags.some((t) => t.includes(kw)) ||
+          c.city.includes(kw)
       );
     }
 
-    if (query.city)
-      data = data.filter((company) => company.city.includes(query.city));
-    if (query.tags.length)
-      data = data.filter((company) =>
-        query.tags.every((t) => company.tags.includes(t))
-      );
+    if (city) data = data.filter((c) => c.city.includes(city));
+    if (tags.length)
+      data = data.filter((c) => tags.every((t) => c.tags.includes(t)));
 
-    switch (query.sort) {
+    switch (sort) {
       case "거리순":
         data.sort((a, b) => a.distanceKm - b.distanceKm);
         break;
@@ -94,24 +98,44 @@ export default function EstimatePage() {
       case "높은평점":
         data.sort((a, b) => b.rating - a.rating);
         break;
-      case "추천":
       default:
         data.sort((a, b) => a.name.localeCompare(b.name, "ko"));
         break;
     }
+
     return data;
-  }, [query, companies]);
+  }, [deferredQuery, companies]);
 
-  // 전체 페이지 수 계산
+  /** 🔹 Pagination 계산 */
   const totalPages = Math.ceil(companyList.length / ITEMS_PER_PAGE);
-
-  // 현재 페이지에 보여줄 업체수 계산
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
-  const currentCompanies = companyList.slice(startIndex, endIndex);
+  const currentCompanies = useMemo(
+    () => companyList.slice(startIndex, startIndex + ITEMS_PER_PAGE),
+    [companyList, currentPage]
+  );
 
-  // 페이지 번호가 올바른 범위인지 확인
-  if (currentPage < 1 || currentPage > totalPages) {
+  /** 🔹 선택 관련 핸들러 메모이제이션 */
+  const handleSelect = useCallback((company) => {
+    setSelectedCompanies((prev) =>
+      prev.find((c) => c.id === company.id)
+        ? prev.filter((c) => c.id !== company.id)
+        : [...prev, company]
+    );
+  }, []);
+
+  const handleOpenCompare = useCallback(() => {
+    if (selectedCompanies.length >= 2) setIsCompareOpen(true);
+    else alert("2개 이상의 업체를 선택해주세요!");
+  }, [selectedCompanies.length]);
+
+  const handleCloseCompare = useCallback(() => setIsCompareOpen(false), []);
+
+  /** 🔹 잘못된 페이지 방어 */
+  if (
+    !loading &&
+    totalPages > 0 &&
+    (currentPage < 1 || currentPage > totalPages)
+  ) {
     return (
       <div className="container mx-auto p-4">
         <h1 className="text-2xl font-bold mb-4">잘못된 페이지입니다</h1>
@@ -123,75 +147,73 @@ export default function EstimatePage() {
     );
   }
 
+  /** 🔹 로딩 처리 */
+  if (loading) return <LoadingSpinner />;
+
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       <FilterBar onChange={setQuery} />
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-6 px-2 py-2">
-        {/* 현재 페이지 정보 */}
+
+      {/* 상단 요약 정보 및 버튼 */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-2 py-2">
         <div className="bg-[#856056] px-4 py-2 rounded-md shadow-sm w-full sm:w-auto text-center sm:text-left">
           <p className="text-sm text-white whitespace-nowrap">
             전체 {companyList.length}개 중 {startIndex + 1}-
-            {Math.min(endIndex, companyList.length)}번째 업체
+            {Math.min(startIndex + ITEMS_PER_PAGE, companyList.length)}번째 업체
             <span className="ml-1">
               (페이지 {currentPage}/{totalPages})
             </span>
           </p>
         </div>
 
-        {/* 버튼 영역 */}
         <div className="flex items-center gap-2">
           <button
             onClick={() => setSelectedCompanies([])}
-            className={`rounded-md border px-3 py-1.5 text-sm font-medium text-gray-700 active:scale-95 transition ${
-              selectedCompanies.length >= 1
+            className={`rounded-md border px-3 py-1.5 text-sm font-medium transition ${
+              selectedCompanies.length
                 ? "bg-[#7b5449] text-white hover:bg-[#61443b]"
-                : " border-gray-300 bg-white"
+                : "border-gray-300 bg-white text-gray-700"
             }`}
           >
             선택 초기화
           </button>
+
           <button
             onClick={handleOpenCompare}
-            className={`rounded-md border px-3 py-1.5 text-sm font-medium text-gray-700 active:scale-95 transition ${
+            className={`rounded-md border px-3 py-1.5 text-sm font-medium transition ${
               selectedCompanies.length >= 2
                 ? "bg-[#7b5449] text-white hover:bg-[#61443b]"
-                : " border-gray-300 bg-white"
+                : "border-gray-300 bg-white text-gray-700"
             }`}
           >
             비교하기 ({selectedCompanies.length})
           </button>
         </div>
-
-        {/* 비교 모달 */}
-        {isCompareOpen && (
-          <CompareCompanies
-            companies={selectedCompanies}
-            onClose={handleCloseCompare}
-          />
-        )}
       </div>
 
+      {/* 비교 모달 */}
+      {isCompareOpen && (
+        <CompareCompanies
+          companies={selectedCompanies}
+          onClose={handleCloseCompare}
+        />
+      )}
+
+      {/* 업체 목록 */}
       {currentCompanies.length === 0 ? (
         <div className="rounded-xl border bg-white p-8 text-center text-gray-500">
           조건에 맞는 업체가 없어요. 필터를 조정해보세요.
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mx-2">
-          {loading && <LoadingSpinner />}
-          {currentCompanies.map(
-            (company) =>
-              company.registered && (
-                <div key={company.id}>
-                  <CompanyCard
-                    company={company}
-                    isSelected={selectedCompanies.some(
-                      (c) => c.id === company.id
-                    )}
-                    onSelect={() => handleSelect(company)}
-                  />
-                </div>
-              )
-          )}
+          {currentCompanies.map((company) => (
+            <CompanyCard
+              key={company.id}
+              company={company}
+              isSelected={selectedCompanies.some((c) => c.id === company.id)}
+              onSelect={() => handleSelect(company)}
+            />
+          ))}
         </div>
       )}
 
