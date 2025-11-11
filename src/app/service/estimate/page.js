@@ -151,77 +151,99 @@ export default function EstimatePage() {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="space-y-3">
-      <FilterBar onChange={setQuery} />
-
-      {/* 상단 요약 정보 및 버튼 */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-2 py-2">
-        <div className="bg-[#856056] px-4 py-2 rounded-md shadow-sm w-full sm:w-auto text-center sm:text-left">
-          <p className="text-sm text-white whitespace-nowrap">
-            전체 {companyList.length}개 중 {startIndex + 1}-
-            {Math.min(startIndex + ITEMS_PER_PAGE, companyList.length)}번째 업체
-            <span className="ml-1">
-              (페이지 {currentPage}/{totalPages})
-            </span>
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setSelectedCompanies([])}
-            className={`rounded-md border px-3 py-1.5 text-sm font-medium transition ${
-              selectedCompanies.length
-                ? "bg-[#7b5449] text-white hover:bg-[#61443b]"
-                : "border-gray-300 bg-white text-gray-700"
-            }`}
-          >
-            선택 초기화
-          </button>
-
-          <button
-            onClick={handleOpenCompare}
-            className={`rounded-md border px-3 py-1.5 text-sm font-medium transition ${
-              selectedCompanies.length >= 2
-                ? "bg-[#7b5449] text-white hover:bg-[#61443b]"
-                : "border-gray-300 bg-white text-gray-700"
-            }`}
-          >
-            비교하기 ({selectedCompanies.length})
-          </button>
-        </div>
-      </div>
-
-      {/* 비교 모달 */}
-      {isCompareOpen && (
-        <CompareCompanies
-          companies={selectedCompanies}
-          onClose={handleCloseCompare}
+    <div className="relative min-h-screenoverflow-hidden">
+      {/* 배경 영상 */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="absolute top-1/2 left-1/2 min-w-full min-h-full -translate-x-1/2 -translate-y-1/2 object-cover"
+      >
+        <source
+          // src="https://cdn.pixabay.com/video/2024/02/05/199446-910244331_large.mp4"
+          // src="https://cdn.pixabay.com/video/2022/05/03/115896-705943396_large.mp4"
+          // src="https://cdn.pixabay.com/video/2022/03/06/109814-685705714_large.mp4"
+          // src="https://cdn.pixabay.com/video/2023/03/10/154135-807166717_large.mp4"
+          src="https://cdn.pixabay.com/video/2022/11/07/138011-768307654_large.mp4"
+          type="video/mp4"
         />
-      )}
+        Your browser does not support the video tag.
+      </video>
 
-      {/* 업체 목록 */}
-      {currentCompanies.length === 0 ? (
-        <div className="rounded-xl border bg-white p-8 text-center text-gray-500">
-          조건에 맞는 업체가 없어요. 필터를 조정해보세요.
-        </div>
-      ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mx-2">
-          {currentCompanies.map((company) => (
-            <CompanyCard
-              key={company.id}
-              company={company}
-              isSelected={selectedCompanies.some((c) => c.id === company.id)}
-              onSelect={() => handleSelect(company)}
-            />
-          ))}
-        </div>
-      )}
+      {/* 반투명 오버레이 */}
+      <div className="absolute inset-0 bg-orange-50/60 z-0" />
 
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        baseUrl="/service/estimate"
-      />
+      <div className="relative z-10 space-y-3">
+        <FilterBar onChange={setQuery} />
+
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-2 py-2">
+          <div className="bg-[#856056] px-4 py-2 rounded-md shadow-sm w-full sm:w-auto text-center sm:text-left">
+            <p className="text-sm text-white whitespace-nowrap">
+              전체 {companyList.length}개 중 {startIndex + 1}-
+              {Math.min(startIndex + ITEMS_PER_PAGE, companyList.length)}번째
+              업체
+              <span className="ml-1">
+                (페이지 {currentPage}/{totalPages})
+              </span>
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setSelectedCompanies([])}
+              className={`rounded-md border px-3 py-1.5 text-sm font-medium transition ${
+                selectedCompanies.length
+                  ? "bg-[#7b5449] text-white hover:bg-[#61443b]"
+                  : "border-gray-300 bg-white text-gray-700"
+              }`}
+            >
+              선택 초기화
+            </button>
+
+            <button
+              onClick={handleOpenCompare}
+              className={`rounded-md border px-3 py-1.5 text-sm font-medium transition ${
+                selectedCompanies.length >= 2
+                  ? "bg-[#7b5449] text-white hover:bg-[#61443b]"
+                  : "border-gray-300 bg-white text-gray-700"
+              }`}
+            >
+              비교하기 ({selectedCompanies.length})
+            </button>
+          </div>
+        </div>
+
+        {isCompareOpen && (
+          <CompareCompanies
+            companies={selectedCompanies}
+            onClose={handleCloseCompare}
+          />
+        )}
+
+        {currentCompanies.length === 0 ? (
+          <div className="rounded-xl border bg-white p-8 text-center text-gray-500">
+            조건에 맞는 업체가 없어요. 필터를 조정해보세요.
+          </div>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mx-2">
+            {currentCompanies.map((company) => (
+              <CompanyCard
+                key={company.id}
+                company={company}
+                isSelected={selectedCompanies.some((c) => c.id === company.id)}
+                onSelect={() => handleSelect(company)}
+              />
+            ))}
+          </div>
+        )}
+
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          baseUrl="/service/estimate"
+        />
+      </div>
     </div>
   );
 }
