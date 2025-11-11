@@ -6,14 +6,18 @@ export default function CompareCompanies({ companies, onClose }) {
   if (!companies || companies.length === 0) return null;
 
   return (
-    <div className="fixed inset-0 bg-gray-100 bg-opacity-90 flex items-center justify-center z-50 p-6">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl p-10 relative border border-gray-300 print:shadow-none print:border-none print:p-4">
-        {/* 닫기 버튼 (인쇄시 숨김) */}
+    <div className="fixed inset-0 flex items-center justify-center z-50 p-6">
+      {/* 배경 반투명 오버레이 */}
+      <div className="absolute inset-0 bg-white/50" onClick={onClose} />
+
+      {/* 모달 내용 */}
+      <div className="relative bg-white/90 rounded-2xl shadow-2xl w-full max-w-5xl p-10 border border-gray-300 z-10">
+        {/* 닫기 버튼 */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-500 hover:text-black print:hidden"
         >
-          <MdClose size="24" />
+          <MdClose size={24} />
         </button>
 
         {/* 헤더 */}
@@ -126,9 +130,16 @@ export default function CompareCompanies({ companies, onClose }) {
                     className="py-3 px-4 border-l font-semibold text-[#61443b]"
                   >
                     ⭐{" "}
-                    {c.reviews.reduce((acc, cur) => acc + cur.rating, 0) /
-                      c.reviews.length}
-                    점 ({c.reviews.length}개)
+                    {isNaN(
+                      c.reviews.reduce((acc, cur) => acc + cur.rating, 0) /
+                        c.reviews.length
+                    )
+                      ? "-"
+                      : (
+                          c.reviews.reduce((acc, cur) => acc + cur.rating, 0) /
+                          c.reviews.length
+                        ).toFixed(1)}
+                    점 ({c.reviews.length || "-"}개)
                   </td>
                 ))}
               </tr>

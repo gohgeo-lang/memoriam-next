@@ -123,8 +123,17 @@ export default function DashboardPage() {
     setIsClickedEdit(true);
   };
 
-  const handleDeleteUser = (user) => {
+  const handleDeleteUser = async (user) => {
+    // 관련 api 없어서 로그만 출력
     console.log("삭제 요청:", user);
+    // try {
+    //   await deleteUser(userId);
+
+    //   setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
+    // } catch (error) {
+    //   console.error("사용자 삭제 실패:", error);
+    //   alert("삭제 중 오류가 발생했습니다.");
+    // }
   };
 
   const handleCloseModal = () => {

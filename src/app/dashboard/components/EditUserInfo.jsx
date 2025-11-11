@@ -49,11 +49,19 @@ export default function EditUserInfo({
 
   // 저장
   const handleSubmit = async () => {
+    // 비밀번호 확인
+    if (formData.password && formData.password !== formData.confirmPassword) {
+      alert("비밀번호가 일치하지 않습니다.");
+      return;
+    }
+
     if (!formData.email || !formData.name) {
       alert("이메일과 이름은 필수입니다.");
       return;
     }
-
+    // 관련 api 없어서 그냥 닫기
+    handleCloseModal();
+    return;
     try {
       const response = await fetch(`/api/users/${formData.id}`, {
         method: "PUT",
@@ -145,6 +153,34 @@ export default function EditUserInfo({
             />
           </div>
 
+          {/* 비밀번호 확인 */}
+          <div className="mt-3">
+            <label className="block text-sm font-medium text-gray-700">
+              비밀번호 확인
+            </label>
+            <input
+              type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword || ""}
+              onChange={handleChange}
+              placeholder="비밀번호 재입력"
+              className="mt-1 w-full border rounded-md px-3 py-2"
+            />
+            {formData.password && formData.confirmPassword && (
+              <p
+                className={`text-sm mt-1 ${
+                  formData.password === formData.confirmPassword
+                    ? "text-green-600"
+                    : "text-red-600"
+                }`}
+              >
+                {formData.password === formData.confirmPassword
+                  ? "비밀번호가 일치합니다."
+                  : "비밀번호가 일치하지 않습니다."}
+              </p>
+            )}
+          </div>
+
           {/* 프로필 이미지 */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -176,7 +212,8 @@ export default function EditUserInfo({
               name="role"
               value={formData.role}
               onChange={handleChange}
-              className="mt-1 w-full border rounded-md px-3 py-2"
+              className="mt-1 w-full border rounded-md px-3 py-2 bg-gray-100 cursor-not-allowed"
+              disabled
             >
               <option value="Admin">관리자</option>
               <option value="User">일반 사용자</option>
