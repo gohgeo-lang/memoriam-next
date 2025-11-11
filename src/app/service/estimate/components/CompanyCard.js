@@ -10,8 +10,8 @@ export default function CompanyCard({ company, isSelected, onSelect }) {
       className={`border rounded-xl p-5 shadow-sm relative cursor-pointer transition
     ${
       isSelected
-        ? "border-[#9eca78] bg-green-300/50"
-        : "border-gray-200 bg-white/50 hover:shadow-md"
+        ? "border-[#61443b] bg-[#f7ece8]"
+        : "border-gray-200 bg-white hover:shadow-md"
     }
   `}
       onClick={onSelect}
