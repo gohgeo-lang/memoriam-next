@@ -152,28 +152,6 @@ export default function EstimatePage() {
 
   return (
     <div className="relative min-h-screenoverflow-hidden">
-      {/* 배경 영상 */}
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        className="absolute top-1/2 left-1/2 min-w-full min-h-full -translate-x-1/2 -translate-y-1/2 object-cover"
-      >
-        <source
-          // src="https://cdn.pixabay.com/video/2024/02/05/199446-910244331_large.mp4"
-          // src="https://cdn.pixabay.com/video/2022/05/03/115896-705943396_large.mp4"
-          // src="https://cdn.pixabay.com/video/2022/03/06/109814-685705714_large.mp4"
-          // src="https://cdn.pixabay.com/video/2023/03/10/154135-807166717_large.mp4"
-          src="https://cdn.pixabay.com/video/2022/11/07/138011-768307654_large.mp4"
-          type="video/mp4"
-        />
-        Your browser does not support the video tag.
-      </video>
-
-      {/* 반투명 오버레이 */}
-      <div className="absolute inset-0 bg-orange-50/60 z-0" />
-
       <div className="relative z-10 space-y-3">
         <FilterBar onChange={setQuery} />
 
