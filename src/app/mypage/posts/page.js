@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 import Section from "@/components/Section";
 import MemorialCard from "@/app/service/memoriam/components/MemorialCard";
 import MemorialModal from "@/app/service/memoriam/components/MemorialModal";
@@ -69,9 +70,15 @@ export default function MyPostPage() {
 
   if (stories.length === 0)
     return (
-      <p className="text-center mt-10 text-gray-500">
-        아직 작성한 게시글이 없습니다.
-      </p>
+      <div className="min-h-screen bg-gray-50 py-8 px-5 flex flex-col items-center justify-center">
+        <p className="text-gray-500 mb-6">아직 작성한 게시글이 없습니다.</p>
+        <Link
+          href="/mypage"
+          className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-2 rounded-lg transition"
+        >
+          돌아가기
+        </Link>
+      </div>
     );
 
   return (
@@ -86,6 +93,15 @@ export default function MyPostPage() {
               onREmember={() => {}}
             />
           ))}
+        </div>
+
+        <div className="mt-10 flex justify-center">
+          <Link
+            href="/mypage"
+            className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-2 rounded-lg transition"
+          >
+            돌아가기
+          </Link>
         </div>
       </Section>
 

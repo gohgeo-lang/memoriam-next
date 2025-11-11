@@ -70,13 +70,19 @@ export default function MyPage() {
     <div className="min-h-screen bg-gray-50 py-8 px-5">
       <div className="bg-white rounded-2xl shadow p-6 flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
-          <Image
-            src={user.image || "/image/default-profile.png"}
-            alt="profile"
-            width={64}
-            height={64}
-            className="rounded-full object-cover border"
-          />
+          {user.image ? (
+            <Image
+              src={user.image}
+              alt={user.name}
+              width={100}
+              height={100}
+              className="rounded-full object-cover"
+            />
+          ) : (
+            <div className="flex items-center justify-center w-[100px] h-[100px] rounded-full bg-gray-200 text-gray-600 text-3xl font-semibold">
+              {user.name ? user.name.charAt(0).toUpperCase() : "?"}
+            </div>
+          )}
           <div>
             <h2 className="text-lg font-semibold text-[#7b5449]">
               {user.name || "고객님"}

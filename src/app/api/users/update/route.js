@@ -18,7 +18,7 @@ export async function POST(req) {
 
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
-      include: { pointHistory: true },
+      include: { pointHistories: true },
     });
     if (!user)
       return NextResponse.json(
@@ -57,10 +57,10 @@ export async function POST(req) {
     const updatedUser = await prisma.user.update({
       where: { id: user.id },
       data: updatedData,
-      include: { pointHistory: true },
+      include: { pointHistories: true },
     });
 
-    const totalPoints = updatedUser.pointHistory.reduce((acc, p) => {
+    const totalPoints = updatedUser.pointHistories.reduce((acc, p) => {
       return p.type === "earn" ? acc + p.amount : acc - p.amount;
     }, 0);
 

@@ -171,9 +171,21 @@ export default function FamilyPage() {
 
         {uploadError && <p className="text-sm text-red-500">{uploadError}</p>}
 
-        <button className="w-full bg-[#7b5449] hover:bg-[#6a483d] text-white py-2 rounded-lg transition">
-          {form.id ? "수정하기" : "등록하기"}
-        </button>
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={() => (window.location.href = "/mypage")}
+            className="flex-1 text-center bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 rounded-lg transition"
+          >
+            돌아가기
+          </button>
+          <button
+            type="submit"
+            className="flex-1 bg-[#7b5449] hover:bg-[#6a483d] text-white py-2 rounded-lg transition"
+          >
+            {form.id ? "수정하기" : "등록하기"}
+          </button>
+        </div>
       </form>
 
       {loading ? (

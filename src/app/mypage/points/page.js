@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 export default function PointsPage() {
   const [points, setPoints] = useState([]);
@@ -66,6 +67,16 @@ export default function PointsPage() {
             </div>
           ))
         )}
+      </div>
+
+      {/* ✅ 돌아가기 버튼 추가 */}
+      <div className="mt-10 flex justify-center">
+        <Link
+          href="/mypage"
+          className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-2 rounded-lg transition"
+        >
+          돌아가기
+        </Link>
       </div>
     </div>
   );

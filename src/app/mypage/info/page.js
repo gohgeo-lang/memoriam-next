@@ -66,13 +66,19 @@ export default function InfoPage() {
       <div className="w-full max-w-2xl">
         <div className="bg-white rounded-2xl shadow p-6 flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
-            <Image
-              src={preview || "/image/default-profile.png"}
-              alt="profile"
-              width={64}
-              height={64}
-              className="rounded-full object-cover border"
-            />
+            {user.image ? (
+              <Image
+                src={user.image}
+                alt={user.name}
+                width={100}
+                height={100}
+                className="rounded-full object-cover"
+              />
+            ) : (
+              <div className="flex items-center justify-center w-[100px] h-[100px] rounded-full bg-gray-200 text-gray-600 text-3xl font-semibold">
+                {user.name ? user.name.charAt(0).toUpperCase() : "?"}
+              </div>
+            )}
             <div>
               <h2 className="text-lg font-semibold text-[#7b5449]">
                 {name || "고객님"}

@@ -15,13 +15,13 @@ model User {
   name           String?
   createdAt      DateTime        @default(now())
   image          String?
-  Address        Address[]
   comments       Comment[]
   Family         Family[]
   paymentMethods PaymentMethod[]
   pointHistories PointHistory[]
   posts          Post[]
   remembers      Postremember[]
+  addresses      Address[]
 
   faqs FAQ[] @relation("AuthorFAQs")
 }

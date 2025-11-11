@@ -17,7 +17,10 @@ export async function GET() {
       },
       include: {
         post: {
-          select: { title: true },
+          select: {
+            id: true,
+            title: true,
+          },
         },
       },
       orderBy: {

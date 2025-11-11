@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 export default function AddressPage() {
   const [addresses, setAddresses] = useState([]);
+  const [loading, setLoading] = useState(false); // ✅ 추가
   const [form, setForm] = useState({
     id: null,
     name: "",
@@ -17,6 +19,10 @@ export default function AddressPage() {
     const res = await fetch("/api/address");
     const data = await res.json();
     setAddresses(data);
+    if (data.length > 0) {
+      const defaultAddr = data.find((a) => a.isDefault) || data[0];
+      setForm(defaultAddr);
+    }
   };
 
   useEffect(() => {
@@ -25,27 +31,28 @@ export default function AddressPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     const method = form.id ? "PATCH" : "POST";
+    const payload = { ...form };
+    if (!form.id) delete payload.id; // ✅ POST 시 id 제거
+
     const res = await fetch("/api/address", {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
+      body: JSON.stringify(payload),
     });
+
     if (res.ok) {
       alert(form.id ? "수정 완료" : "등록 완료");
-      setForm({
-        id: null,
-        name: "",
-        phone: "",
-        address: "",
-        detail: "",
-        isDefault: false,
-      });
       fetchAddresses();
+    } else {
+      alert("오류가 발생했습니다.");
     }
+    setLoading(false);
   };
 
   const handleEdit = (a) => setForm(a);
+
   const handleDelete = async (id) => {
     if (!confirm("삭제하시겠습니까?")) return;
     await fetch("/api/address", {
@@ -96,9 +103,31 @@ export default function AddressPage() {
           />
           기본주소로 설정
         </label>
-        <button className="w-full bg-[#7b5449] text-white py-2 rounded">
-          {form.id ? "수정하기" : "등록하기"}
-        </button>
+        <div className="flex gap-3">
+          <Link
+            href="/mypage"
+            className="flex-1 text-center bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 rounded-lg transition"
+          >
+            돌아가기
+          </Link>
+          <button
+            type="submit"
+            disabled={loading}
+            className={`flex-1 py-2 rounded-lg text-white font-medium transition ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-[#7b5449] hover:bg-[#6a483d]"
+            }`}
+          >
+            {loading
+              ? form.id
+                ? "수정 중..."
+                : "등록 중..."
+              : form.id
+              ? "수정하기"
+              : "등록하기"}
+          </button>
+        </div>
       </form>
 
       <div className="space-y-3">
