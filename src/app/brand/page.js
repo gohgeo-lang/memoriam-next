@@ -84,7 +84,7 @@ export default function Brand() {
               />
 
               {/* ✅ 모바일에서만 글씨 살짝 위로 (bottom 조정) */}
-              <span className="absolute bottom-[80px] sm:bottom-[60px] left-[20px] sm:left-[30px] text-white text-[16px] sm:text-[17px] font-medium drop-shadow-lg leading-[1.5]">
+              <span className="absolute bottom-[90px] sm:bottom-[80px] left-[20px] sm:left-[30px] text-white text-[16px] sm:text-[17px] font-medium drop-shadow-lg leading-[1.5]">
                 {index === 1 && (
                   <>
                     단순한 장례가 아닌 <br />
