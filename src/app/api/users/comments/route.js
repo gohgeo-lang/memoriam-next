@@ -4,33 +4,42 @@ import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const session = await getServerSession(authOptions);
-  if (!session)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
   try {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json(
+        { error: "로그인이 필요합니다." },
+        { status: 401 }
+      );
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "사용자를 찾을 수 없습니다." },
+        { status: 404 }
+      );
+    }
+
     const comments = await prisma.comment.findMany({
-      where: {
-        author: {
-          email: session.user.email,
-        },
-      },
+      where: { authorId: user.id },
+      orderBy: { createdAt: "desc" },
       include: {
         post: {
-          select: {
-            id: true,
-            title: true,
+          include: {
+            category: true,
+            author: true,
           },
         },
-      },
-      orderBy: {
-        createdAt: "desc",
       },
     });
 
     return NextResponse.json(comments);
   } catch (error) {
-    console.error("댓글 조회 실패:", error);
+    console.error("내 댓글 조회 실패:", error);
     return NextResponse.json({ error: "서버 오류" }, { status: 500 });
   }
 }

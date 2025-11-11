@@ -8,36 +8,68 @@ import Section from "@/components/Section";
 import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function MyCommentsPage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const [comments, setComments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!session) return;
+    if (status === "loading") return;
+
+    if (status === "unauthenticated") {
+      setIsLoading(false);
+      return;
+    }
+
     const fetchMyComments = async () => {
       setIsLoading(true);
       try {
         const res = await fetch("/api/users/comments");
-        if (res.ok) setComments(await res.json());
-      } catch (error) {
-        console.error("댓글 조회 실패:", error);
-      }
-      setIsLoading(false);
-    };
-    fetchMyComments();
-  }, [session]);
+        if (!res.ok) throw new Error("댓글 데이터를 불러오지 못했습니다.");
 
-  if (!session)
+        const data = await res.json();
+        setComments(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error("댓글 조회 실패:", err);
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchMyComments();
+  }, [status]);
+
+  if (status === "loading" || isLoading) {
+    return <LoadingSpinner text="댓글을 불러오는 중..." />;
+  }
+
+  if (status === "unauthenticated") {
     return (
       <p className="text-center mt-10 text-gray-500">
         로그인 후 이용 가능한 페이지입니다.
       </p>
     );
+  }
 
-  if (isLoading) return <LoadingSpinner text="댓글을 불러오는 중..." />;
+  if (error) {
+    return (
+      <div className="text-center mt-10 text-red-500">
+        데이터를 불러오는 중 오류가 발생했습니다.
+        <div className="mt-4">
+          <button
+            onClick={() => location.reload()}
+            className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition"
+          >
+            다시 시도
+          </button>
+        </div>
+      </div>
+    );
+  }
 
-  if (comments.length === 0)
+  if (comments.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 py-8 px-5 flex flex-col items-center justify-center">
         <p className="text-gray-500 mb-6">아직 작성한 댓글이 없습니다.</p>
@@ -49,6 +81,7 @@ export default function MyCommentsPage() {
         </Link>
       </div>
     );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-5">
@@ -67,16 +100,24 @@ export default function MyCommentsPage() {
                 <tr
                   key={c.id}
                   onClick={() => {
-                    if (c.post?.id) {
-                      // ✅ 404 안 나게 안전한 이동 (메모리엄 페이지로만 이동)
-                      router.push(`/service/memoriam?highlight=${c.post.id}`);
+                    const post = c.post;
+                    if (!post?.id)
+                      return alert("원본 게시물을 찾을 수 없습니다.");
+
+                    const category = post.category?.name;
+                    if (category === "MEMORIAL") {
+                      router.push(
+                        `/service/memoriam/${post.id}#comment-${c.id}`
+                      );
                     } else {
-                      alert("삭제된 게시물입니다.");
+                      router.push(`/posts/${post.id}#comment-${c.id}`);
                     }
                   }}
                   className="border-t text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition"
                 >
-                  <td className="py-3 px-4 truncate max-w-xs">{c.content}</td>
+                  <td className="py-3 px-4 truncate max-w-xs">
+                    {c.content || "내용 없음"}
+                  </td>
                   <td className="py-3 px-4 text-[#7b5449]">
                     {c.post?.title || "삭제된 게시물"}
                   </td>
