@@ -4,12 +4,6 @@ import React, { useState, useEffect, useRef } from "react";
 
 export default function ChatBot({ className, faqs }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    {
-      sender: "bot",
-      text: "안녕하세요 🐾 반려동물 장례 서비스 FAQ 챗봇입니다.\n궁금한 점을 입력해주세요. 예: '장례 절차', '추모관', '예약 취소' 등",
-    },
-  ]);
   const [input, setInput] = useState("");
   const [adminConnected, setAdminConnected] = useState(false);
   const [usedFAQs, setUsedFAQs] = useState(new Set()); // ✅ 이미 답변한 FAQ 기록
@@ -17,6 +11,17 @@ export default function ChatBot({ className, faqs }) {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const [messages, setMessages] = useState([
+    {
+      sender: "bot",
+      text: "안녕하세요 🐾 반려동물 장례 서비스 FAQ 챗봇입니다.\n궁금한 점을 입력해주세요. 예: '장례 절차', '추모관', '예약 취소' 등",
+    },
+  ]);
+
+  useEffect(() => {
+    scrollToBottom();
   }, [messages]);
 
   const normalize = (str) => str.replace(/\s+/g, "").toLowerCase();
