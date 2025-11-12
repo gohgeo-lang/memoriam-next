@@ -73,19 +73,21 @@ export default function CookiesPage() {
           {total.toLocaleString()} 🍪
         </p>
         <p className="text-sm text-gray-500 mt-1">
-          오늘의 퀘스트를 완료하고 쿠키를 모아보세요!
+          오늘의 미션을 완료하고 쿠키를 모아보세요!
         </p>
       </div>
 
       <div className="text-center text-sm text-gray-600 mb-6">
-        지금까지 완료한 퀘스트{" "}
-        <span className="font-semibold text-[#7b5449]">{completedCount}</span>{" "}
+        지금까지 완료한 미션
+        <span className="font-semibold text-[#7b5449]">
+          {completedCount}
+        </span>{" "}
         개
       </div>
 
       <div className="space-y-4 max-w-xl mx-auto">
         <h3 className="text-[#7b5449] font-semibold text-sm mb-1 mt-4">
-          고정 퀘스트
+          데일리미션
         </h3>
         {fixedQuests.map((q) => (
           <div
@@ -123,7 +125,7 @@ export default function CookiesPage() {
         ))}
 
         <h3 className="text-[#7b5449] font-semibold text-sm mb-1 mt-8">
-          오늘의 퀘스트
+          오늘의 미션
         </h3>
         {randomQuests.map((q) => (
           <div
@@ -147,7 +149,7 @@ export default function CookiesPage() {
                 보상받기
               </button>
             ) : (
-              <span className="text-xs text-gray-400">퀘스트 미완료</span>
+              <span className="text-xs text-gray-400">미션 미완료</span>
             )}
           </div>
         ))}

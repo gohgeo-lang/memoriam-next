@@ -22,7 +22,7 @@ export async function markQuestComplete(userId, type) {
         where: { id: quest.id },
         data: { completed: true },
       });
-      console.log(`퀘스트 완료 처리됨: ${type}`);
+      console.log(`미션 완료 처리됨: ${type}`);
     }
   } catch (error) {
     console.error("markQuestComplete 오류:", error);

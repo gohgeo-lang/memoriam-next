@@ -96,7 +96,7 @@ export async function GET() {
       completedCount,
     });
   } catch (error) {
-    console.error("🔥 /api/cookies GET 에러:", error);
+    console.error("/api/cookies GET 에러:", error);
     return Response.json({ error: String(error) }, { status: 500 });
   }
 }
@@ -166,7 +166,7 @@ export async function POST(req) {
           userId: user.id,
           type,
           amount: 1,
-          description: "퀘스트 보상",
+          description: "미션 보상",
         },
       }),
       prisma.user.update({
@@ -188,7 +188,7 @@ export async function POST(req) {
       completedCount,
     });
   } catch (error) {
-    console.error("🔥 /api/cookies POST 에러:", error);
+    console.error("/api/cookies POST 에러:", error);
     return Response.json({ error: String(error) }, { status: 500 });
   }
 }
