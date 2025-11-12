@@ -1,12 +1,30 @@
-export async function markQuestComplete(type) {
+import prisma from "@/lib/prisma";
+
+export async function markQuestComplete(userId, type) {
   try {
-    await fetch("/api/quests/complete", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type }),
+    if (!userId || !type) return;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const quest = await prisma.questProgress.findFirst({
+      where: {
+        userId,
+        type,
+        createdAt: { gte: today },
+      },
     });
-    console.log(`[퀘스트 완료] ${type}`);
-  } catch (err) {
-    console.error("퀘스트 완료 실패:", err);
+
+    if (!quest) return;
+
+    if (!quest.completed) {
+      await prisma.questProgress.update({
+        where: { id: quest.id },
+        data: { completed: true },
+      });
+      console.log(`퀘스트 완료 처리됨: ${type}`);
+    }
+  } catch (error) {
+    console.error("markQuestComplete 오류:", error);
   }
 }
