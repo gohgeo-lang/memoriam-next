@@ -170,6 +170,12 @@ export default function MemorialPage() {
           rememberCount: updatedRememberCount,
         }));
       }
+      //쿠키페이지 미션트리거용 코드임다(공감 시 미션완료)
+      await fetch("/api/quests/trigger", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "remember_post" }),
+      });
     } catch (error) {
       console.error("Failed to remember story:", error);
       alert(error.message);
@@ -196,6 +202,14 @@ export default function MemorialPage() {
       const newPostFromDb = await res.json();
       const newStoryMapped = mapStoryData(newPostFromDb);
 
+      //여기 if문은 쿠키페이지 미션트리거용 코드에요.(게시물 작성 시 미션 완료 트리거)
+      if (isEditing) {
+        await fetch("/api/quests/trigger", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ type: "write_post" }),
+        });
+      }
       if (isEditing) {
         setStories((prevStories) =>
           prevStories.map((story) =>
@@ -266,6 +280,13 @@ export default function MemorialPage() {
       if (!res.ok) throw new Error("댓글 등록 실패");
 
       const newCommentFromDb = await res.json();
+
+      //쿠키 페이지 미션 트리거용 코드에요.(댓글 작성시 미션 완료되는 거)
+      await fetch("/api/quest/trigger", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "write_comment" }),
+      });
 
       const newCommentMapped = {
         id: newCommentFromDb.id,

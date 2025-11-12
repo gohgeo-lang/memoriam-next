@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
+import { completeQuest } from "@/lib/completeQuest";
 
 export const authOptions = {
   providers: [
@@ -28,6 +29,12 @@ export const authOptions = {
           return null;
         }
 
+        try {
+          await completeQuest(user.id, "login_today");
+          console.log("login_today 퀘스트 완료 처리됨");
+        } catch (error) {
+          console.error("login_today 퀘스트 처리 실패:", error);
+        }
         console.log("로그인 성공:", user.email);
         return { id: String(user.id), email: user.email, name: user.name };
       },

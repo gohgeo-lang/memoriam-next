@@ -1,62 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <quests>
-  <!-- DAILY QUESTS -->
+
+  <!-- 🌅 DAILY QUESTS -->
   <quest><type>login_today</type><label>오늘 로그인하기</label><reward>1</reward><category>daily</category></quest>
-  <quest><type>visit_cookie_page</type><label>내 쿠키 페이지 방문하기</label><reward>1</reward><category>daily</category></quest>
-  <quest><type>visit_family_page</type><label>가족 관리 페이지 방문하기</label><reward>1</reward><category>daily</category></quest>
-  <quest><type>visit_memorial_page</type><label>메모리얼 게시판 방문하기</label><reward>1</reward><category>daily</category></quest>
-  <quest><type>read_3_posts</type><label>게시글 3개 이상 읽기</label><reward>1</reward><category>daily</category></quest>
+  <quest><type>visit_cookie_page</type><label>쿠키 페이지 확인하기</label><reward>1</reward><category>daily</category></quest>
   <quest><type>write_comment</type><label>댓글 한 개 작성하기</label><reward>1</reward><category>daily</category></quest>
   <quest><type>remember_post</type><label>게시글에 추모 남기기</label><reward>1</reward><category>daily</category></quest>
   <quest><type>register_family</type><label>새 가족 등록하기</label><reward>1</reward><category>daily</category></quest>
-  <quest><type>upload_photo</type><label>사진 업로드하기</label><reward>1</reward><category>daily</category></quest>
-  <quest><type>share_memorial</type><label>게시글 SNS로 공유하기</label><reward>1</reward><category>daily</category></quest>
+  <quest><type>upload_photo</type><label>가족 사진 업로드하기</label><reward>1</reward><category>daily</category></quest>
+  <quest><type>write_post</type><label>게시글 작성하기</label><reward>1</reward><category>daily</category></quest>
 
-  <!-- SOCIAL INTERACTION -->
-  <quest><type>reply_to_comment</type><label>댓글에 답글 달기</label><reward>1</reward><category>social</category></quest>
-  <quest><type>follow_user</type><label>다른 사용자 팔로우하기</label><reward>1</reward><category>social</category></quest>
-  <quest><type>like_post</type><label>게시글 좋아요 남기기</label><reward>1</reward><category>social</category></quest>
-  <quest><type>bookmark_post</type><label>게시글 북마크하기</label><reward>1</reward><category>social</category></quest>
-  <quest><type>report_post</type><label>부적절한 게시글 신고하기</label><reward>1</reward><category>social</category></quest>
-  <quest><type>send_message</type><label>누군가에게 메시지 보내기</label><reward>1</reward><category>social</category></quest>
-  <quest><type>receive_like</type><label>내 게시글에 좋아요 받기</label><reward>1</reward><category>social</category></quest>
-  <quest><type>comment_3_posts</type><label>게시글 3개에 댓글 남기기</label><reward>1</reward><category>social</category></quest>
-  <quest><type>remember_3_posts</type><label>추모 3건 남기기</label><reward>1</reward><category>social</category></quest>
-  <quest><type>reply_received</type><label>내 댓글에 답글 받기</label><reward>1</reward><category>social</category></quest>
+  <!-- 📈 MILESTONE QUESTS (누적형) -->
+  <quest><type>post_10_total</type><label>게시글 10개 작성 달성</label><reward>5</reward><category>milestone</category></quest>
+  <quest><type>comment_20_total</type><label>댓글 20개 작성 달성</label><reward>5</reward><category>milestone</category></quest>
+  <quest><type>remember_30_total</type><label>게시글 추모 30회 달성</label><reward>5</reward><category>milestone</category></quest>
+  <quest><type>family_5_total</type><label>가족 등록 5명 달성</label><reward>5</reward><category>milestone</category></quest>
+  <quest><type>cookie_100_total</type><label>누적 쿠키 100개 달성</label><reward>10</reward><category>milestone</category></quest>
+  <quest><type>profile_update_3_times</type><label>프로필 수정 3회 달성</label><reward>3</reward><category>milestone</category></quest>
+  <quest><type>memorial_100_views</type><label>내 게시글 조회수 100회 달성</label><reward>5</reward><category>milestone</category></quest>
+  <quest><type>memorial_20_remembers</type><label>내 게시글 공감 20회 달성</label><reward>5</reward><category>milestone</category></quest>
 
-  <!-- CONTENT CREATION -->
-  <quest><type>write_post</type><label>게시글 작성하기</label><reward>1</reward><category>content</category></quest>
-  <quest><type>edit_post</type><label>게시글 수정하기</label><reward>1</reward><category>content</category></quest>
-  <quest><type>delete_post</type><label>작성한 글 삭제하기</label><reward>1</reward><category>content</category></quest>
-  <quest><type>upload_memorial_photo</type><label>추모 사진 업로드하기</label><reward>1</reward><category>content</category></quest>
-  <quest><type>add_pet_story</type><label>반려동물의 이야기 남기기</label><reward>1</reward><category>content</category></quest>
-  <quest><type>edit_family_info</type><label>가족 정보 수정하기</label><reward>1</reward><category>content</category></quest>
-  <quest><type>upload_profile_photo</type><label>프로필 사진 업로드하기</label><reward>1</reward><category>content</category></quest>
-  <quest><type>update_profile</type><label>프로필 정보 수정하기</label><reward>1</reward><category>content</category></quest>
-  <quest><type>post_with_tag</type><label>태그 포함 게시글 작성하기</label><reward>1</reward><category>content</category></quest>
-  <quest><type>view_my_posts</type><label>내 게시글 목록 보기</label><reward>1</reward><category>content</category></quest>
+  <!-- 🔁 STREAK QUESTS (연속형) -->
+  <quest><type>streak_3_days</type><label>3일 연속 로그인</label><reward>3</reward><category>streak</category></quest>
+  <quest><type>streak_7_days</type><label>7일 연속 로그인</label><reward>7</reward><category>streak</category></quest>
+  <quest><type>streak_30_days</type><label>30일 연속 로그인</label><reward>20</reward><category>streak</category></quest>
 
-  <!-- SYSTEM / UTILITY -->
-  <quest><type>change_theme</type><label>다크모드/라이트모드 전환</label><reward>1</reward><category>system</category></quest>
+  <!-- ⚙️ SYSTEM / UTILITY -->
   <quest><type>set_default_address</type><label>기본 배송지 등록하기</label><reward>1</reward><category>system</category></quest>
   <quest><type>add_payment_method</type><label>결제수단 등록하기</label><reward>1</reward><category>system</category></quest>
-  <quest><type>use_coupon</type><label>쿠폰 사용하기</label><reward>1</reward><category>system</category></quest>
-  <quest><type>view_notifications</type><label>알림함 확인하기</label><reward>1</reward><category>system</category></quest>
-  <quest><type>enable_email_alerts</type><label>이메일 알림 설정하기</label><reward>1</reward><category>system</category></quest>
-  <quest><type>backup_data</type><label>내 데이터 백업하기</label><reward>1</reward><category>system</category></quest>
-  <quest><type>verify_email</type><label>이메일 인증 완료하기</label><reward>1</reward><category>system</category></quest>
-  <quest><type>change_password</type><label>비밀번호 변경하기</label><reward>1</reward><category>system</category></quest>
-  <quest><type>delete_account</type><label>계정 탈퇴(테스트용)</label><reward>1</reward><category>system</category></quest>
+  <quest><type>update_profile</type><label>프로필 정보 수정하기</label><reward>1</reward><category>system</category></quest>
 
-  <!-- COMMUNITY / EMOTIONAL -->
-  <quest><type>write_thank_you_note</type><label>감사 인사 남기기</label><reward>1</reward><category>community</category></quest>
-  <quest><type>read_daily_verse</type><label>오늘의 말씀 읽기</label><reward>1</reward><category>community</category></quest>
-  <quest><type>meditation_note</type><label>짧은 묵상 기록 남기기</label><reward>1</reward><category>community</category></quest>
-  <quest><type>light_virtual_candle</type><label>가상 촛불 켜기</label><reward>1</reward><category>community</category></quest>
-  <quest><type>pray_for_others</type><label>다른 가족을 위해 기도하기</label><reward>1</reward><category>community</category></quest>
-  <quest><type>comment_supportive</type><label>위로의 댓글 남기기</label><reward>1</reward><category>community</category></quest>
-  <quest><type>share_memory</type><label>소중한 추억 한 줄 남기기</label><reward>1</reward><category>community</category></quest>
-  <quest><type>visit_today_memorials</type><label>오늘 등록된 추모글 둘러보기</label><reward>1</reward><category>community</category></quest>
-  <quest><type>celebrate_pet_day</type><label>오늘의 반려동물 데이 참여하기</label><reward>1</reward><category>community</category></quest>
-  <quest><type>send_encouragement</type><label>다른 사용자에게 응원 메시지 보내기</label><reward>1</reward><category>community</category></quest>
 </quests>

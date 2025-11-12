@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
+import { completeQuest } from "@/lib/completeQuest";
 
 export const runtime = "nodejs";
 
@@ -58,6 +59,8 @@ export async function POST(req) {
     return NextResponse.json({ error: "서버 오류" }, { status: 500 });
   }
 }
+
+await completeQuest(user.id, "register_payment");
 
 export async function PATCH(req) {
   try {

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { completeQuest } from "@/lib/completeQuest";
 
 export const runtime = "nodejs";
 
@@ -39,3 +40,5 @@ export async function POST(req) {
     return NextResponse.json({ error: "업로드 실패" }, { status: 500 });
   }
 }
+
+await completeQuest(userid, "upload_photo");
