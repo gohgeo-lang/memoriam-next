@@ -4,7 +4,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
 import fs from "fs";
 import path from "path";
-import { markQuestComplete } from "@/lib/quests";
+import { completeQuest } from "@/lib/completeQuest";
 
 export const runtime = "nodejs";
 
@@ -19,7 +19,7 @@ export async function POST(req) {
 
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
-      include: { pointHistories: true },
+      include: { cookieHistories: true },
     });
     if (!user)
       return NextResponse.json(
@@ -39,8 +39,9 @@ export async function POST(req) {
       const buffer = Buffer.from(await file.arrayBuffer());
       const uploadDir = path.join(process.cwd(), "public", "uploads");
 
-      if (!fs.existsSync(uploadDir))
+      if (!fs.existsSync(uploadDir)) {
         fs.mkdirSync(uploadDir, { recursive: true });
+      }
 
       const fileName = `${Date.now()}_${file.name}`;
       const filePath = path.join(uploadDir, fileName);
@@ -58,23 +59,30 @@ export async function POST(req) {
     const updatedUser = await prisma.user.update({
       where: { id: user.id },
       data: updatedData,
-      include: { pointHistories: true },
+      include: { cookieHistories: true },
     });
 
-    const totalPoints = updatedUser.pointHistories.reduce((acc, p) => {
-      return p.type === "earn" ? acc + p.amount : acc - p.amount;
+    const totalCookies = updatedUser.cookieHistories.reduce((acc, c) => {
+      return c.amount > 0 ? acc + c.amount : acc;
     }, 0);
+
+    if (updatedData.image) {
+      await completeQuest(user.id, "edit_profile");
+    }
 
     return NextResponse.json({
       id: updatedUser.id,
       name: updatedUser.name,
       email: updatedUser.email,
       image: updatedUser.image,
-      totalPoints,
+      totalCookies,
       message: "프로필이 성공적으로 수정되었습니다.",
     });
   } catch (error) {
     console.error("프로필 수정 실패:", error);
-    return NextResponse.json({ error: "서버 오류 발생" }, { status: 500 });
+    return NextResponse.json(
+      { error: "서버 오류가 발생했습니다." },
+      { status: 500 }
+    );
   }
 }
