@@ -25,7 +25,7 @@ export default function GuidePage() {
       <SupportGuide />
 
       {/* FAQ */}
-      <FAQ />
+      {/* <FAQ /> */}
 
       {/* 미션/비전 지우기 또는 위치 변경 */}
       <MissionVision />
