@@ -31,13 +31,8 @@ export default function Home() {
           </h1>
 
           <blockquote className="max-w-lg mx-auto border-t border-gray-400 border-opacity-50 pt-6 [text-shadow:0_1px_2px_rgba(0,0,0,0.8)]">
-<<<<<<< HEAD
             <p className="text-lg text-gray-200 italic leading-relaxed">
               &quot;나에게 녀석들은 반려가 아니라 여행자에 가깝다.
-=======
-            <p className="text-xl text-gray-200 italic leading-relaxed">
-              "나에게 녀석들은 반려가 아니라 여행자에 가깝다.
->>>>>>> bb82f79906284b77acad51b7e87a34cfcc3645cb
               <br />
               긴 여행을 하다보면
               <br />
