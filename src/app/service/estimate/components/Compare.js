@@ -33,11 +33,14 @@ export default function CompareCompanies({ companies, onClose }) {
           <table className="w-full border-collapse text-sm text-center">
             <thead>
               <tr className="bg-[#f8f8f8] border-y-2 border-gray-300">
-                <th className="py-3 px-4 text-left font-semibold border-r">
+                <th className="w-1/8 py-2 px-2 text-center font-semibold border-r">
                   항목
                 </th>
                 {companies.map((c) => (
-                  <th key={c.id} className="py-3 px-4 font-semibold border-r">
+                  <th
+                    key={c.id}
+                    className="w-1/3 py-2 px-2 font-semibold border-r"
+                  >
                     {c.name}
                   </th>
                 ))}
@@ -47,11 +50,11 @@ export default function CompareCompanies({ companies, onClose }) {
             <tbody className="text-gray-700">
               {/* 주소 */}
               <tr className="border-b border-gray-200">
-                <td className="py-2 px-4 font-medium text-left bg-gray-50">
+                <td className="w-30 py-2 px-2 font-medium text-center bg-gray-50">
                   주소
                 </td>
                 {companies.map((c) => (
-                  <td key={c.id} className="py-2 px-4 border-l">
+                  <td key={c.id} className="py-2 px-2 border-l">
                     {c.contacts.addressRdn || c.contacts.addressSite || "-"}
                   </td>
                 ))}
@@ -59,11 +62,11 @@ export default function CompareCompanies({ companies, onClose }) {
 
               {/* 전화번호 */}
               <tr className="border-b border-gray-200">
-                <td className="py-2 px-4 font-medium text-left bg-gray-50">
+                <td className="w-30 py-2 px-2 font-medium text-center bg-gray-50">
                   전화번호
                 </td>
                 {companies.map((c) => (
-                  <td key={c.id} className="py-2 px-4 border-l">
+                  <td key={c.id} className="py-2 px-2 border-l">
                     {c.contacts.phone || "-"}
                   </td>
                 ))}
@@ -71,11 +74,11 @@ export default function CompareCompanies({ companies, onClose }) {
 
               {/* 영업시간 */}
               <tr className="border-b border-gray-200">
-                <td className="py-2 px-4 font-medium text-left bg-gray-50">
+                <td className="w-30 py-2 px-2 font-medium text-center bg-gray-50">
                   영업시간
                 </td>
                 {companies.map((c) => (
-                  <td key={c.id} className="py-2 px-4 border-l leading-5">
+                  <td key={c.id} className="py-2 px-2 border-l leading-5">
                     <div>평일: {c.hours.weekdays}</div>
                     <div>주말: {c.hours.weekend}</div>
                     <div className="text-xs text-gray-500 mt-1">
@@ -87,11 +90,12 @@ export default function CompareCompanies({ companies, onClose }) {
 
               {/* 가격표 */}
               <tr className="border-b border-gray-200 align-top">
-                <td className="py-2 px-4 font-medium text-left bg-gray-50">
-                  가격표 (개별 / 합동)
+                <td className="w-30 py-2 px-2 font-medium text-center bg-gray-50">
+                  가격표 <br />
+                  (개별 / 합동)
                 </td>
                 {companies.map((c) => (
-                  <td key={c.id} className="py-2 px-4 border-l">
+                  <td key={c.id} className="py-2 px-2 border-l">
                     {c.priceTable.map((p) => (
                       <div key={p.weight} className="text-sm mb-1">
                         {p.weight}:{" "}
@@ -107,11 +111,11 @@ export default function CompareCompanies({ companies, onClose }) {
 
               {/* 옵션 */}
               <tr className="border-b border-gray-200 align-top">
-                <td className="py-2 px-4 font-medium text-left bg-gray-50">
+                <td className="w-30 py-2 px-2 font-medium text-center bg-gray-50">
                   제공 옵션
                 </td>
                 {companies.map((c) => (
-                  <td key={c.id} className="py-2 px-4 border-l">
+                  <td key={c.id} className="py-2 px-2 border-l">
                     {c.options.map((o, i) => (
                       <div key={i}>• {o}</div>
                     ))}
@@ -121,13 +125,13 @@ export default function CompareCompanies({ companies, onClose }) {
 
               {/* 평점 / 리뷰 */}
               <tr className="border-t-2 border-gray-300">
-                <td className="py-3 px-4 font-medium text-left bg-gray-50">
+                <td className="w-30 py-2 px-2 font-medium text-center bg-gray-50">
                   평점 / 리뷰
                 </td>
                 {companies.map((c) => (
                   <td
                     key={c.id}
-                    className="py-3 px-4 border-l font-semibold text-[#61443b]"
+                    className="py-2 px-2 border-l font-semibold text-[#61443b]"
                   >
                     ⭐{" "}
                     {isNaN(

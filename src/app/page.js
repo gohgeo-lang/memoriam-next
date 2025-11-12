@@ -31,8 +31,8 @@ export default function Home() {
           </h1>
 
           <blockquote className="max-w-lg mx-auto border-t border-gray-400 border-opacity-50 pt-6 [text-shadow:0_1px_2px_rgba(0,0,0,0.8)]">
-            <p className="text-xl text-gray-200 italic leading-relaxed">
-              "나에게 녀석들은 반려가 아니라 여행자에 가깝다.
+            <p className="text-lg text-gray-200 italic leading-relaxed">
+              &quot;나에게 녀석들은 반려가 아니라 여행자에 가깝다.
               <br />
               긴 여행을 하다보면
               <br />
@@ -46,7 +46,7 @@ export default function Home() {
               <br />
               인간이든 동물이든 그렇게 모두 여행자라고 생각하면
               <br />
-              떠나보내는 마음이 덜 괴롭다"
+              떠나보내는 마음이 덜 괴롭다.&quot;
             </p>
             <footer className="mt-4 text-base text-gray-300 not-italic">
               - 김영하, &lt;여행의 이유&gt; 中
