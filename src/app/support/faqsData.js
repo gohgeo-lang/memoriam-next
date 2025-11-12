@@ -1,100 +1,186 @@
-// app/support/faqs.js
+"use client";
+import React, { useState, useRef, useEffect } from "react";
 
-const faqs = [
-  {
-    category: "서비스 이용 관련",
-    items: [
-      {
-        q: "서비스 이용 시간은 언제인가요?",
-        a: "저희 장례 서비스는 24시간 접수 가능합니다. 다만 지역에 따라 야간 픽업이 제한될 수 있습니다.",
-      },
-      {
-        q: "어떤 반려동물이 장례 대상인가요?",
-        a: "개, 고양이, 소형 포유류(토끼, 기니피그 등) 모두 가능합니다.",
-      },
-    ],
-  },
-  {
-    category: "장례 절차 및 비용 관련",
-    items: [
-      {
-        q: "반려동물 장례 절차는 어떻게 진행되나요?",
-        a: "접수 → 픽업(또는 방문) → 장례 절차 → 수목장/납골/자택 유골함 선택 → 디지털 추모관 등록 순으로 진행됩니다.",
-      },
-      {
-        q: "장례비용은 어떻게 계산되나요?",
-        a: "체중, 화장 방식(개별/공동), 추가 서비스(영정사진, 추모함 등)에 따라 자동 견적이 산출됩니다.",
-      },
-      {
-        q: "견적이 실제 비용과 다른 경우도 있나요?",
-        a: "현장 상황에 따라 소폭 차이가 있을 수 있지만, 모든 추가 비용은 사전 동의 후 진행됩니다.",
-      },
-    ],
-  },
-  {
-    category: "디지털 추모관 관련",
-    items: [
-      {
-        q: "디지털 추모관이란 무엇인가요?",
-        a: "반려동물의 사진, 영상, 추억글을 등록하여 영원히 기억할 수 있는 온라인 공간입니다.",
-      },
-      {
-        q: "추모관은 무료인가요?",
-        a: "기본형은 무료 제공, 프리미엄(맞춤 디자인, 음악 삽입 등)은 유료로 이용 가능합니다.",
-      },
-      {
-        q: "가족이나 친구와 공유할 수 있나요?",
-        a: "링크로 공유하거나, 함께 작성 권한을 부여할 수 있습니다.",
-      },
-    ],
-  },
-  {
-    category: "영정사진 서비스 관련",
-    items: [
-      {
-        q: "영정사진은 어떻게 만들어지나요?",
-        a: "업로드한 사진을 기반으로 AI 및 전문 디자이너가 합성·보정하여 제작합니다.",
-      },
-      {
-        q: "사진 퀄리티가 좋지 않아도 괜찮나요?",
-        a: "해상도가 높을수록 좋지만, 보정 서비스를 통해 보완할 수 있습니다.",
-      },
-      {
-        q: "제작된 영정사진은 어디서 받나요?",
-        a: "장례 당일 출력본과 함께, 디지털 파일 형태로 이메일/문자로 전송됩니다.",
-      },
-    ],
-  },
-  {
-    category: "예약 및 취소 관련",
-    items: [
-      {
-        q: "예약은 언제까지 가능한가요?",
-        a: "24시간 실시간 접수 가능합니다. 단, 일부 지역은 야간 픽업이 제한될 수 있습니다.",
-      },
-      {
-        q: "예약 취소나 변경은 어떻게 하나요?",
-        a: "장례 진행 2시간 전까지는 무료 취소 가능하며, 이후에는 일부 위약금이 발생할 수 있습니다.",
-      },
-    ],
-  },
-  {
-    category: "기타 문의",
-    items: [
-      {
-        q: "반려동물의 종에 따라 장례 방식이 다른가요?",
-        a: "네, 체중과 종에 따라 장례 절차와 비용이 달라집니다. 견적 시 자동 반영됩니다.",
-      },
-      {
-        q: "유골 보관은 어떻게 하나요?",
-        a: "수목장, 납골당, 유골함 보관 등 여러 옵션을 안내드립니다.",
-      },
-      {
-        q: "사람처럼 제사도 가능한가요?",
-        a: "추모관의 ‘기일 알림’ 기능을 통해 매년 헌화 서비스를 제공합니다.",
-      },
-    ],
-  },
-];
+export default function ChatBot({ className, faqs }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState([
+    {
+      sender: "bot",
+      text: "안녕하세요 🐾 반려동물 장례 서비스 FAQ 챗봇입니다.\n궁금한 점을 입력해주세요. 예: '장례 절차', '추모관', '예약 취소' 등",
+    },
+  ]);
+  const [input, setInput] = useState("");
+  const [adminConnected, setAdminConnected] = useState(false);
+  const [pendingOptions, setPendingOptions] = useState(null); // 다중 선택 대기 상태
+  const messagesEndRef = useRef(null);
 
-export default faqs;
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  // 관련 FAQ 찾기 (부분일치)
+  const findRelatedFAQs = (keyword) => {
+    const normalized = keyword.trim().toLowerCase();
+    const related = [];
+    for (const section of faqs) {
+      for (const item of section.items) {
+        if (item.q.toLowerCase().includes(normalized)) {
+          related.push(item);
+        }
+      }
+    }
+    return related;
+  };
+
+  const handleSend = () => {
+    const trimmedInput = input.trim();
+    if (!trimmedInput) return;
+
+    // 사용자 메시지 추가
+    const userMessage = { sender: "user", text: trimmedInput };
+    setMessages((prev) => [...prev, userMessage]);
+
+    // 관리자 연결 요청
+    if (trimmedInput === "연결") {
+      setAdminConnected(true);
+      setMessages((prev) => [
+        ...prev,
+        {
+          sender: "bot",
+          text: "관리자에게 연결되었습니다. 메시지를 작성하세요.",
+        },
+      ]);
+      setInput("");
+      setPendingOptions(null);
+      return;
+    }
+
+    // 사용자가 이전에 선택해야 하는 옵션이 있는 경우
+    if (pendingOptions) {
+      const choice = parseInt(trimmedInput);
+      if (!isNaN(choice) && choice >= 1 && choice <= pendingOptions.length) {
+        const selected = pendingOptions[choice - 1];
+        setMessages((prev) => [
+          ...prev,
+          {
+            sender: "bot",
+            text: `${selected.a}\n\n원하는 답변이 없으셨다면 "연결"을 입력해주세요.`,
+          },
+        ]);
+      } else {
+        setMessages((prev) => [
+          ...prev,
+          {
+            sender: "bot",
+            text: "잘못된 선택입니다. 번호를 다시 입력해주세요.",
+          },
+        ]);
+        setInput("");
+        return;
+      }
+      setPendingOptions(null);
+      setInput("");
+      return;
+    }
+
+    // 관련 질문 찾기
+    const relatedFAQs = findRelatedFAQs(trimmedInput);
+
+    if (relatedFAQs.length === 0) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          sender: "bot",
+          text: `관련된 정보를 찾지 못했습니다.\n원하시는 답변이 없으셨다면 "연결"을 입력해주세요.`,
+        },
+      ]);
+    } else if (relatedFAQs.length === 1) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          sender: "bot",
+          text: `${relatedFAQs[0].a}\n\n원하시는 답변이 없으셨다면 "연결"을 입력해주세요.`,
+        },
+      ]);
+    } else {
+      // 여러 관련 질문이 있는 경우
+      const optionList = relatedFAQs
+        .map((item, i) => `${i + 1}. ${item.q}`)
+        .join("\n");
+      setMessages((prev) => [
+        ...prev,
+        {
+          sender: "bot",
+          text: `여러 관련 질문이 있습니다. 원하시는 항목 번호를 입력해주세요:\n${optionList}`,
+        },
+      ]);
+      setPendingOptions(relatedFAQs);
+    }
+
+    setInput("");
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.nativeEvent.isComposing) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
+  return (
+    <div className={`${className} font-sans`}>
+      {!isOpen && (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="fixed bottom-4 right-4 bg-[#6D4C41] text-white px-4 py-3 rounded-full shadow-lg z-50"
+        >
+          💬 Chat
+        </button>
+      )}
+
+      {isOpen && (
+        <div className="fixed bottom-4 right-4 w-80 h-96 bg-white border border-gray-300 rounded-xl shadow-lg flex flex-col z-50">
+          <div className="flex justify-between items-center bg-[#6D4C41] text-white px-4 py-2 rounded-t-xl">
+            <span>FAQ 챗봇</span>
+            <button onClick={() => setIsOpen(false)} className="font-bold">
+              ×
+            </button>
+          </div>
+
+          <div className="flex-1 p-3 overflow-y-auto space-y-2 bg-[#F5F5F5]">
+            {messages.map((msg, i) => (
+              <div
+                key={i}
+                className={`p-2 rounded-lg max-w-[80%] whitespace-pre-wrap ${
+                  msg.sender === "user"
+                    ? "bg-[#D7CCC8] ml-auto"
+                    : "bg-[#EFEBE9] mr-auto"
+                }`}
+              >
+                {msg.text}
+              </div>
+            ))}
+            <div ref={messagesEndRef}></div>
+          </div>
+
+          <div className="p-2 border-t border-gray-300 flex gap-2">
+            <input
+              type="text"
+              className="flex-1 border border-gray-300 rounded-lg px-3 py-1"
+              placeholder="질문을 입력하세요..."
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
+            <button
+              onClick={handleSend}
+              className="bg-[#6D4C41] text-white px-3 py-1 rounded-lg"
+            >
+              전송
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

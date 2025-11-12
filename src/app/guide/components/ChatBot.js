@@ -11,8 +11,7 @@ export default function ChatBot({ className, faqs }) {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
+  }, []);
   const [messages, setMessages] = useState([
     {
       sender: "bot",
