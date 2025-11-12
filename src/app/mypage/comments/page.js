@@ -1,79 +1,144 @@
-import prisma from "@/lib/prisma";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/route";
-import { completeQuest } from "@/lib/completeQuest";
+"use client";
 
-export async function GET() {
-  try {
-    const session = await getServerSession(authOptions);
-    if (!session) {
-      return Response.json({ error: "로그인이 필요합니다." }, { status: 401 });
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
+import Section from "@/components/Section";
+import LoadingSpinner from "@/components/LoadingSpinner";
+
+export default function MyCommentsPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [comments, setComments] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (status === "loading") return;
+
+    if (status === "unauthenticated") {
+      setIsLoading(false);
+      return;
     }
 
-    const userId = session.user.id;
+    const fetchMyComments = async () => {
+      setIsLoading(true);
+      try {
+        const res = await fetch("/api/users/comments");
+        if (!res.ok) throw new Error("댓글 데이터를 불러오지 못했습니다.");
 
-    const comments = await prisma.comment.findMany({
-      where: { authorId: userId },
-      include: {
-        post: {
-          include: {
-            category: true,
-          },
-        },
-      },
-      orderBy: { createdAt: "desc" },
-    });
+        const data = await res.json();
+        setComments(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error("댓글 조회 실패:", err);
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    return Response.json(comments);
-  } catch (error) {
-    console.error("내 댓글 조회 실패:", error);
-    return Response.json(
-      { error: "댓글 조회 중 오류가 발생했습니다." },
-      { status: 500 }
+    fetchMyComments();
+  }, [status]);
+
+  if (status === "loading" || isLoading) {
+    return <LoadingSpinner text="댓글을 불러오는 중..." />;
+  }
+
+  if (status === "unauthenticated") {
+    return (
+      <p className="text-center mt-10 text-gray-500">
+        로그인 후 이용 가능한 페이지입니다.
+      </p>
     );
   }
-}
 
-export async function POST(req) {
-  try {
-    const session = await getServerSession(authOptions);
-    if (!session) {
-      return Response.json({ error: "로그인이 필요합니다." }, { status: 401 });
-    }
-
-    const userId = session.user.id;
-    const { postId, content, parentId } = await req.json();
-
-    if (!postId || !content) {
-      return Response.json(
-        { error: "필수 데이터가 누락되었습니다." },
-        { status: 400 }
-      );
-    }
-
-    const comment = await prisma.comment.create({
-      data: {
-        postId,
-        content,
-        authorId: userId,
-        parentId: parentId || null,
-      },
-      include: {
-        post: { include: { category: true } },
-      },
-    });
-
-    await completeQuest(userId, "comment_support");
-
-    return Response.json({
-      message: "댓글이 성공적으로 등록되었습니다.",
-      comment,
-    });
-  } catch (error) {
-    console.error("댓글 작성 실패:", error);
-    return Response.json(
-      { error: "댓글 작성 중 오류가 발생했습니다." },
-      { status: 500 }
+  if (error) {
+    return (
+      <div className="text-center mt-10 text-red-500">
+        데이터를 불러오는 중 오류가 발생했습니다.
+        <div className="mt-4">
+          <button
+            onClick={() => location.reload()}
+            className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition"
+          >
+            다시 시도
+          </button>
+        </div>
+      </div>
     );
   }
+
+  if (comments.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8 px-5 flex flex-col items-center justify-center">
+        <p className="text-gray-500 mb-6">아직 작성한 댓글이 없습니다.</p>
+        <Link
+          href="/mypage"
+          className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-2 rounded-lg transition"
+        >
+          돌아가기
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-8 px-5">
+      <Section title="내가 쓴 댓글">
+        <div className="overflow-x-auto">
+          <table className="min-w-full border-t border-gray-200 bg-white rounded-xl shadow-sm">
+            <thead>
+              <tr className="bg-gray-100 text-sm text-gray-600">
+                <th className="py-3 px-4 text-left w-[60%]">내용</th>
+                <th className="py-3 px-4 text-left">게시물</th>
+                <th className="py-3 px-4 text-left">작성일</th>
+              </tr>
+            </thead>
+            <tbody>
+              {comments.map((c) => (
+                <tr
+                  key={c.id}
+                  onClick={() => {
+                    const post = c.post;
+                    if (!post?.id)
+                      return alert("원본 게시물을 찾을 수 없습니다.");
+
+                    const category = post.category?.name;
+                    if (category === "MEMORIAL") {
+                      router.push(
+                        `/service/memoriam/${post.id}#comment-${c.id}`
+                      );
+                    } else {
+                      router.push(`/posts/${post.id}#comment-${c.id}`);
+                    }
+                  }}
+                  className="border-t text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition"
+                >
+                  <td className="py-3 px-4 truncate max-w-xs">
+                    {c.content || "내용 없음"}
+                  </td>
+                  <td className="py-3 px-4 text-[#7b5449]">
+                    {c.post?.title || "삭제된 게시물"}
+                  </td>
+                  <td className="py-3 px-4 text-gray-500 text-xs">
+                    {new Date(c.createdAt).toLocaleDateString("ko-KR")}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="mt-10 flex justify-center">
+          <Link
+            href="/mypage"
+            className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-2 rounded-lg transition"
+          >
+            돌아가기
+          </Link>
+        </div>
+      </Section>
+    </div>
+  );
 }

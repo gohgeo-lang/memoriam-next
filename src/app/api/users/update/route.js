@@ -62,12 +62,16 @@ export async function POST(req) {
       include: { cookieHistories: true },
     });
 
-    const totalCookies = updatedUser.cookieHistories.reduce((acc, c) => {
-      return c.amount > 0 ? acc + c.amount : acc;
-    }, 0);
-
+    const totalCookies = updatedUser.cookieHistories.reduce(
+      (acc, c) => acc + c.amount,
+      0
+    );
     if (updatedData.image) {
-      await completeQuest(user.id, "edit_profile");
+      try {
+        await completeQuest(user.id, "edit_profile");
+      } catch (err) {
+        console.warn("completeQuest 실패:", err);
+      }
     }
 
     return NextResponse.json({

@@ -23,8 +23,10 @@ export async function GET() {
     if (!user)
       return NextResponse.json({ error: "User not found" }, { status: 404 });
 
-    const totalCookies =
-      user.cookieHistories?.reduce((acc, c) => acc + c.amount, 0) ?? 0;
+    const totalCookies = updatedUser.cookieHistories.reduce(
+      (acc, c) => acc + c.amount,
+      0
+    );
 
     return NextResponse.json({
       id: user.id,
