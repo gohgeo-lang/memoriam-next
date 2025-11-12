@@ -3,7 +3,6 @@ import React, { useState, useRef, useEffect } from "react";
 
 export default function ChatBot({ className, faqs }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [adminConnected, setAdminConnected] = useState(false);
   const messagesEndRef = useRef(null);
@@ -12,6 +11,13 @@ export default function ChatBot({ className, faqs }) {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  const [messages, setMessages] = useState([
+    {
+      sender: "bot",
+      text: "안녕하세요 🐾 반려동물 장례 서비스 FAQ 챗봇입니다.\n궁금한 점을 입력해주세요. 예: '장례 절차', '추모관', '예약 취소' 등",
+    },
+  ]);
 
   useEffect(() => {
     scrollToBottom();
