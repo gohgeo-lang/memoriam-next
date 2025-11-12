@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { markQuestComplete } from "@/lib/quests";
 
 const MEMORIAL_CATEGORY_NAME = "MEMORIAL";
 
@@ -92,6 +93,8 @@ export async function POST(request) {
         comments: true,
       },
     });
+
+    await markQuestComplete("post");
 
     return NextResponse.json(newPost);
   } catch (error) {

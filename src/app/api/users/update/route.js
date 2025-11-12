@@ -4,6 +4,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
 import fs from "fs";
 import path from "path";
+import { markQuestComplete } from "@/lib/quests";
 
 export const runtime = "nodejs";
 

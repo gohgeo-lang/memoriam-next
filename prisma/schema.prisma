@@ -9,21 +9,23 @@ datasource db {
 }
 
 model User {
-  id             Int             @id @default(autoincrement())
-  email          String          @unique
-  password       String
-  name           String?
-  createdAt      DateTime        @default(now())
-  image          String?
-  comments       Comment[]
-  Family         Family[]
-  paymentMethods PaymentMethod[]
-  pointHistories PointHistory[]
-  posts          Post[]
-  remembers      Postremember[]
-  addresses      Address[]
+  id              Int             @id @default(autoincrement())
+  email           String          @unique
+  password        String
+  name            String?
+  createdAt       DateTime        @default(now())
+  image           String?
+  comments        Comment[]
+  Family          Family[]
+  paymentMethods  PaymentMethod[]
+  cookieHistories CookieHistory[]
+  totalCookies    Int             @default(0)
+  posts           Post[]
+  remembers       Postremember[]
+  addresses       Address[]
 
-  faqs FAQ[] @relation("AuthorFAQs")
+  faqs            FAQ[]           @relation("AuthorFAQs")
+  questProgresses QuestProgress[]
 }
 
 model PostCategory {
@@ -116,15 +118,14 @@ model Address {
 model PaymentMethod {
   id         Int      @id @default(autoincrement())
   userId     Int
-  carName    String
+  cardName   String
   cardNumber String
-  expiry     String
   isDefault  Boolean  @default(false)
   createdAt  DateTime @default(now())
   user       User     @relation(fields: [userId], references: [id])
 }
 
-model PointHistory {
+model CookieHistory {
   id          Int      @id @default(autoincrement())
   userId      Int
   type        String
@@ -132,6 +133,16 @@ model PointHistory {
   description String?
   createdAt   DateTime @default(now())
   user        User     @relation(fields: [userId], references: [id])
+}
+
+model QuestProgress {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  type      String
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedaT DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model FAQ {

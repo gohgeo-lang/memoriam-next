@@ -3,6 +3,7 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { markQuestComplete } from "@/lib/quests";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -28,6 +29,8 @@ export default function LoginPage() {
         setError("이메일 또는 비밀번호가 올바르지 않습니다");
         return;
       }
+
+      await markQuestComplete("login");
 
       router.push("/");
       router.refresh();
