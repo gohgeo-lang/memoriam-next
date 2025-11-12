@@ -12,7 +12,7 @@ export default function PostList({ data }) {
   return (
     <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
       <div className="px-2 py-2 sm:px-0">
-        <div className="bg-gray-400 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 shadow-xl p-2 gap-1">
+        <div className="bg-gray-400 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 shadow-xl p-2 gap-2">
           {data.map((post) => (
             <div
               key={post.id}
