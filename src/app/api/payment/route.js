@@ -5,128 +5,91 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export const runtime = "nodejs";
 
-export async function GET() {
-  const session = await getServerSession(authOptions);
-  if (!session)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+async function alreadyEarnedToday(userId, category) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-    include: { paymentMethods: true },
-  });
-
-  if (!user)
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
-
-  return NextResponse.json(user.paymentMethods || []);
-}
-
-export async function PUT(req) {
-  const session = await getServerSession(authOptions);
-  if (!session)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  const data = await req.json();
-  const { cardName, cardNumber, isDefault } = data;
-
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-  });
-  if (!user)
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
-
-  if (isDefault) {
-    await prisma.paymentMethod.updateMany({
-      where: { userId: user.id },
-      data: { isDefault: false },
-    });
-  }
-
-  const newMethod = await prisma.paymentMethod.create({
-    data: {
-      userId: user.id,
-      cardName,
-      cardNumber,
-      isDefault: !!isDefault,
+  const record = await prisma.pointHistories.findFirst({
+    where: {
+      userId,
+      category,
+      createdAt: { gte: today },
     },
   });
 
-  return NextResponse.json(newMethod);
-}
-
-export async function DELETE(req) {
-  const session = await getServerSession(authOptions);
-  if (!session)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  const { id } = await req.json();
-
-  await prisma.paymentMethod.delete({ where: { id } });
-
-  return NextResponse.json({ message: "삭제 완료" });
+  return !!record;
 }
 
 export async function POST(req) {
-  const session = await getServerSession(authOptions);
-  if (!session)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session)
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-  });
-  if (!user)
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
+    const { category } = await req.json(); // "login" | "post" | "comment"
+    if (!category)
+      return NextResponse.json(
+        { error: "카테고리가 필요합니다." },
+        { status: 400 }
+      );
 
-  const { amount, description } = await req.json();
-  const earned = Math.floor(amount * 0.03);
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+    });
+    if (!user)
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
 
-  await prisma.pointHistory.create({
-    data: {
-      userId: user.id,
-      type: "earn",
-      amount: earned,
-      description: `결제 적립 (${description})`,
-    },
-  });
+    const earned = await alreadyEarnedToday(user.id, category);
+    if (earned)
+      return NextResponse.json({
+        message: "오늘은 이미 포인트를 받았습니다.",
+      });
 
-  const payment = await prisma.paymentMethod.findFirst({
-    where: { userId: user.id, isDefault: true },
-  });
+    const descriptionMap = {
+      login: "로그인 보너스",
+      post: "게시글 작성 보상",
+      comment: "댓글 작성 보상",
+    };
 
-  return NextResponse.json({
-    success: true,
-    message: `결제가 완료되었습니다. ${earned}P가 적립되었습니다.`,
-    paymentMethod: payment ? payment.cardName : "기본결제수단 없음",
-    earned,
-  });
+    const point = await prisma.pointHistories.create({
+      data: {
+        userId: user.id,
+        type: "earn",
+        category,
+        amount: 100,
+        description: descriptionMap[category],
+      },
+    });
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { totalPoints: { increment: 100 } },
+    });
+
+    return NextResponse.json(point);
+  } catch (error) {
+    console.error("포인트 적립 실패:", error);
+    return NextResponse.json({ error: "서버 오류" }, { status: 500 });
+  }
 }
 
-export async function PATCH(req) {
-  const session = await getServerSession(authOptions);
-  if (!session)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function GET() {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session)
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-  });
-  if (!user)
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      include: { pointHistories: { orderBy: { createdAt: "desc" } } },
+    });
 
-  const { amount, description } = await req.json();
-  const deducted = Math.floor(amount * 0.03);
+    if (!user)
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
 
-  await prisma.pointHistory.create({
-    data: {
-      userId: user.id,
-      type: "use",
-      amount: deducted,
-      description: `결제 환불 (${description})`,
-    },
-  });
-
-  return NextResponse.json({
-    success: true,
-    message: `환불이 완료되었습니다. ${deducted}P가 차감되었습니다.`,
-    deducted,
-  });
+    return NextResponse.json(user.pointHistories || []);
+  } catch (error) {
+    console.error("포인트 내역 조회 실패:", error);
+    return NextResponse.json({ error: "서버 오류" }, { status: 500 });
+  }
 }

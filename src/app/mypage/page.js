@@ -4,9 +4,10 @@ import {
   MapPin,
   PawPrint,
   CreditCard,
-  Coins,
+  Gift,
   LogOut,
   Shield,
+  PawPrintIcon,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -17,7 +18,13 @@ export default function MyPage() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    fetch("/api/users/me").then(async (res) => setUser(await res.json()));
+    fetch("/api/users/me").then(async (res) => {
+      if (!res.ok) {
+        console.error("유저 정보 불러오기 실패:", await res.text());
+        return;
+      }
+      setUser(await res.json());
+    });
   }, []);
 
   if (!user)
@@ -40,9 +47,9 @@ export default function MyPage() {
       icon: <CreditCard className="w-6 h-6 text-[#7b5449]" />,
     },
     {
-      href: "/mypage/points",
-      label: "포인트내역",
-      icon: <Coins className="w-6 h-6 text-[#7b5449]" />,
+      href: "/mypage/cookies",
+      label: "쿠키",
+      icon: <Gift className="w-6 h-6 text-[#7b5449]" />,
     },
   ];
 
@@ -51,19 +58,11 @@ export default function MyPage() {
     { href: "/mypage/address", label: "주소 관리" },
     { href: "/mypage/family", label: "가족 관리" },
     { href: "/mypage/payment", label: "결제수단 관리" },
-    { href: "/mypage/points", label: "포인트 내역" },
-    {
-      href: "/mypage/posts",
-      label: "내가 쓴 게시물",
-    },
-    {
-      href: "/mypage/comments",
-      label: "내가 쓴 댓글",
-    },
+    { href: "/mypage/cookies", label: "쿠키" },
+    { href: "/mypage/posts", label: "내가 쓴 게시물" },
+    { href: "/mypage/comments", label: "내가 쓴 댓글" },
   ];
 
-  // 임시로 role 추가 전까지 hong@gmail.com만 관리자페이지 노출, 비번: 12341234
-  // ...(session?.user?.role === "admin" && { path: "/dashboard", label: "관리자페이지" })
   const isAdmin = user?.email === "hong@gmail.com";
 
   return (
@@ -83,6 +82,7 @@ export default function MyPage() {
               {user.name ? user.name.charAt(0).toUpperCase() : "?"}
             </div>
           )}
+
           <div>
             <h2 className="text-lg font-semibold text-[#7b5449]">
               {user.name || "고객님"}
@@ -92,9 +92,9 @@ export default function MyPage() {
         </div>
 
         <div className="text-right">
-          <p className="text-xs text-gray-500 mb-1">보유 포인트</p>
-          <p className="text-lg font-semibold text-[#7b5449]">
-            {user.totalPoints?.toLocaleString() || 0}P
+          <p className="text-xs text-gray-500 mb-1">보유 쿠키</p>
+          <p className="text-lg font-semibold text-[#7b5449] flex items-center justify-end gap-1">
+            {user.totalCookies?.toLocaleString() || 0} 🍪
           </p>
         </div>
       </div>
@@ -124,7 +124,6 @@ export default function MyPage() {
             className="flex justify-between items-center px-5 py-4 hover:bg-gray-50 transition"
           >
             <div className="flex items-center gap-2">
-              {item.icon && item.icon}
               <span className="text-sm text-gray-700">{item.label}</span>
             </div>
             <span className="text-gray-400">›</span>
