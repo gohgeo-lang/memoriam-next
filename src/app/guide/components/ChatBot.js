@@ -1,57 +1,73 @@
 "use client";
-import React, { useState, useRef, useEffect } from "react";
+
+import React, { useState, useEffect, useRef } from "react";
 
 export default function ChatBot({ className, faqs }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([
+    {
+      sender: "bot",
+      text: "안녕하세요 🐾 반려동물 장례 서비스 FAQ 챗봇입니다.\n궁금한 점을 입력해주세요. 예: '장례 절차', '추모관', '예약 취소' 등",
+    },
+  ]);
   const [input, setInput] = useState("");
   const [adminConnected, setAdminConnected] = useState(false);
+  const [usedFAQs, setUsedFAQs] = useState(new Set()); // ✅ 이미 답변한 FAQ 기록
   const messagesEndRef = useRef(null);
 
-  // 스크롤 자동 이동
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
   useEffect(() => {
-    scrollToBottom();
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // FAQ에서 정확히 매칭되는 답변 찾기
-  const getFAQAnswer = (question) => {
+  const normalize = (str) => str.replace(/\s+/g, "").toLowerCase();
+
+  const findBestMatch = (question) => {
+    const normalizedInput = normalize(question);
+
+    // 너무 짧은 입력은 무시 (오탐 방지)
+    if (normalizedInput.length < 2) return null;
+
+    let best = null;
+    let maxScore = 0;
+
     for (const section of faqs) {
       for (const item of section.items) {
-        if (item.q === question) {
-          return item.a;
+        if (usedFAQs.has(item.q)) continue; // 이미 사용된 FAQ 제외
+
+        const normalizedQ = normalize(item.q);
+
+        let score = 0;
+
+        // 간단 유사도: 포함 여부 + 길이 비율
+        if (normalizedQ.includes(normalizedInput)) {
+          score = normalizedInput.length / normalizedQ.length;
+        } else if (normalizedInput.includes(normalizedQ)) {
+          score = normalizedQ.length / normalizedInput.length;
+        }
+
+        if (score > maxScore) {
+          maxScore = score;
+          best = item;
         }
       }
     }
-    return null;
+
+    return maxScore >= 0.3 ? best : null; // 0.3 이상만 선택
   };
 
   const handleSend = () => {
     const trimmedInput = input.trim();
     if (!trimmedInput) return;
 
-    // 마지막 메시지와 동일하면 전송 안함 (중복 방지)
-    if (
-      messages.length > 0 &&
-      messages[messages.length - 1].text === trimmedInput
-    ) {
-      setInput("");
-      return;
-    }
-
-    // 사용자 메시지 추가
     const userMessage = { sender: "user", text: trimmedInput };
     setMessages((prev) => [...prev, userMessage]);
 
-    // 사용자 입력이 '연결'이면 관리자 연결
     if (trimmedInput === "연결") {
       setMessages((prev) => [
         ...prev,
         {
           sender: "bot",
-          text: "관리자에게 연결되었습니다. 메세지를 작성하세요.",
+          text: "관리자에게 연결되었습니다. 메시지를 작성해주세요. 💬",
         },
       ]);
       setAdminConnected(true);
@@ -59,22 +75,25 @@ export default function ChatBot({ className, faqs }) {
       return;
     }
 
-    // FAQ 답변 확인 (정확 일치)
-    const answer = getFAQAnswer(trimmedInput);
-    if (answer) {
+    const matchedFAQ = findBestMatch(trimmedInput);
+
+    if (matchedFAQ) {
       setMessages((prev) => [
         ...prev,
         {
           sender: "bot",
-          text: `${answer}\n원하는 답변이 없으셨나요? 관리자 연결을 원하시면 "연결"을 입력해주세요.`,
+          text: `${matchedFAQ.a}\n\n더 궁금한 점이 있으신가요? '연결'을 입력하면 관리자에게 문의할 수 있습니다.`,
         },
       ]);
+
+      // 사용한 FAQ 기록
+      setUsedFAQs((prev) => new Set(prev).add(matchedFAQ.q));
     } else {
       setMessages((prev) => [
         ...prev,
         {
           sender: "bot",
-          text: `관련된 정보가 없습니다. 원하는 답변이 없으셨나요? 관리자 연결을 원하시면 "연결"을 입력해주세요.`,
+          text: `관련된 정보를 찾지 못했어요 😥\n"연결"을 입력해 관리자에게 문의해주세요.`,
         },
       ]);
     }
@@ -84,20 +103,17 @@ export default function ChatBot({ className, faqs }) {
 
   return (
     <div className={`${className} font-sans`}>
-      {/* 챗봇 버튼 */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
           className="fixed bottom-4 right-4 bg-[#6D4C41] text-white px-4 py-3 rounded-full shadow-lg z-50"
         >
-          Chat
+          💬 Chat
         </button>
       )}
 
-      {/* 챗봇 박스 */}
       {isOpen && (
         <div className="fixed bottom-4 right-4 w-80 h-96 bg-white border border-gray-300 rounded-xl shadow-lg flex flex-col z-50">
-          {/* 헤더 */}
           <div className="flex justify-between items-center bg-[#6D4C41] text-white px-4 py-2 rounded-t-xl">
             <span>FAQ 챗봇</span>
             <button onClick={() => setIsOpen(false)} className="font-bold">
@@ -105,7 +121,6 @@ export default function ChatBot({ className, faqs }) {
             </button>
           </div>
 
-          {/* 메시지 영역 */}
           <div className="flex-1 p-3 overflow-y-auto space-y-2 bg-[#F5F5F5]">
             {messages.map((msg, i) => (
               <div
@@ -122,7 +137,6 @@ export default function ChatBot({ className, faqs }) {
             <div ref={messagesEndRef}></div>
           </div>
 
-          {/* 입력 영역 */}
           <div className="p-2 border-t border-gray-300 flex gap-2">
             <input
               type="text"
