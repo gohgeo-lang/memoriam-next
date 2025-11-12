@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
+import { completeQuest } from "@/lib/completeQuest";
 
 export async function GET() {
   try {
@@ -30,6 +31,17 @@ export async function POST(req) {
 
     delete data.id;
 
+    if (data.isDefault) {
+      const session = await getServerSession(authOptions);
+      await prisma.address.updateMany({
+        where: {
+          user: { email: session.user.email },
+          NOT: { id: data.id ?? 0 },
+        },
+        data: { isDefault: false },
+      });
+    }
+
     const address = await prisma.address.create({
       data: {
         ...data,
@@ -40,11 +52,16 @@ export async function POST(req) {
     return NextResponse.json(address);
   } catch (err) {
     console.error("주소 등록 실패:", err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: "서버 오류" }, { status: 500 });
   }
 }
+await completeQuest(user.id, "add_address");
 
 export async function PATCH(req) {
+  const session = await getServerSession(authOptions);
+  if (!session)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
   try {
     const data = await req.json();
 
@@ -52,6 +69,17 @@ export async function PATCH(req) {
       where: { id: data.id },
       data,
     });
+
+    if (data.isDefault) {
+      const session = await getServerSession(authOptions);
+      await prisma.address.updateMany({
+        where: {
+          user: { email: session.user.email },
+          NOT: { id: data.id ?? 0 },
+        },
+        data: { isDefault: false },
+      });
+    }
 
     return NextResponse.json(updated);
   } catch (err) {
@@ -62,6 +90,10 @@ export async function PATCH(req) {
 
 export async function DELETE(req) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session)
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     const { id } = await req.json();
 
     await prisma.address.delete({ where: { id } });

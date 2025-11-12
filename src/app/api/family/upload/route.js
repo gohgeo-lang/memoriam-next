@@ -2,6 +2,16 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 
+export const runtime = "nodejs";
+
+const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+if (!allowedTypes.includes(file.type)) {
+  return NextResponse.json(
+    { error: "이미지 파일만 업로드 가능합니다." },
+    { status: 400 }
+  );
+}
+
 export async function POST(req) {
   try {
     const formData = await req.formData();

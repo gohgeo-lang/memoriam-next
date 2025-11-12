@@ -64,7 +64,7 @@ export async function GET() {
       totalCookies: user.totalCookies ?? 0,
     });
   } catch (error) {
-    console.error("/api/cookies (고정퀘스트 포함) 에러:", error);
+    console.error("/api/cookies (고정미션 포함) 에러:", error);
     return Response.json({ error: String(error) }, { status: 500 });
   }
 }
