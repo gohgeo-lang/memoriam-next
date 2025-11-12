@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import ChatBot from "../guide/components/ChatBot";
 
 export default function SupportPage() {
   const router = useRouter();
@@ -169,8 +168,6 @@ export default function SupportPage() {
           영정사진 제작하기
         </button>
       </div>
-      {/* 챗봇 고정 */}
-      <ChatBot className="fixed bottom-4 right-4 w-80 h-96 z-50" faqs={faqs} />
     </div>
   );
 }
