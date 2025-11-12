@@ -186,7 +186,6 @@ export default function DashboardPage() {
       )}
       {activeTab === TABS.USER && (
         <>
-          {" "}
           <UserList
             data={filteredData}
             onEdit={handleEditUser}

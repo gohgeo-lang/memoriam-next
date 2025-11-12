@@ -151,12 +151,12 @@ export default function EstimatePage() {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="relative min-h-screenoverflow-hidden">
+    <div className="relative min-h-screen overflow-hidden bg-[#f5f5f5]">
       <div className="relative z-10 space-y-3">
         <FilterBar onChange={setQuery} />
 
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-2 py-2">
-          <div className="bg-[#856056] px-4 py-2 rounded-md shadow-sm w-full sm:w-auto text-center sm:text-left">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-left gap-3 flex-wrap px-2 py-2">
+          <div className="bg-[rgb(133,96,86)] px-4 py-2 rounded-md shadow-sm w-full sm:w-auto text-center sm:text-left">
             <p className="text-sm text-white whitespace-nowrap">
               전체 {companyList.length}개 중 {startIndex + 1}-
               {Math.min(startIndex + ITEMS_PER_PAGE, companyList.length)}번째
