@@ -5,15 +5,22 @@ import { completeQuest } from "@/lib/completeQuest";
 
 export const runtime = "nodejs";
 
-const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
-if (!allowedTypes.includes(file.type)) {
-  return NextResponse.json(
-    { error: "이미지 파일만 업로드 가능합니다." },
-    { status: 400 }
-  );
-}
+// const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+// if (!allowedTypes.includes(file.type)) {
+//   return NextResponse.json(
+//     { error: "이미지 파일만 업로드 가능합니다." },
+//     { status: 400 }
+//   );
+// }
 
 export async function POST(req) {
+  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+  if (!allowedTypes.includes(file.type)) {
+    return NextResponse.json(
+      { error: "이미지 파일만 업로드 가능합니다." },
+      { status: 400 }
+    );
+  }
   try {
     const formData = await req.formData();
     const file = formData.get("file");
