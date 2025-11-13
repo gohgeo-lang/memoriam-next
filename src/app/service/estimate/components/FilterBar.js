@@ -28,7 +28,7 @@ export default function FilterBar({ onChange }) {
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             placeholder="업체명, 서비스 검색"
-            className="w-full md:flex-1 max-w-lg rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#7b5449]"
+            className="w-full md:flex-1 md:max-w-lg rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#7b5449]"
           />
 
           {/* 지역, 정렬, 적용 버튼을 한 줄로 */}
