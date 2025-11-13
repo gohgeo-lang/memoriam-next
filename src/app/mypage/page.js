@@ -59,8 +59,6 @@ export default function MyPage() {
     { href: "/mypage/family", label: "가족 관리" },
     { href: "/mypage/payment", label: "결제수단 관리" },
     { href: "/mypage/cookies", label: "쿠키" },
-    { href: "/mypage/posts", label: "내가 쓴 게시물" },
-    { href: "/mypage/comments", label: "내가 쓴 댓글" },
   ];
 
   const isAdmin = user?.email === "hong@gmail.com";
