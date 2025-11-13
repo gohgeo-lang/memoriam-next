@@ -2,8 +2,6 @@ import prisma from "@/lib/prisma";
 
 export async function markQuestComplete(userId, type) {
   try {
-    if (!userId || !type) return;
-
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -15,16 +13,23 @@ export async function markQuestComplete(userId, type) {
       },
     });
 
-    if (!quest) return;
-
-    if (!quest.completed) {
+    if (quest) {
       await prisma.questProgress.update({
         where: { id: quest.id },
         data: { completed: true },
       });
-      console.log(`미션 완료 처리됨: ${type}`);
+    } else {
+      await prisma.questProgress.create({
+        data: {
+          userId,
+          type,
+          completed: true,
+          rewarded: false,
+          createdAt: new Date(),
+        },
+      });
     }
   } catch (error) {
-    console.error("markQuestComplete 오류:", error);
+    console.error("퀘스트 완료 처리 실패:", error);
   }
 }

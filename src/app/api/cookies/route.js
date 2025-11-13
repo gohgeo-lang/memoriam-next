@@ -23,7 +23,7 @@ export async function GET() {
     });
     if (!user) return Response.json({ error: "사용자 없음" }, { status: 404 });
 
-    const allQuests = loadQuests();
+    const allQuests = await loadQuests();
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 

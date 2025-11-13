@@ -1,37 +1,37 @@
 import fs from "fs";
 import path from "path";
-import { XMLParser } from "fast-xml-parser";
+import xml2js from "xml2js";
 
-/**
- * XML 파일에서 퀘스트 목록을 불러오는 함수
- * - 경로: public/data/quest.xml
- * - fast-xml-parser 사용
- */
-export function loadQuests() {
+const QUEST_XML_PATH = path.join(process.cwd(), "public", "data", "quest.xml");
+
+const SYSTEM_QUESTS = [
+  { type: "remember_post", label: "게시글에 추모 남기기", reward: 1 },
+  { type: "upload_photo", label: "가족 사진 업로드하기", reward: 1 },
+  { type: "register_family", label: "가족 등록하기", reward: 1 },
+];
+
+export async function loadQuests() {
   try {
-    const xmlPath = path.join(process.cwd(), "public", "data", "quest.xml");
+    const xml = fs.readFileSync(QUEST_XML_PATH, "utf-8");
 
-    if (!fs.existsSync(xmlPath)) {
-      console.warn("⚠️ quest.xml 파일을 찾을 수 없습니다.");
-      return [];
-    }
+    const parser = new xml2js.Parser();
+    const parsed = await parser.parseStringPromise(xml);
 
-    const xmlData = fs.readFileSync(xmlPath, "utf-8");
-    const parser = new XMLParser();
-    const json = parser.parse(xmlData);
+    const questsFromXml =
+      parsed?.quests?.quest?.map((q) => ({
+        type: q.type?.[0] || "unknown",
+        label: q.label?.[0] || "이름없는 미션",
+        reward: Number(q.reward?.[0] || 1),
+        category: q.category?.[0] || "daily",
+      })) || [];
 
-    const quests = Array.isArray(json.quests.quest)
-      ? json.quests.quest
-      : [json.quests.quest];
+    const uniqueSystemQuests = SYSTEM_QUESTS.filter(
+      (sys) => !questsFromXml.some((xmlQ) => xmlQ.type === sys.type)
+    );
 
-    return quests.map((q) => ({
-      type: q.type,
-      label: q.label,
-      reward: parseInt(q.reward, 10) || 1,
-      category: q.category || "misc",
-    }));
-  } catch (error) {
-    console.error("loadQuests() 오류:", error);
-    return [];
+    return [...questsFromXml, ...uniqueSystemQuests];
+  } catch (err) {
+    console.error("loadQuests() 실패:", err);
+    return SYSTEM_QUESTS;
   }
 }
