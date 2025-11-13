@@ -48,4 +48,5 @@ export async function POST(req) {
   }
 }
 
-await completeQuest(userid, "upload_photo");
+// Vercel Deploy
+// await completeQuest(userid, "upload_photo");

@@ -89,7 +89,8 @@ export default function Brand() {
                   <>
                     단순한 장례가 아닌 <br />
                     <span className="font-semibold text-[17px]">
-                      "진정한 교감"
+                      {/* Vercel Deploy */}
+                      &quot;진정한 교감&quot;
                     </span>
                   </>
                 )}
@@ -97,7 +98,7 @@ export default function Brand() {
                   <>
                     따뜻한 마음을 담습니다. <br />
                     <span className="font-semibold text-[17px]">
-                      "소중한 기록"
+                      &quot;소중한 기록&quot;
                     </span>
                   </>
                 )}
@@ -105,7 +106,7 @@ export default function Brand() {
                   <>
                     기억을 지키는 <br />
                     <span className="font-semibold text-[17px]">
-                      "친절한 전문성"
+                      &quot;친절한 전문성&quot;
                     </span>
                   </>
                 )}

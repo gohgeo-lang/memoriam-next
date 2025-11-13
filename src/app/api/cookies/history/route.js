@@ -1,7 +1,8 @@
 import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 // import { authOptions } from "../auth/[...nextauth]/route";
-import { authOptions } from "../auth/[...nextauth]/authOptions";
+// Vercel Deploy
+import { authOptions } from "../../auth/[...nextauth]/route";
 
 export const runtime = "nodejs";
 
