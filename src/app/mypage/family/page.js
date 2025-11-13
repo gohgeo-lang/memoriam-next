@@ -25,18 +25,14 @@ export default function FamilyPage() {
       const res = await fetch("/api/family");
       if (!res.ok) {
         if (res.status === 401) {
-          console.warn("로그인이 필요합니다.");
           setFamilies([]);
           return;
         }
-        throw new Error("가족 정보를 불러오지 못했습니다.");
+        throw new Error();
       }
-
       const data = await res.json();
-
       setFamilies(Array.isArray(data) ? data : []);
     } catch (err) {
-      console.error("가족 정보 로드 실패:", err);
       setFamilies([]);
     } finally {
       setLoading(false);
@@ -60,7 +56,7 @@ export default function FamilyPage() {
         method: "POST",
         body: formData,
       });
-      if (!res.ok) throw new Error("업로드 실패");
+      if (!res.ok) throw new Error();
       const data = await res.json();
       setForm({ ...form, photo: data.url });
     } catch (err) {
@@ -79,7 +75,6 @@ export default function FamilyPage() {
       body: JSON.stringify(form),
     });
     if (res.ok) {
-      alert(form.id ? "수정 완료" : "등록 완료");
       setForm({
         id: null,
         name: "",
@@ -94,7 +89,8 @@ export default function FamilyPage() {
   };
 
   const handleDelete = async (id) => {
-    if (!confirm("정말 삭제하시겠습니까?")) return;
+    const ok = confirm("정말 삭제하시겠습니까?");
+    if (!ok) return;
     await fetch("/api/family", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
@@ -105,68 +101,88 @@ export default function FamilyPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-5">
-      <h2 className="text-lg font-semibold text-[#7b5449] mb-6 flex items-center gap-2">
-        가족 관리
-      </h2>
+      <h2 className="text-lg font-semibold text-[#7b5449] mb-6">가족 관리</h2>
 
       <form
         onSubmit={handleSubmit}
         className="bg-white rounded-xl shadow p-6 space-y-4 max-w-xl mx-auto"
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input
-            placeholder="이름"
+          <div>
+            <p className="text-sm text-gray-600 mb-1">이름</p>
+            <input
+              placeholder="예: 쿠키"
+              className="border p-2 w-full rounded"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+            />
+          </div>
+
+          <div>
+            <p className="text-sm text-gray-600 mb-1">종(species)</p>
+            <input
+              placeholder="예: 강아지"
+              className="border p-2 w-full rounded"
+              value={form.species}
+              onChange={(e) => setForm({ ...form, species: e.target.value })}
+            />
+          </div>
+
+          <div>
+            <p className="text-sm text-gray-600 mb-1">품종(breed)</p>
+            <input
+              placeholder="예: 말티즈"
+              className="border p-2 w-full rounded"
+              value={form.breed}
+              onChange={(e) => setForm({ ...form, breed: e.target.value })}
+            />
+          </div>
+
+          <div>
+            <p className="text-sm text-gray-600 mb-1">생일</p>
+            <input
+              type="date"
+              className="border p-2 w-full rounded"
+              value={form.birthDate}
+              onChange={(e) => setForm({ ...form, birthDate: e.target.value })}
+            />
+          </div>
+        </div>
+
+        <div>
+          <p className="text-sm text-gray-600 mb-1">메모</p>
+          <textarea
+            placeholder="예: 우리 집 첫째, 장난감 좋아함"
             className="border p-2 w-full rounded"
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-          />
-          <input
-            placeholder="종(species)"
-            className="border p-2 w-full rounded"
-            value={form.species}
-            onChange={(e) => setForm({ ...form, species: e.target.value })}
-          />
-          <input
-            placeholder="품종(breed)"
-            className="border p-2 w-full rounded"
-            value={form.breed}
-            onChange={(e) => setForm({ ...form, breed: e.target.value })}
-          />
-          <input
-            type="date"
-            className="border p-2 w-full rounded"
-            value={form.birthDate}
-            onChange={(e) => setForm({ ...form, birthDate: e.target.value })}
+            value={form.memo}
+            onChange={(e) => setForm({ ...form, memo: e.target.value })}
           />
         </div>
-        <textarea
-          placeholder="메모"
-          className="border p-2 w-full rounded"
-          value={form.memo}
-          onChange={(e) => setForm({ ...form, memo: e.target.value })}
-        />
 
-        <div className="flex items-center gap-3">
-          <label className="cursor-pointer bg-gray-100 px-3 py-2 rounded border text-sm text-gray-700 hover:bg-gray-200">
-            {uploading ? "업로드 중..." : "이미지 선택"}
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handlePhotoUpload}
-              disabled={uploading}
-            />
-          </label>
+        <div>
+          <p className="text-sm text-gray-600 mb-1">사진</p>
+          <div className="flex items-center gap-3">
+            <label className="cursor-pointer bg-gray-100 px-3 py-2 rounded border text-sm text-gray-700 hover:bg-gray-200">
+              {uploading ? "업로드 중..." : "이미지 선택"}
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handlePhotoUpload}
+                disabled={uploading}
+              />
+            </label>
 
-          {form.photo && (
-            <Image
-              src={form.photo}
-              alt="family photo"
-              width={60}
-              height={60}
-              className="rounded-md object-cover border"
-            />
-          )}
+            {form.photo && (
+              <Image
+                src={form.photo}
+                alt="family photo"
+                width={60}
+                height={60}
+                className="rounded-md object-cover border"
+              />
+            )}
+          </div>
         </div>
 
         {uploadError && <p className="text-sm text-red-500">{uploadError}</p>}

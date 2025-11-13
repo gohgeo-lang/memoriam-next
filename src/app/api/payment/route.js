@@ -19,7 +19,6 @@ export async function GET() {
 
     return NextResponse.json(user?.paymentMethods || []);
   } catch (err) {
-    console.error("결제수단 조회 실패:", err);
     return NextResponse.json({ error: "서버 오류" }, { status: 500 });
   }
 }
@@ -53,14 +52,13 @@ export async function POST(req) {
       },
     });
 
+    await completeQuest(user.id, "register_payment");
+
     return NextResponse.json(method);
   } catch (err) {
-    console.error("결제수단 등록 실패:", err);
     return NextResponse.json({ error: "서버 오류" }, { status: 500 });
   }
 }
-
-await completeQuest(user.id, "register_payment");
 
 export async function PATCH(req) {
   try {
@@ -91,7 +89,6 @@ export async function PATCH(req) {
 
     return NextResponse.json(updated);
   } catch (err) {
-    console.error("결제수단 수정 실패:", err);
     return NextResponse.json({ error: "서버 오류" }, { status: 500 });
   }
 }
@@ -107,7 +104,6 @@ export async function DELETE(req) {
 
     return NextResponse.json({ success: true });
   } catch (err) {
-    console.error("결제수단 삭제 실패:", err);
     return NextResponse.json({ error: "서버 오류" }, { status: 500 });
   }
 }

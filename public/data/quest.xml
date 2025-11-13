@@ -1,33 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <quests>
 
-  <!-- 🌅 DAILY QUESTS -->
-  <quest><type>login_today</type><label>오늘 로그인하기</label><reward>1</reward><category>daily</category></quest>
-  <quest><type>visit_cookie_page</type><label>쿠키 페이지 확인하기</label><reward>1</reward><category>daily</category></quest>
-  <quest><type>write_comment</type><label>댓글 한 개 작성하기</label><reward>1</reward><category>daily</category></quest>
-  <quest><type>remember_post</type><label>게시글에 추모 남기기</label><reward>1</reward><category>daily</category></quest>
-  <quest><type>register_family</type><label>새 가족 등록하기</label><reward>1</reward><category>daily</category></quest>
+  <!-- DAILY QUESTS -->
+  <quest><type>visit_cookie_page</type><label>쿠키 페이지 방문하기</label><reward>1</reward><category>daily</category></quest>
+  <quest><type>remember_post</type><label>추모 남기기</label><reward>1</reward><category>daily</category></quest>
+  <quest><type>register_family</type><label>가족 등록하기</label><reward>1</reward><category>daily</category></quest>
   <quest><type>upload_photo</type><label>가족 사진 업로드하기</label><reward>1</reward><category>daily</category></quest>
-  <quest><type>write_post</type><label>게시글 작성하기</label><reward>1</reward><category>daily</category></quest>
+  <quest><type>visit_mypage</type><label>마이페이지 방문하기</label><reward>1</reward><category>daily</category></quest>
+  <quest><type>visit_family_page</type><label>가족 페이지 방문하기</label><reward>1</reward><category>daily</category></quest>
+  <quest><type>visit_home</type><label>홈 화면 방문하기</label><reward>1</reward><category>daily</category></quest>
+  <quest><type>like_post</type><label>게시글 좋아요하기</label><reward>1</reward><category>daily</category></quest>
+  <quest><type>write_reply</type><label>대댓글 작성하기</label><reward>1</reward><category>daily</category></quest>
+  <quest><type>search_memorial</type><label>추모 검색하기</label><reward>1</reward><category>daily</category></quest>
+  <quest><type>view_memorial</type><label>게시글 상세보기</label><reward>1</reward><category>daily</category></quest>
+  <quest><type>share_memorial</type><label>게시글 공유하기</label><reward>1</reward><category>daily</category></quest>
 
-  <!-- 📈 MILESTONE QUESTS (누적형) -->
-  <quest><type>post_10_total</type><label>게시글 10개 작성 달성</label><reward>5</reward><category>milestone</category></quest>
-  <quest><type>comment_20_total</type><label>댓글 20개 작성 달성</label><reward>5</reward><category>milestone</category></quest>
-  <quest><type>remember_30_total</type><label>게시글 추모 30회 달성</label><reward>5</reward><category>milestone</category></quest>
-  <quest><type>family_5_total</type><label>가족 등록 5명 달성</label><reward>5</reward><category>milestone</category></quest>
-  <quest><type>cookie_100_total</type><label>누적 쿠키 100개 달성</label><reward>10</reward><category>milestone</category></quest>
-  <quest><type>profile_update_3_times</type><label>프로필 수정 3회 달성</label><reward>3</reward><category>milestone</category></quest>
-  <quest><type>memorial_100_views</type><label>내 게시글 조회수 100회 달성</label><reward>5</reward><category>milestone</category></quest>
-  <quest><type>memorial_20_remembers</type><label>내 게시글 공감 20회 달성</label><reward>5</reward><category>milestone</category></quest>
+  <!-- MILESTONE QUESTS -->
+  <quest><type>post_10_total</type><label>게시글 10개 작성</label><reward>5</reward><category>milestone</category></quest>
+  <quest><type>comment_20_total</type><label>댓글 20개 작성</label><reward>5</reward><category>milestone</category></quest>
+  <quest><type>remember_30_total</type><label>추모 30회 달성</label><reward>5</reward><category>milestone</category></quest>
+  <quest><type>family_5_total</type><label>가족 5명 등록</label><reward>5</reward><category>milestone</category></quest>
+  <quest><type>cookie_100_total</type><label>쿠키 100개 달성</label><reward>10</reward><category>milestone</category></quest>
+  <quest><type>profile_update_3_times</type><label>프로필 수정 3회</label><reward>3</reward><category>milestone</category></quest>
+  <quest><type>memorial_100_views</type><label>게시글 100 조회수 달성</label><reward>5</reward><category>milestone</category></quest>
+  <quest><type>memorial_20_remembers</type><label>게시글 공감 20회</label><reward>5</reward><category>milestone</category></quest>
 
-  <!-- 🔁 STREAK QUESTS (연속형) -->
+  <!-- STREAK QUESTS -->
   <quest><type>streak_3_days</type><label>3일 연속 로그인</label><reward>3</reward><category>streak</category></quest>
   <quest><type>streak_7_days</type><label>7일 연속 로그인</label><reward>7</reward><category>streak</category></quest>
   <quest><type>streak_30_days</type><label>30일 연속 로그인</label><reward>20</reward><category>streak</category></quest>
 
-  <!-- ⚙️ SYSTEM / UTILITY -->
-  <quest><type>set_default_address</type><label>기본 배송지 등록하기</label><reward>1</reward><category>system</category></quest>
-  <quest><type>add_payment_method</type><label>결제수단 등록하기</label><reward>1</reward><category>system</category></quest>
-  <quest><type>update_profile</type><label>프로필 정보 수정하기</label><reward>1</reward><category>system</category></quest>
+  <!-- SYSTEM QUESTS -->
+  <quest><type>set_default_address</type><label>기본 배송지 등록</label><reward>1</reward><category>system</category></quest>
+  <quest><type>add_payment_method</type><label>결제수단 등록</label><reward>1</reward><category>system</category></quest>
+  <quest><type>update_profile</type><label>프로필 정보 수정</label><reward>1</reward><category>system</category></quest>
 
 </quests>

@@ -49,7 +49,7 @@ export default function InfoPage() {
         ...prev,
         name: data.name,
         image: data.image,
-        totalPoints: data.totalPoints,
+        totalCookies: data.totalCookies,
       }));
       setPassword("");
     } else {
@@ -90,7 +90,7 @@ export default function InfoPage() {
           <div className="text-right">
             <p className="text-xs text-gray-500 mb-1">보유 포인트</p>
             <p className="text-lg font-semibold text-[#7b5449]">
-              {user.totalPoints?.toLocaleString() || 0}P
+              {user.totalCookies?.toLocaleString() || 0}P
             </p>
           </div>
         </div>

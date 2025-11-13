@@ -87,11 +87,30 @@ const deleteCommentInState = (comments, commentId) => {
 export default function MemorialPage() {
   const [stories, setStories] = useState([]);
   const [selectedStory, setSelectedStory] = useState(null);
+  //미션로직(selectedStory 변경 감지하는 훅)
+  useEffect(() => {
+    if (selectedStory) {
+      fetch("/api/quests/trigger", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "view_memorial" }),
+      });
+    }
+  }, [selectedStory]);
+
   const [isWriting, setIsWriting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [editingStory, setEditingStory] = useState(null);
   const [sortOrder, setSortOrder] = useState("latest"); // 👈 [신규] 정렬 상태
   const { data: session } = useSession();
+
+  useEffect(() => {
+    fetch("/api/quests/trigger", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "visit_memorial_page" }),
+    });
+  }, []);
 
   useEffect(() => {
     const fetchStories = async () => {
@@ -203,10 +222,10 @@ export default function MemorialPage() {
       const newStoryMapped = mapStoryData(newPostFromDb);
 
       //여기 if문은 쿠키페이지 미션트리거용 코드에요.(게시물 작성 시 미션 완료 트리거)
-      if (isEditing) {
+      if (!isEditing) {
         await fetch("/api/quests/trigger", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Typse": "application/json" },
           body: JSON.stringify({ type: "write_post" }),
         });
       }
@@ -282,10 +301,12 @@ export default function MemorialPage() {
       const newCommentFromDb = await res.json();
 
       //쿠키 페이지 미션 트리거용 코드에요.(댓글 작성시 미션 완료되는 거)
-      await fetch("/api/quest/trigger", {
+      const triggerType = parentId ? "write_reply" : "write_comment";
+
+      await fetch("/api/quests/trigger", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "write_comment" }),
+        body: JSON.stringify({ type: triggerType }),
       });
 
       const newCommentMapped = {
